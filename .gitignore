@@ -31,3 +31,4 @@ Cargo.lock
 
 # Generated files
 /generated/
+.vscode/branch-timer.json

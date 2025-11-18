@@ -1,6 +1,6 @@
 [package]
 name = "async-inspect"
-version = "0.1.0"
+version = "0.0.1"
 edition = "2021"
 rust-version = "1.70"
 authors = ["Your Name <your.email@example.com>"]
@@ -42,7 +42,11 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
 # Tokio integration (optional)
-tokio = { version = "1.35", features = ["rt", "macros", "sync"], optional = true }
+tokio = { version = "1.35", features = [
+    "rt",
+    "macros",
+    "sync",
+], optional = true }
 
 # Tracing integration
 tracing = "0.1"
