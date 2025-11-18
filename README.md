@@ -11,6 +11,7 @@
 ## 😰 The Problem
 
 Debugging async Rust is frustrating:
+
 ```rust
 #[tokio::test]
 async fn test_user_flow() {
@@ -23,7 +24,8 @@ async fn test_user_flow() {
 ```
 
 **What you see in a regular debugger:**
-```
+
+```bash
 Thread blocked in:
   tokio::runtime::park
   std::sys::unix::thread::Thread::sleep
