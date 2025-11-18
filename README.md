@@ -1,8 +1,8 @@
-<div align="center>
+<div align="center">
 
 # async-inspect 🔍
 
-> X-ray vision for async Rust
+_X-ray vision for async Rust_
 
 **async-inspect** is a debugging tool that visualizes and inspects async state machines in Rust. See exactly what your futures are doing, where they're stuck, and why.
 
