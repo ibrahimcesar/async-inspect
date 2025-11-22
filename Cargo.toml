@@ -109,6 +109,7 @@ path = "examples/simple_test.rs"
 [[example]]
 name = "tokio_integration"
 path = "examples/tokio_integration.rs"
+required-features = ["tokio"]
 
 [[example]]
 name = "deadlock_detection"
@@ -117,14 +118,17 @@ path = "examples/deadlock_detection.rs"
 [[example]]
 name = "performance_analysis"
 path = "examples/performance_analysis.rs"
+required-features = ["tokio"]
 
 [[example]]
 name = "visualization"
 path = "examples/visualization.rs"
+required-features = ["tokio"]
 
 [[example]]
 name = "task_hierarchy"
 path = "examples/task_hierarchy.rs"
+required-features = ["tokio"]
 
 [[example]]
 name = "proc_macro_test"
@@ -138,12 +142,13 @@ required-features = ["cli"]
 [[example]]
 name = "production_ready"
 path = "examples/production_ready.rs"
+required-features = ["tokio"]
 
 [[example]]
 name = "relationship_graph"
 path = "examples/relationship_graph.rs"
 
-
 [[example]]
 name = "ecosystem_integration"
 path = "examples/ecosystem_integration.rs"
+required-features = ["tokio"]
