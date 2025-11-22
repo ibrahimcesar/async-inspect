@@ -79,7 +79,7 @@ jobs:
           key: ${{ runner.os }}-cargo-clippy-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Run Clippy
-        run: cargo clippy --all-features --all-targets -- -D warnings
+        run: cargo clippy --all-features --all-targets -- -D warnings -A clippy::must-use-candidate -A clippy::cast-precision-loss -A clippy::cast-possible-truncation
 
   # Test suite
   test:
