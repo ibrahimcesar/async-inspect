@@ -341,7 +341,11 @@ mod tests {
         metrics.blocked_time = Duration::from_millis(20);
 
         let efficiency = metrics.efficiency();
-        assert!((efficiency - 0.8).abs() < 0.01, "Expected efficiency ~0.8, got {}", efficiency);
+        assert!(
+            (efficiency - 0.8).abs() < 0.01,
+            "Expected efficiency ~0.8, got {}",
+            efficiency
+        );
     }
 
     #[test]
