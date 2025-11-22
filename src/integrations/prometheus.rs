@@ -6,9 +6,10 @@
 use crate::inspector::Inspector;
 use crate::task::TaskState;
 use prometheus::{
-    Counter, CounterVec, Gauge, GaugeVec, Histogram, HistogramOpts, HistogramVec, Opts, Registry,
+    Counter, CounterVec, Gauge, GaugeVec, HistogramOpts, HistogramVec, Opts, Registry,
 };
 use std::sync::Arc;
+use std::time::Duration;
 
 /// Prometheus metrics exporter for async-inspect
 ///
@@ -26,7 +27,6 @@ use std::sync::Arc;
 /// let metrics = exporter.gather();
 /// ```
 pub struct PrometheusExporter {
-    inspector: Arc<Inspector>,
     registry: Registry,
 
     // Task counters
@@ -54,11 +54,6 @@ pub struct PrometheusExporter {
 impl PrometheusExporter {
     /// Create a new Prometheus exporter
     pub fn new() -> prometheus::Result<Self> {
-        Self::with_inspector(Inspector::global().clone())
-    }
-
-    /// Create an exporter with a specific inspector
-    pub fn with_inspector(inspector: Arc<Inspector>) -> prometheus::Result<Self> {
         let registry = Registry::new();
 
         // Task counters
@@ -131,7 +126,6 @@ impl PrometheusExporter {
         registry.register(Box::new(blocked_tasks.clone()))?;
 
         Ok(Self {
-            inspector,
             registry,
             tasks_total,
             tasks_completed,
@@ -147,7 +141,7 @@ impl PrometheusExporter {
 
     /// Update all metrics from the inspector
     pub fn update(&self) {
-        let stats = self.inspector.stats();
+        let stats = Inspector::global().stats();
 
         // Update counters (these are cumulative, so we need to set them carefully)
         // Note: Prometheus counters can only increase, so we track changes
@@ -171,7 +165,7 @@ impl PrometheusExporter {
         self.blocked_tasks.set(stats.blocked_tasks as f64);
 
         // Update task durations and polls
-        for task in self.inspector.get_all_tasks() {
+        for task in Inspector::global().get_all_tasks() {
             // Update task duration histogram for completed tasks
             if matches!(task.state, TaskState::Completed | TaskState::Failed) {
                 self.task_duration

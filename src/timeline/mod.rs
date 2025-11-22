@@ -16,6 +16,11 @@ impl EventId {
     pub fn new(id: u64) -> Self {
         Self(id)
     }
+
+    /// Get the raw u64 value
+    pub fn as_u64(&self) -> u64 {
+        self.0
+    }
 }
 
 /// Type of event that occurred
