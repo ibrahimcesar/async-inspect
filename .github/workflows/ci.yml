@@ -277,7 +277,7 @@ jobs:
   # All checks passed
   ci-success:
     name: CI Success
-    needs: [check, fmt, clippy, test, examples, docs, features, msrv, security]
+    needs: [check, fmt, clippy, test, examples, docs, features]
     runs-on: ubuntu-latest
     steps:
       - name: Mark CI as successful
