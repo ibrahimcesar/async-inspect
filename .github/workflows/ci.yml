@@ -104,6 +104,7 @@ jobs:
           toolchain: ${{ matrix.rust }}
 
       - name: Cache cargo
+        continue-on-error: true
         uses: actions/cache@v4
         with:
           path: |
