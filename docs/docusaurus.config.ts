@@ -33,6 +33,10 @@ const config: Config = {
 
   themes: ['@docusaurus/theme-mermaid'],
 
+  plugins: [
+    './src/plugins/clacks-overhead',
+  ],
+
   presets: [
     [
       'classic',
