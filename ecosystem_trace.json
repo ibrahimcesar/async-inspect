@@ -1,0 +1,1261 @@
+{
+  "tasks": [
+    {
+      "id": 11,
+      "name": "worker_7",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.55204200000003,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 26,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.522,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 24,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.525709,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 28,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.52175,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 25,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.525625,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 29,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.52162500000003,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 3,
+      "name": "worker_2",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.57045800000003,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 23,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.531625,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 15,
+      "name": "worker_10",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.552,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 17,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.551833,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 27,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.52754200000004,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 9,
+      "name": "worker_6",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.563708,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 31,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.525209,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 1,
+      "name": "orchestrator",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.617459,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 7,
+      "name": "worker_5",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.567917,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 18,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.552583,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 21,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.539,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 14,
+      "name": "worker_9",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.55991600000004,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 8,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.569208,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 12,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.56341699999996,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 2,
+      "name": "worker_1",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.586,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 5,
+      "name": "worker_4",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.574459,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 16,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.560584,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 22,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.54345800000004,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 13,
+      "name": "worker_8",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.566,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 20,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.552708,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 30,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.534708,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 19,
+      "name": "fetch_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.556833,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 4,
+      "name": "worker_3",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.582208,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": 1
+    },
+    {
+      "id": 10,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.572292,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 6,
+      "name": "process_data",
+      "state": "Completed",
+      "created_at_ms": 347,
+      "duration_ms": 347.578833,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=orchestrator, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 2,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_1, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 3,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_2, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 4,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_3, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 5,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_4, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 7,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_5, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 9,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_6, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 8,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 10,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 8,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 11,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_7, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 10,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 13,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_8, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 12,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 14,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_9, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 12,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 15,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=worker_10, parent=Some(TaskId(1)), location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 16,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 17,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 18,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 18,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 19,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 17,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 20,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 16,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 21,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 22,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 21,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 20,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 22,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 23,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 24,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 23,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 24,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 25,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 28,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 27,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 25,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 26,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=process_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 28,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 27,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 29,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 30,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 26,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=process_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 29,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 31,
+      "timestamp_ms": 347,
+      "kind": "TaskSpawned",
+      "details": "name=fetch_data, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 30,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 31,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 19,
+      "timestamp_ms": 347,
+      "kind": "AwaitStarted",
+      "details": "point=fetch_data::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 8,
+      "timestamp_ms": 235,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 8,
+      "timestamp_ms": 235,
+      "kind": "TaskCompleted",
+      "details": "duration=112.385166ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 12,
+      "timestamp_ms": 225,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 12,
+      "timestamp_ms": 225,
+      "kind": "TaskCompleted",
+      "details": "duration=122.140209ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 22,
+      "timestamp_ms": 216,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 22,
+      "timestamp_ms": 216,
+      "kind": "TaskCompleted",
+      "details": "duration=131.36675ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 20,
+      "timestamp_ms": 205,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 20,
+      "timestamp_ms": 205,
+      "kind": "TaskCompleted",
+      "details": "duration=142.5335ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 19,
+      "timestamp_ms": 196,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 19,
+      "timestamp_ms": 196,
+      "kind": "TaskCompleted",
+      "details": "duration=151.648541ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 18,
+      "timestamp_ms": 196,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 18,
+      "timestamp_ms": 196,
+      "kind": "TaskCompleted",
+      "details": "duration=151.70320800000002ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 7,
+      "timestamp_ms": 196,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 7,
+      "timestamp_ms": 196,
+      "kind": "TaskCompleted",
+      "details": "duration=151.72395799999998ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 23,
+      "timestamp_ms": 186,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 23,
+      "timestamp_ms": 186,
+      "kind": "TaskCompleted",
+      "details": "duration=161.40829200000002ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 183,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 183,
+      "kind": "TaskCompleted",
+      "details": "duration=163.891583ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 2,
+      "timestamp_ms": 183,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 2,
+      "timestamp_ms": 183,
+      "kind": "TaskCompleted",
+      "details": "duration=163.913417ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 183,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 183,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 25,
+      "timestamp_ms": 175,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 25,
+      "timestamp_ms": 175,
+      "kind": "TaskCompleted",
+      "details": "duration=171.914875ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 10,
+      "timestamp_ms": 174,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 10,
+      "timestamp_ms": 174,
+      "kind": "TaskCompleted",
+      "details": "duration=173.18129199999998ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 3,
+      "timestamp_ms": 174,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 3,
+      "timestamp_ms": 174,
+      "kind": "TaskCompleted",
+      "details": "duration=173.20166700000001ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 174,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 174,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 16,
+      "timestamp_ms": 165,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 16,
+      "timestamp_ms": 165,
+      "kind": "TaskCompleted",
+      "details": "duration=182.38104199999998ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 4,
+      "timestamp_ms": 165,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 4,
+      "timestamp_ms": 165,
+      "kind": "TaskCompleted",
+      "details": "duration=182.406958ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 31,
+      "timestamp_ms": 165,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 31,
+      "timestamp_ms": 165,
+      "kind": "TaskCompleted",
+      "details": "duration=182.39725ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 165,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 165,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 31,
+      "timestamp_ms": 155,
+      "kind": "AwaitEnded",
+      "details": "point=fetch_data::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 30,
+      "timestamp_ms": 155,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 30,
+      "timestamp_ms": 155,
+      "kind": "TaskCompleted",
+      "details": "duration=192.537292ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 17,
+      "timestamp_ms": 154,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 17,
+      "timestamp_ms": 154,
+      "kind": "TaskCompleted",
+      "details": "duration=193.847583ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 5,
+      "timestamp_ms": 154,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 5,
+      "timestamp_ms": 154,
+      "kind": "TaskCompleted",
+      "details": "duration=193.872459ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 153,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 153,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 153,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 153,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 29,
+      "timestamp_ms": 145,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 29,
+      "timestamp_ms": 145,
+      "kind": "TaskCompleted",
+      "details": "duration=201.86770900000002ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 28,
+      "timestamp_ms": 145,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 28,
+      "timestamp_ms": 145,
+      "kind": "TaskCompleted",
+      "details": "duration=201.89395800000003ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 15,
+      "timestamp_ms": 145,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 15,
+      "timestamp_ms": 145,
+      "kind": "TaskCompleted",
+      "details": "duration=201.924125ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 21,
+      "timestamp_ms": 134,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 21,
+      "timestamp_ms": 134,
+      "kind": "TaskCompleted",
+      "details": "duration=212.946167ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 9,
+      "timestamp_ms": 134,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 9,
+      "timestamp_ms": 134,
+      "kind": "TaskCompleted",
+      "details": "duration=212.980333ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 134,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 134,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 24,
+      "timestamp_ms": 123,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 24,
+      "timestamp_ms": 123,
+      "kind": "TaskCompleted",
+      "details": "duration=224.123209ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 11,
+      "timestamp_ms": 123,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 11,
+      "timestamp_ms": 123,
+      "kind": "TaskCompleted",
+      "details": "duration=224.15658299999998ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 123,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 123,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 26,
+      "timestamp_ms": 113,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 26,
+      "timestamp_ms": 113,
+      "kind": "TaskCompleted",
+      "details": "duration=234.310792ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 13,
+      "timestamp_ms": 113,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 13,
+      "timestamp_ms": 113,
+      "kind": "TaskCompleted",
+      "details": "duration=234.345542ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 113,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 113,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 27,
+      "timestamp_ms": 102,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 27,
+      "timestamp_ms": 102,
+      "kind": "TaskCompleted",
+      "details": "duration=245.206709ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 14,
+      "timestamp_ms": 102,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 14,
+      "timestamp_ms": 102,
+      "kind": "TaskCompleted",
+      "details": "duration=245.23945799999998ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 102,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 102,
+      "kind": "AwaitStarted",
+      "details": "point=orchestrator::await#1, location=Some(\"async-inspect-macros/src/lib.rs:97\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 102,
+      "kind": "AwaitEnded",
+      "details": "point=orchestrator::await#1, duration=0ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 102,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 102,
+      "kind": "TaskCompleted",
+      "details": "duration=245.37224999999998ms"
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "timestamp": "2025-11-20T12:08:53.392877+00:00",
+    "total_tasks": 31,
+    "total_events": 134,
+    "duration_ms": 348.049709
+  }
+}

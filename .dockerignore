@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+.github
+
+# Rust build artifacts
+target/
+**/*.rs.bk
+*.pdb
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Test artifacts
+*.json
+*.csv
+*.html
+!Cargo.toml
+!Cargo.lock
+
+# Examples output
+examples/*.json
+examples/*.csv
+examples/*.html

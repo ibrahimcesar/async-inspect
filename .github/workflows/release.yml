@@ -1,0 +1,210 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # Create GitHub release
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract release notes
+        id: extract-release-notes
+        run: |
+          # Extract version from tag
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          # Extract changelog for this version (if CHANGELOG.md exists)
+          if [ -f CHANGELOG.md ]; then
+            # Extract section for this version
+            sed -n "/## \[${VERSION}\]/,/## \[/p" CHANGELOG.md | sed '$d' > release-notes.md
+          else
+            echo "Release $VERSION" > release-notes.md
+          fi
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: release-notes.md
+          draft: false
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Publish to crates.io
+  publish-crates:
+    name: Publish to crates.io
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-publish-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Publish async-inspect-macros
+        run: cd async-inspect-macros && cargo publish --token ${{ secrets.CARGO_TOKEN }}
+        continue-on-error: true  # May already be published
+
+      - name: Wait for macros to be available
+        run: sleep 30
+
+      - name: Publish async-inspect
+        run: cargo publish --token ${{ secrets.CARGO_TOKEN }}
+
+  # Build binaries for different platforms
+  build-binaries:
+    name: Build Binary (${{ matrix.target }})
+    needs: create-release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            binary_name: async-inspect
+            asset_name: async-inspect-linux-x86_64
+
+          - os: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+            binary_name: async-inspect
+            asset_name: async-inspect-linux-aarch64
+
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            binary_name: async-inspect
+            asset_name: async-inspect-macos-x86_64
+
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            binary_name: async-inspect
+            asset_name: async-inspect-macos-aarch64
+
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binary_name: async-inspect.exe
+            asset_name: async-inspect-windows-x86_64.exe
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install cross-compilation tools
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.target }} --features cli
+
+      - name: Strip binary (Unix)
+        if: matrix.os != 'windows-latest'
+        run: strip target/${{ matrix.target }}/release/${{ matrix.binary_name }}
+
+      - name: Create archive
+        shell: bash
+        run: |
+          cd target/${{ matrix.target }}/release
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            7z a ../../../${{ matrix.asset_name }}.zip ${{ matrix.binary_name }}
+          else
+            tar czf ../../../${{ matrix.asset_name }}.tar.gz ${{ matrix.binary_name }}
+          fi
+
+      - name: Upload binary to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ matrix.asset_name }}.*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Build and publish Docker image
+  docker:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract version
+        id: extract_version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/async-inspect:latest
+            ${{ secrets.DOCKER_USERNAME }}/async-inspect:${{ steps.extract_version.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Announce release
+  announce:
+    name: Announce Release
+    runs-on: ubuntu-latest
+    needs: [publish-crates, build-binaries]
+    steps:
+      - name: Extract version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Announce on Discord (if webhook configured)
+        if: secrets.DISCORD_WEBHOOK != ''
+        run: |
+          curl -H "Content-Type: application/json" \
+            -d "{\"content\": \"🎉 async-inspect ${{ steps.version.outputs.version }} has been released! Check it out at https://github.com/${{ github.repository }}/releases/tag/${GITHUB_REF#refs/tags/}\"}" \
+            ${{ secrets.DISCORD_WEBHOOK }}
+
+      - name: Success
+        run: |
+          echo "Release ${{ steps.version.outputs.version }} completed successfully!"
+          echo "Published to crates.io: https://crates.io/crates/async-inspect"
+          echo "GitHub Release: https://github.com/${{ github.repository }}/releases/tag/${GITHUB_REF#refs/tags/}"

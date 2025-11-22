@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>async-inspect Report</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .timeline-viz {
+            padding: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .timeline-viz h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .timeline-container {
+            position: relative;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow-x: auto;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+        }
+
+        .timeline-svg {
+            width: 100%;
+            min-width: 800px;
+            height: 100%;
+        }
+
+        .task-row {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .task-row:hover {
+            opacity: 0.8;
+        }
+
+        .task-bar {
+            stroke-width: 2;
+            stroke: white;
+        }
+
+        .task-bar.completed {
+            fill: #4caf50;
+        }
+
+        .task-bar.running {
+            fill: #2196f3;
+        }
+
+        .task-bar.blocked {
+            fill: #ff9800;
+        }
+
+        .task-bar.failed {
+            fill: #f44336;
+        }
+
+        .task-bar.pending {
+            fill: #9e9e9e;
+        }
+
+        .task-list {
+            padding: 30px;
+        }
+
+        .task-list h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .task-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid #667eea;
+        }
+
+        .task-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .task-item.expanded {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-name {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .task-state {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .state-completed {
+            background: #4caf50;
+            color: white;
+        }
+
+        .state-running {
+            background: #2196f3;
+            color: white;
+        }
+
+        .state-blocked {
+            background: #ff9800;
+            color: white;
+        }
+
+        .state-failed {
+            background: #f44336;
+            color: white;
+        }
+
+        .state-pending {
+            background: #9e9e9e;
+            color: white;
+        }
+
+        .task-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            display: none;
+        }
+
+        .task-item.expanded .task-details {
+            display: block;
+        }
+
+        .task-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .meta-item {
+            font-size: 0.9em;
+        }
+
+        .meta-label {
+            color: #666;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .meta-value {
+            color: #333;
+        }
+
+        .events-section {
+            margin-top: 15px;
+        }
+
+        .events-section h4 {
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .event-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #667eea;
+            font-size: 0.9em;
+        }
+
+        .event-time {
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .running-indicator {
+            animation: pulse 1.5s infinite;
+        }
+
+        /* State Machine Graph */
+        .state-machine-graph {
+            padding: 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .state-machine-graph h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .graph-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 400px;
+            border: 1px solid #e0e0e0;
+            position: relative;
+        }
+
+        .state-node {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .state-node:hover {
+            transform: scale(1.05);
+        }
+
+        .state-node circle {
+            stroke-width: 2;
+            transition: all 0.2s;
+        }
+
+        .state-node:hover rect,
+        .state-node:hover circle {
+            stroke-width: 3;
+        }
+
+        .state-node.pending rect,
+        .state-node.pending circle {
+            fill: #9e9e9e;
+            stroke: #757575;
+        }
+
+        .state-node.running rect,
+        .state-node.running circle {
+            fill: #2196f3;
+            stroke: #1976d2;
+        }
+
+        .state-node.blocked rect,
+        .state-node.blocked circle {
+            fill: #ff9800;
+            stroke: #f57c00;
+        }
+
+        .state-node.completed rect,
+        .state-node.completed circle {
+            fill: #4caf50;
+            stroke: #388e3c;
+        }
+
+        .state-node.failed rect,
+        .state-node.failed circle {
+            fill: #f44336;
+            stroke: #d32f2f;
+        }
+
+        .state-node text {
+            fill: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        .state-transition {
+            fill: none;
+            stroke: #999;
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+
+        .state-transition.animated {
+            stroke-dasharray: 5, 5;
+            animation: dash 1s linear infinite;
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -10;
+            }
+        }
+
+        .transition-label {
+            font-size: 10px;
+            fill: #666;
+            text-anchor: middle;
+        }
+
+        .graph-legend {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔍 async-inspect</h1>
+        <p>X-ray vision for async Rust - 9 tasks analyzed</p>
+    </header>
+    <div class="container">
+        <div class="stats-panel">
+            <div class="stat-card">
+                <div class="label">Total Tasks</div>
+                <div class="value">9</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Running</div>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Blocked</div>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Completed</div>
+                <div class="value">9</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Failed</div>
+                <div class="value">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Total Events</div>
+                <div class="value">28</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">Duration</div>
+                <div class="value">0.53s</div>
+            </div>
+        </div>
+        <div class="timeline-viz">
+            <h2>Concurrency Timeline</h2>
+            <div class="timeline-container">
+<svg class="timeline-svg" viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg">
+  <line x1="200" y1="30" x2="200" y2="35" stroke="#999" stroke-width="1" />
+  <text x="200" y="25" text-anchor="middle" font-size="10" fill="#666">0ms</text>
+  <line x1="295" y1="30" x2="295" y2="35" stroke="#999" stroke-width="1" />
+  <text x="295" y="25" text-anchor="middle" font-size="10" fill="#666">53ms</text>
+  <line x1="390" y1="30" x2="390" y2="35" stroke="#999" stroke-width="1" />
+  <text x="390" y="25" text-anchor="middle" font-size="10" fill="#666">106ms</text>
+  <line x1="485" y1="30" x2="485" y2="35" stroke="#999" stroke-width="1" />
+  <text x="485" y="25" text-anchor="middle" font-size="10" fill="#666">160ms</text>
+  <line x1="580" y1="30" x2="580" y2="35" stroke="#999" stroke-width="1" />
+  <text x="580" y="25" text-anchor="middle" font-size="10" fill="#666">213ms</text>
+  <line x1="675" y1="30" x2="675" y2="35" stroke="#999" stroke-width="1" />
+  <text x="675" y="25" text-anchor="middle" font-size="10" fill="#666">267ms</text>
+  <line x1="770" y1="30" x2="770" y2="35" stroke="#999" stroke-width="1" />
+  <text x="770" y="25" text-anchor="middle" font-size="10" fill="#666">320ms</text>
+  <line x1="865" y1="30" x2="865" y2="35" stroke="#999" stroke-width="1" />
+  <text x="865" y="25" text-anchor="middle" font-size="10" fill="#666">373ms</text>
+  <line x1="960" y1="30" x2="960" y2="35" stroke="#999" stroke-width="1" />
+  <text x="960" y="25" text-anchor="middle" font-size="10" fill="#666">427ms</text>
+  <line x1="1055" y1="30" x2="1055" y2="35" stroke="#999" stroke-width="1" />
+  <text x="1055" y="25" text-anchor="middle" font-size="10" fill="#666">480ms</text>
+  <line x1="1150" y1="30" x2="1150" y2="35" stroke="#999" stroke-width="1" />
+  <text x="1150" y="25" text-anchor="middle" font-size="10" fill="#666">534ms</text>
+  <line x1="200" y1="35" x2="1150" y2="35" stroke="#333" stroke-width="2" />
+  <text x="10" y="55" font-size="12" font-weight="bold" fill="#333">fetch_user_3</text>
+  <g class="task-row" data-task-id="#3">
+    <rect class="task-bar completed" x="200" y="38" width="950" height="25" rx="3" />
+    <title>fetch_user_3: 534.00ms</title>
+  </g>
+  <text x="10" y="95" font-size="12" font-weight="bold" fill="#333">pipeline</text>
+  <g class="task-row" data-task-id="#6">
+    <rect class="task-bar completed" x="200" y="78" width="950" height="25" rx="3" />
+    <title>pipeline: 534.00ms</title>
+  </g>
+  <text x="10" y="135" font-size="12" font-weight="bold" fill="#333">fetch_user_1</text>
+  <g class="task-row" data-task-id="#1">
+    <rect class="task-bar completed" x="200" y="118" width="950" height="25" rx="3" />
+    <title>fetch_user_1: 534.00ms</title>
+  </g>
+  <text x="10" y="175" font-size="12" font-weight="bold" fill="#333">fetch_user_2</text>
+  <g class="task-row" data-task-id="#2">
+    <rect class="task-bar completed" x="200" y="158" width="950" height="25" rx="3" />
+    <title>fetch_user_2: 534.00ms</title>
+  </g>
+  <text x="10" y="215" font-size="12" font-weight="bold" fill="#333">retry_logic</text>
+  <g class="task-row" data-task-id="#8">
+    <rect class="task-bar completed" x="200" y="198" width="950" height="25" rx="3" />
+    <title>retry_logic: 534.00ms</title>
+  </g>
+  <text x="10" y="255" font-size="12" font-weight="bold" fill="#333">fetch_user_5</text>
+  <g class="task-row" data-task-id="#5">
+    <rect class="task-bar completed" x="200" y="238" width="950" height="25" rx="3" />
+    <title>fetch_user_5: 534.00ms</title>
+  </g>
+  <text x="10" y="295" font-size="12" font-weight="bold" fill="#333">race_winner</text>
+  <g class="task-row" data-task-id="#7">
+    <rect class="task-bar completed" x="200" y="278" width="950" height="25" rx="3" />
+    <title>race_winner: 534.00ms</title>
+  </g>
+  <text x="10" y="335" font-size="12" font-weight="bold" fill="#333">timeout_handler</text>
+  <g class="task-row" data-task-id="#9">
+    <rect class="task-bar completed" x="200" y="318" width="950" height="25" rx="3" />
+    <title>timeout_handler: 534.00ms</title>
+  </g>
+  <text x="10" y="375" font-size="12" font-weight="bold" fill="#333">fetch_user_4</text>
+  <g class="task-row" data-task-id="#4">
+    <rect class="task-bar completed" x="200" y="358" width="950" height="25" rx="3" />
+    <title>fetch_user_4: 534.00ms</title>
+  </g>
+</svg>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4caf50;"></div>
+                    <span>Completed</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2196f3;"></div>
+                    <span>Running</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff9800;"></div>
+                    <span>Blocked</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f44336;"></div>
+                    <span>Failed</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9e9e9e;"></div>
+                    <span>Pending</span>
+                </div>
+            </div>
+        </div>
+        <div class="state-machine-graph">
+            <h2>Task Relationship Graph</h2>
+            <p style="color: #666; margin-bottom: 15px;">Hierarchical view of task dependencies and interactions</p>
+            <div class="graph-container" id="state-graph">
+<svg width="1000" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#999" />
+    </marker>
+    <marker id="arrowhead-parent" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#667eea" />
+    </marker>
+    <marker id="arrowhead-blocked" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#ff9800" />
+    </marker>
+  </defs>
+  <g class="state-node completed" data-task-id="#3">
+    <rect x="-10" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="50" y="75" font-size="13">fetch_user_3</text>
+    <text x="50" y="92" font-size="10" fill="white" opacity="0.8">#3</text>
+    <text x="50" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>fetch_user_3
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <g class="state-node completed" data-task-id="#6">
+    <rect x="102.5" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="162.5" y="75" font-size="13">pipeline</text>
+    <text x="162.5" y="92" font-size="10" fill="white" opacity="0.8">#6</text>
+    <text x="162.5" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>pipeline
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <g class="state-node completed" data-task-id="#1">
+    <rect x="215" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="275" y="75" font-size="13">fetch_user_1</text>
+    <text x="275" y="92" font-size="10" fill="white" opacity="0.8">#1</text>
+    <text x="275" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>fetch_user_1
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <g class="state-node completed" data-task-id="#2">
+    <rect x="327.5" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="387.5" y="75" font-size="13">fetch_user_2</text>
+    <text x="387.5" y="92" font-size="10" fill="white" opacity="0.8">#2</text>
+    <text x="387.5" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>fetch_user_2
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <g class="state-node completed" data-task-id="#8">
+    <rect x="440" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="500" y="75" font-size="13">retry_logic</text>
+    <text x="500" y="92" font-size="10" fill="white" opacity="0.8">#8</text>
+    <text x="500" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>retry_logic
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <g class="state-node completed" data-task-id="#5">
+    <rect x="552.5" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="612.5" y="75" font-size="13">fetch_user_5</text>
+    <text x="612.5" y="92" font-size="10" fill="white" opacity="0.8">#5</text>
+    <text x="612.5" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>fetch_user_5
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <g class="state-node completed" data-task-id="#7">
+    <rect x="665" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="725" y="75" font-size="13">race_winner</text>
+    <text x="725" y="92" font-size="10" fill="white" opacity="0.8">#7</text>
+    <text x="725" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>race_winner
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <g class="state-node completed" data-task-id="#9">
+    <rect x="777.5" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="837.5" y="75" font-size="13">timeout_h...</text>
+    <text x="837.5" y="92" font-size="10" fill="white" opacity="0.8">#9</text>
+    <text x="837.5" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>timeout_handler
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <g class="state-node completed" data-task-id="#4">
+    <rect x="890" y="45" width="120" height="70" rx="10" ry="10" />
+    <text x="950" y="75" font-size="13">fetch_user_4</text>
+    <text x="950" y="92" font-size="10" fill="white" opacity="0.8">#4</text>
+    <text x="950" y="105" font-size="9" fill="white" opacity="0.9">✓ Done</text>
+    <title>fetch_user_4
+State: Completed
+Poll count: 0
+Runtime: 0ms</title>
+  </g>
+  <text x="20" y="520" font-size="14" font-weight="bold" fill="#333">Relationships:</text>
+  <line x1="20" y1="535" x2="80" y2="535" stroke="#667eea" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead-parent)" />
+  <text x="90" y="540" font-size="12" fill="#666">Parent spawns child</text>
+  <line x1="20" y1="555" x2="80" y2="555" stroke="#ff9800" stroke-width="2" marker-end="url(#arrowhead-blocked)" />
+  <text x="90" y="560" font-size="12" fill="#666">Task waits for</text>
+</svg>
+            </div>
+            <div class="graph-legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9e9e9e;"></div>
+                    <span>Pending</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #2196f3;"></div>
+                    <span>Running</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff9800;"></div>
+                    <span>Blocked</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #4caf50;"></div>
+                    <span>Completed</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f44336;"></div>
+                    <span>Failed</span>
+                </div>
+            </div>
+        </div>
+        <div class="task-list">
+            <h2>Task Details</h2>
+            <div class="task-item" data-task-id="#3">
+                <div class="task-header">
+                    <div class="task-name">fetch_user_3</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#3</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">534ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (3 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[534ms]</span> Spawned: fetch_user_3
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[372ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[372ms]</span> Completed (0.16s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-item" data-task-id="#6">
+                <div class="task-header">
+                    <div class="task-name">pipeline</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#6</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">534ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (3 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[534ms]</span> Spawned: pipeline
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[54ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[54ms]</span> Completed (0.48s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-item" data-task-id="#1">
+                <div class="task-header">
+                    <div class="task-name">fetch_user_1</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#1</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">535ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (3 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[535ms]</span> Spawned: fetch_user_1
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[413ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[413ms]</span> Completed (0.12s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-item" data-task-id="#2">
+                <div class="task-header">
+                    <div class="task-name">fetch_user_2</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#2</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">534ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (3 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[534ms]</span> Spawned: fetch_user_2
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[392ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[392ms]</span> Completed (0.14s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-item" data-task-id="#8">
+                <div class="task-header">
+                    <div class="task-name">retry_logic</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#8</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">534ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (4 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[534ms]</span> Spawned: retry_logic
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[534ms]</span> Inspection[retry_attempt]: Attempt 1
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[408ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[408ms]</span> Completed (0.13s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-item" data-task-id="#5">
+                <div class="task-header">
+                    <div class="task-name">fetch_user_5</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#5</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">534ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (3 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[534ms]</span> Spawned: fetch_user_5
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[333ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[333ms]</span> Completed (0.20s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-item" data-task-id="#7">
+                <div class="task-header">
+                    <div class="task-name">race_winner</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#7</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">534ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (3 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[534ms]</span> Spawned: race_winner
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[382ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[382ms]</span> Completed (0.15s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-item" data-task-id="#9">
+                <div class="task-header">
+                    <div class="task-name">timeout_handler</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#9</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">534ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (3 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[534ms]</span> Spawned: timeout_handler
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[433ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[433ms]</span> Completed (0.10s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="task-item" data-task-id="#4">
+                <div class="task-header">
+                    <div class="task-name">fetch_user_4</div>
+                    <div class="task-state state-completed">Completed</div>
+                </div>
+                <div class="task-details">
+                    <div class="task-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Task ID</div>
+                            <div class="meta-value">#4</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Age</div>
+                            <div class="meta-value">535ms</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Poll Count</div>
+                            <div class="meta-value">0</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Total Runtime</div>
+                            <div class="meta-value">0ms</div>
+                        </div>
+                    </div>
+                    <div class="events-section">
+                        <h4>Events (3 total)</h4>
+                        <div class="event-item">
+                            <span class="event-time">[535ms]</span> Spawned: fetch_user_4
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[354ms]</span> State: PENDING → COMPLETED
+                        </div>
+                        <div class="event-item">
+                            <span class="event-time">[354ms]</span> Completed (0.18s)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Task item click to expand/collapse
+        document.querySelectorAll('.task-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                // Don't toggle if clicking on a link or button
+                if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
+                    return;
+                }
+                item.classList.toggle('expanded');
+            });
+        });
+
+        // SVG task row click to highlight corresponding task item
+        document.querySelectorAll('.task-row').forEach(row => {
+            row.addEventListener('click', (e) => {
+                const taskId = row.getAttribute('data-task-id');
+                const taskItem = document.querySelector(`.task-item[data-task-id="${taskId}"]`);
+
+                if (taskItem) {
+                    // Scroll into view
+                    taskItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    // Expand
+                    taskItem.classList.add('expanded');
+
+                    // Flash highlight
+                    taskItem.style.background = '#fff3cd';
+                    setTimeout(() => {
+                        taskItem.style.background = '';
+                    }, 1000);
+                }
+            });
+        });
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

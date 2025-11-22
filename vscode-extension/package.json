@@ -1,0 +1,265 @@
+{
+  "name": "async-inspect",
+  "displayName": "async-inspect",
+  "description": "X-ray vision for async Rust - Debug async code with real-time task inspection",
+  "version": "0.1.0",
+  "publisher": "async-inspect",
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Debuggers",
+    "Visualization",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "rust",
+    "async",
+    "debugging",
+    "tokio",
+    "futures",
+    "inspection"
+  ],
+  "activationEvents": [
+    "onLanguage:rust",
+    "workspaceContains:**/Cargo.toml"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "async-inspect.start",
+        "title": "Start Monitoring",
+        "category": "Async-Inspect",
+        "icon": "$(play)"
+      },
+      {
+        "command": "async-inspect.stop",
+        "title": "Stop Monitoring",
+        "category": "Async-Inspect",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "async-inspect.export",
+        "title": "Export Session",
+        "category": "Async-Inspect",
+        "icon": "$(export)"
+      },
+      {
+        "command": "async-inspect.clear",
+        "title": "Clear History",
+        "category": "Async-Inspect",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "async-inspect.showGraph",
+        "title": "Show Task Graph",
+        "category": "Async-Inspect",
+        "icon": "$(graph)"
+      },
+      {
+        "command": "async-inspect.showTimeline",
+        "title": "Show Timeline",
+        "category": "Async-Inspect",
+        "icon": "$(timeline-view-icon)"
+      },
+      {
+        "command": "async-inspect.analyzeDeadlocks",
+        "title": "Analyze Deadlocks",
+        "category": "Async-Inspect",
+        "icon": "$(warning)"
+      },
+      {
+        "command": "async-inspect.refreshTasks",
+        "title": "Refresh",
+        "category": "Async-Inspect",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "async-inspect.jumpToTask",
+        "title": "Jump to Task Definition",
+        "category": "Async-Inspect"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "async-inspect",
+          "title": "Async-Inspect",
+          "icon": "images/sidebar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "async-inspect": [
+        {
+          "id": "async-inspect.tasksView",
+          "name": "Tasks",
+          "icon": "images/sidebar-icon.svg"
+        },
+        {
+          "id": "async-inspect.statsView",
+          "name": "Statistics"
+        },
+        {
+          "id": "async-inspect.deadlocksView",
+          "name": "Deadlocks"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "async-inspect.tasksView",
+        "contents": "No async-inspect session active.\n[Start Monitoring](command:async-inspect.start)\nMake sure async-inspect is installed:\n`cargo install async-inspect`"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "async-inspect.refreshTasks",
+          "when": "view == async-inspect.tasksView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "async-inspect.start",
+          "when": "view == async-inspect.tasksView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "async-inspect.stop",
+          "when": "view == async-inspect.tasksView",
+          "group": "navigation@3"
+        },
+        {
+          "command": "async-inspect.export",
+          "when": "view == async-inspect.tasksView",
+          "group": "navigation@4"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "async-inspect.start",
+          "when": "editorLangId == rust"
+        },
+        {
+          "command": "async-inspect.stop",
+          "when": "editorLangId == rust"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Async-Inspect",
+      "properties": {
+        "async-inspect.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable async-inspect extension"
+        },
+        "async-inspect.autoStart": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically start monitoring when opening Rust files"
+        },
+        "async-inspect.showInlineStats": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show inline statistics using CodeLens"
+        },
+        "async-inspect.deadlockAlerts": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show notifications for detected deadlocks"
+        },
+        "async-inspect.performanceThreshold": {
+          "type": "number",
+          "default": 1000,
+          "description": "Threshold in milliseconds for slow operation warnings"
+        },
+        "async-inspect.refreshInterval": {
+          "type": "number",
+          "default": 500,
+          "description": "Update interval in milliseconds"
+        },
+        "async-inspect.cliPath": {
+          "type": "string",
+          "default": "async-inspect",
+          "description": "Path to async-inspect CLI binary"
+        },
+        "async-inspect.features": {
+          "type": "array",
+          "default": [
+            "cli"
+          ],
+          "description": "Cargo features to enable"
+        }
+      }
+    },
+    "colors": [
+      {
+        "id": "async-inspect.taskRunning",
+        "description": "Color for running tasks",
+        "defaults": {
+          "dark": "#4EC9B0",
+          "light": "#267f99"
+        }
+      },
+      {
+        "id": "async-inspect.taskBlocked",
+        "description": "Color for blocked tasks",
+        "defaults": {
+          "dark": "#CE9178",
+          "light": "#a31515"
+        }
+      },
+      {
+        "id": "async-inspect.taskCompleted",
+        "description": "Color for completed tasks",
+        "defaults": {
+          "dark": "#6A9955",
+          "light": "#008000"
+        }
+      },
+      {
+        "id": "async-inspect.taskFailed",
+        "description": "Color for failed tasks",
+        "defaults": {
+          "dark": "#F48771",
+          "light": "#cd3131"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^8.47.0",
+    "@typescript-eslint/parser": "^8.47.0",
+    "@vscode/test-electron": "^2.3.x",
+    "@vscode/vsce": "^3.7.0",
+    "eslint": "^9.39.1",
+    "typescript": "^5.3.x"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ibrahimcesar/async-inspect.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ibrahimcesar/async-inspect/issues"
+  },
+  "homepage": "https://github.com/ibrahimcesar/async-inspect#readme",
+  "license": "MIT"
+}

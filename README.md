@@ -434,6 +434,95 @@ debug = true
 
 ---
 
+## 🌐 Ecosystem Integration
+
+async-inspect works seamlessly with your existing Rust async ecosystem tools:
+
+### Prometheus Metrics
+
+Export metrics for monitoring dashboards:
+
+```rust
+use async_inspect::integrations::prometheus::PrometheusExporter;
+
+let exporter = PrometheusExporter::new()?;
+exporter.update();
+
+// In your /metrics endpoint:
+let metrics = exporter.gather();
+```
+
+**Available metrics:**
+- `async_inspect_tasks_total` - Total tasks created
+- `async_inspect_active_tasks` - Currently active tasks
+- `async_inspect_blocked_tasks` - Tasks waiting on I/O
+- `async_inspect_task_duration_seconds` - Task execution times
+- `async_inspect_tasks_failed_total` - Failed task count
+
+### OpenTelemetry Export
+
+Send traces to Jaeger, Zipkin, or any OTLP backend:
+
+```rust
+use async_inspect::integrations::opentelemetry::OtelExporter;
+
+let exporter = OtelExporter::new("my-service");
+exporter.export_tasks();
+```
+
+### Tracing Integration
+
+Automatic capture via `tracing-subscriber`:
+
+```rust
+use tracing_subscriber::prelude::*;
+use async_inspect::integrations::tracing_layer::AsyncInspectLayer;
+
+tracing_subscriber::registry()
+    .with(AsyncInspectLayer::new())
+    .init();
+```
+
+### Tokio Console Compatibility
+
+Use alongside tokio-console for complementary insights:
+
+```bash
+# Terminal 1: Run with tokio-console
+RUSTFLAGS="--cfg tokio_unstable" cargo run
+
+# Terminal 2: Monitor with tokio-console
+tokio-console
+
+# async-inspect exports provide historical analysis
+cargo run --example ecosystem_integration
+```
+
+### Grafana Dashboards
+
+Import async-inspect metrics into Grafana:
+
+1. Configure Prometheus scraping
+2. Import dashboard template (coming soon)
+3. Monitor key metrics:
+   - Task creation rate
+   - Active/blocked task ratio
+   - Task duration percentiles
+   - Error rates
+
+**Feature Flags:**
+
+```toml
+[dependencies]
+async-inspect = { version = "0.0.1", features = [
+    "prometheus-export",     # Prometheus metrics
+    "opentelemetry-export",  # OTLP traces
+    "tracing-sub",           # Tracing integration
+] }
+```
+
+---
+
 ## 🗺️ Roadmap
 
 ### Phase 1: Core Inspector (Current)

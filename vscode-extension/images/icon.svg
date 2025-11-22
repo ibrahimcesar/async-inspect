@@ -1,0 +1,20 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#1e1e1e"/>
+
+  <!-- Magnifying glass handle -->
+  <rect x="72" y="72" width="8" height="32" rx="4" fill="#569cd6" transform="rotate(45 76 88)"/>
+
+  <!-- Magnifying glass circle -->
+  <circle cx="52" cy="52" r="28" fill="none" stroke="#569cd6" stroke-width="6"/>
+
+  <!-- Inner async symbol (two overlapping circles suggesting state transitions) -->
+  <circle cx="45" cy="52" r="10" fill="none" stroke="#ce9178" stroke-width="3"/>
+  <circle cx="59" cy="52" r="10" fill="none" stroke="#ce9178" stroke-width="3"/>
+
+  <!-- Arrow indicating flow/transition -->
+  <path d="M 48 52 L 56 52 M 53 49 L 56 52 L 53 55" fill="none" stroke="#ce9178" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Highlight/shine effect -->
+  <circle cx="44" cy="44" r="6" fill="#ffffff" opacity="0.3"/>
+</svg>

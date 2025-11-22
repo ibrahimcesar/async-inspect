@@ -3,11 +3,11 @@ name = "async-inspect"
 version = "0.0.1"
 edition = "2021"
 rust-version = "1.70"
-authors = ["Your Name <your.email@example.com>"]
-license = "MIT OR Apache-2.0"
+authors = ["Ibrahim Cesar <email@ibrahimcesar.com>"]
+license = "MIT"
 description = "X-ray vision for async Rust - inspect and debug async state machines"
-homepage = "https://github.com/yourusername/async-inspect"
-repository = "https://github.com/yourusername/async-inspect"
+homepage = "https://github.com/ibrahimcesar/async-inspect"
+repository = "https://github.com/ibrahimcesar/async-inspect"
 documentation = "https://docs.rs/async-inspect"
 keywords = ["async", "debugging", "inspection", "state-machine", "tokio"]
 categories = ["asynchronous", "development-tools::debugging"]
@@ -40,6 +40,7 @@ crossterm = { version = "0.27", optional = true }
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+chrono = "0.4"
 
 # Tokio integration (optional)
 tokio = { version = "1.35", features = [
@@ -50,10 +51,19 @@ tokio = { version = "1.35", features = [
 
 # Tracing integration
 tracing = "0.1"
-tracing-subscriber = "0.3"
+tracing-subscriber = { version = "0.3", optional = true }
+
+# Ecosystem integrations (optional)
+prometheus = { version = "0.13", optional = true }
+opentelemetry = { version = "0.21", optional = true }
+opentelemetry_sdk = { version = "0.21", optional = true }
 
 # Time tracking
 parking_lot = "0.12"
+once_cell = "1.19"
+
+# Proc macros (internal)
+async-inspect-macros = { path = "async-inspect-macros" }
 
 [dev-dependencies]
 tokio = { version = "1.35", features = ["full"] }
@@ -68,8 +78,15 @@ cli = ["ratatui", "crossterm"]
 # Runtime support
 tokio = ["dep:tokio"]
 
+# Tracing ecosystem integration
+tracing-sub = ["tracing-subscriber"]
+
+# Ecosystem integrations
+prometheus-export = ["prometheus"]
+opentelemetry-export = ["opentelemetry", "opentelemetry_sdk"]
+
 # All features
-full = ["cli", "tokio"]
+full = ["cli", "tokio", "tracing-sub", "prometheus-export", "opentelemetry-export"]
 
 [profile.dev]
 opt-level = 0
@@ -85,9 +102,47 @@ name = "basic_inspection"
 path = "examples/basic_inspection.rs"
 
 [[example]]
+name = "simple_test"
+path = "examples/simple_test.rs"
+
+[[example]]
+name = "tokio_integration"
+path = "examples/tokio_integration.rs"
+
+[[example]]
 name = "deadlock_detection"
 path = "examples/deadlock_detection.rs"
 
 [[example]]
 name = "performance_analysis"
 path = "examples/performance_analysis.rs"
+
+[[example]]
+name = "visualization"
+path = "examples/visualization.rs"
+
+[[example]]
+name = "task_hierarchy"
+path = "examples/task_hierarchy.rs"
+
+[[example]]
+name = "proc_macro_test"
+path = "examples/proc_macro_test.rs"
+
+[[example]]
+name = "tui_monitor"
+path = "examples/tui_monitor.rs"
+required-features = ["cli"]
+
+[[example]]
+name = "production_ready"
+path = "examples/production_ready.rs"
+
+[[example]]
+name = "relationship_graph"
+path = "examples/relationship_graph.rs"
+
+
+[[example]]
+name = "ecosystem_integration"
+path = "examples/ecosystem_integration.rs"
