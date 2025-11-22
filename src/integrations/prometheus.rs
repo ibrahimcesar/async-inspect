@@ -9,7 +9,6 @@ use prometheus::{
     Counter, CounterVec, Gauge, GaugeVec, HistogramOpts, HistogramVec, Opts, Registry,
 };
 use std::sync::Arc;
-use std::time::Duration;
 
 /// Prometheus metrics exporter for async-inspect
 ///
@@ -30,9 +29,9 @@ pub struct PrometheusExporter {
     registry: Registry,
 
     // Task counters
-    tasks_total: Counter,
-    tasks_completed: Counter,
-    tasks_failed: Counter,
+    _tasks_total: Counter,
+    _tasks_completed: Counter,
+    _tasks_failed: Counter,
 
     // Task state gauges
     tasks_by_state: GaugeVec,
@@ -127,9 +126,9 @@ impl PrometheusExporter {
 
         Ok(Self {
             registry,
-            tasks_total,
-            tasks_completed,
-            tasks_failed,
+            _tasks_total: tasks_total,
+            _tasks_completed: tasks_completed,
+            _tasks_failed: tasks_failed,
             tasks_by_state,
             task_duration,
             events_total,

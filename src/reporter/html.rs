@@ -76,7 +76,7 @@ impl HtmlReporter {
 
     /// Generate CSS styles
     fn generate_css(&self) -> String {
-        r#"
+        r"
     <style>
         * {
             margin: 0;
@@ -484,7 +484,7 @@ impl HtmlReporter {
             flex-wrap: wrap;
         }
     </style>
-"#
+"
         .to_string()
     }
 
@@ -492,11 +492,11 @@ impl HtmlReporter {
     fn generate_header(&self) -> String {
         let stats = self.inspector.stats();
         format!(
-            r#"    <header>
+            r"    <header>
         <h1>🔍 async-inspect</h1>
         <p>X-ray vision for async Rust - {} tasks analyzed</p>
     </header>
-"#,
+",
             stats.total_tasks
         )
     }

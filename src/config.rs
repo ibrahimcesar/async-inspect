@@ -46,11 +46,13 @@ struct ConfigInner {
 
 impl Config {
     /// Get the global configuration instance
+    #[must_use]
     pub fn global() -> &'static Config {
         &CONFIG
     }
 
     /// Create a new configuration with default settings
+    #[must_use]
     pub fn new() -> Self {
         Self {
             inner: Arc::new(ConfigInner {

@@ -1,0 +1,6 @@
+# Clippy configuration
+# Allow some pedantic/nursery warnings that are not critical
+
+# We use a lot of f64 casts for metrics/stats - precision loss is acceptable
+# We use must_use extensively but not on every single getter
+# Some format! usage is clearer than inline formatting

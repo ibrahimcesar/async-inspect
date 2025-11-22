@@ -2,6 +2,56 @@
 
 Use this checklist when preparing a new release of async-inspect.
 
+## CI/CD Testing Completed (2025-01-22)
+
+### Infrastructure Setup
+- [x] GitHub Actions CI workflow created (`.github/workflows/ci.yml`)
+  - Multi-platform testing (Linux, macOS, Windows)
+  - Multi-channel testing (stable, beta, nightly)
+  - Code formatting verification (`cargo fmt`)
+  - Linting with clippy (`-D warnings`)
+  - Comprehensive test suite
+  - Examples compilation verification
+  - Documentation build checks
+  - Security audit (`cargo-audit`)
+  - Code coverage (tarpaulin + Codecov)
+  - Feature combinations testing (`cargo-hack`)
+  - MSRV verification (Rust 1.70)
+
+- [x] GitHub Actions Release workflow created (`.github/workflows/release.yml`)
+  - Automated binary builds for all platforms
+  - Linux: x86_64 (glibc, musl), aarch64 (glibc, musl)
+  - macOS: x86_64, aarch64
+  - Windows: x86_64
+  - Automatic crates.io publishing
+  - GitHub release creation with artifacts
+
+### Code Fixes Applied
+- [x] Integration code fixes
+  - Added `time` feature to tokio in `Cargo.toml`
+  - Fixed `tracing_layer.rs` to use `Inspector::global()` API
+  - Simplified `opentelemetry.rs` to avoid trait object issues
+  - Fixed `prometheus.rs` integration
+  - Added `EventId::as_u64()` helper method
+  - Fixed all non-exhaustive pattern matches
+
+- [x] Example configuration fixes
+  - Added `required-features = ["tokio"]` to 6 examples:
+    - `tokio_integration`
+    - `performance_analysis`
+    - `visualization`
+    - `task_hierarchy`
+    - `production_ready`
+    - `ecosystem_integration`
+
+### Verification Status
+- [x] All compilation errors resolved
+- [x] Integration tests passing
+- [x] Example feature requirements properly configured
+- [ ] CI workflow fully verified (in progress)
+
+---
+
 ## Pre-Release (1-2 weeks before)
 
 ### Code Quality

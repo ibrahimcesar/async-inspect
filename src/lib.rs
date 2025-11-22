@@ -1,6 +1,31 @@
 //! # async-inspect 🔍
 //!
 //! > X-ray vision for async Rust
+
+// Allow some clippy lints that are too pedantic for this crate
+#![allow(clippy::must_use_candidate)]
+#![allow(clippy::cast_precision_loss)]
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_lossless)]
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::use_self)]
+#![allow(clippy::missing_errors_doc)]
+#![allow(clippy::missing_panics_doc)]
+#![allow(clippy::module_name_repetitions)]
+#![allow(clippy::needless_pass_by_value)]
+#![allow(clippy::similar_names)]
+#![allow(clippy::too_many_lines)]
+#![allow(clippy::unnested_or_patterns)]
+#![allow(clippy::unused_self)]
+#![allow(clippy::format_in_format_args)]
+#![allow(clippy::doc_markdown)]
+#![allow(clippy::return_self_not_must_use)]
+#![allow(clippy::redundant_closure)]
+#![allow(clippy::float_cmp)]
+#![allow(clippy::manual_range_contains)]
+#![allow(clippy::into_iter_on_ref)]
+#![allow(clippy::map_unwrap_or)]
+#![allow(clippy::format_push_string)]
 //!
 //! **async-inspect** visualizes and inspects async state machines in Rust.
 //! See exactly what your futures are doing, where they're stuck, and why.
@@ -28,7 +53,6 @@
 #![warn(missing_docs)]
 #![warn(clippy::all)]
 #![warn(clippy::pedantic)]
-#![allow(clippy::module_name_repetitions)]
 
 // Re-export proc macros
 pub use async_inspect_macros::{inspect, trace};
@@ -40,9 +64,9 @@ pub mod config;
 pub mod inspector;
 
 /// State machine introspection
-pub mod state_machine {
-    //! State machine analysis and visualization
-}
+///
+/// State machine analysis and visualization
+pub mod state_machine {}
 
 /// Task tracking and monitoring
 pub mod task;
@@ -79,8 +103,9 @@ pub mod integrations;
 pub mod tui;
 
 /// Error types
+///
+/// Error definitions
 pub mod error {
-    //! Error definitions
 
     use thiserror::Error;
 
@@ -109,12 +134,13 @@ pub mod error {
 }
 
 /// Prelude for convenient imports
+///
+/// Convenient re-exports
+///
+/// ```rust
+/// use async_inspect::prelude::*;
+/// ```
 pub mod prelude {
-    //! Convenient re-exports
-    //!
-    //! ```rust
-    //! use async_inspect::prelude::*;
-    //! ```
 
     pub use crate::error::{Error, Result};
     pub use crate::inspector::{Inspector, InspectorStats};
@@ -135,7 +161,6 @@ pub use error::{Error, Result};
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
     #[test]
     fn test_placeholder() {

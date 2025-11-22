@@ -205,7 +205,7 @@ fn run_app<B: ratatui::backend::Backend>(
             if let Event::Key(key) = event::read()? {
                 match key.code {
                     KeyCode::Char('q') => return Ok(()),
-                    KeyCode::Char('h') | KeyCode::Char('?') => app.toggle_help(),
+                    KeyCode::Char('h' | '?') => app.toggle_help(),
                     KeyCode::Char('s') => app.next_sort_mode(),
                     KeyCode::Char('f') => app.next_filter_mode(),
                     KeyCode::Up => app.select_previous(),

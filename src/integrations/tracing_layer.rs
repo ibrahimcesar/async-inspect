@@ -8,7 +8,6 @@ use crate::task::{TaskId, TaskState};
 use crate::timeline::EventKind;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
-use std::time::Instant;
 use tracing::span::{Attributes, Id};
 use tracing::{Event as TracingEvent, Subscriber};
 use tracing_subscriber::layer::{Context, Layer};
