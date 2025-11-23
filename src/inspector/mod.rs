@@ -3,6 +3,7 @@
 //! This module provides the main `Inspector` type that manages task tracking
 //! and event collection.
 
+use crate::deadlock::DeadlockDetector;
 use crate::task::{TaskId, TaskInfo, TaskState};
 use crate::timeline::{Event, EventKind, Timeline};
 use parking_lot::RwLock;
@@ -29,6 +30,9 @@ struct InspectorState {
     /// Timeline of events
     timeline: RwLock<Timeline>,
 
+    /// Deadlock detector
+    deadlock_detector: DeadlockDetector,
+
     /// Event counter for unique IDs
     event_counter: AtomicU64,
 
@@ -43,6 +47,7 @@ impl Inspector {
             state: Arc::new(InspectorState {
                 tasks: RwLock::new(HashMap::new()),
                 timeline: RwLock::new(Timeline::new()),
+                deadlock_detector: DeadlockDetector::new(),
                 event_counter: AtomicU64::new(1),
                 enabled: RwLock::new(true),
             }),
@@ -405,6 +410,14 @@ impl Inspector {
     pub fn reset(&self) {
         self.clear();
         self.enable();
+    }
+
+    /// Get the deadlock detector
+    ///
+    /// Returns a reference to the integrated deadlock detector for resource
+    /// tracking and deadlock analysis.
+    pub fn deadlock_detector(&self) -> &DeadlockDetector {
+        &self.state.deadlock_detector
     }
 }
 

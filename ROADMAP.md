@@ -10,10 +10,11 @@
 
 ## 📊 Executive Summary
 
-async-inspect is an async Rust debugging tool that provides X-ray vision into async state machines. The project has **significantly exceeded initial expectations**, completing not just Phase 1-2 but achieving full production-ready infrastructure (Phase 8).
+async-inspect is an async Rust debugging tool that provides X-ray vision into async state machines. The project has **significantly exceeded initial expectations**, completing Phases 1, 2, 5, and 8, plus partial completion of Phases 4 and 9.
 
-**Current Progress:** ~85% of production-ready features complete
-**Next Priority:** State Machine Introspection (Phase 3) or Deadlock Detection (Phase 5)
+**Current Progress:** ~88% of production-ready features complete
+**Recently Completed:** Deadlock Detection (Phase 5) ✅
+**Next Priority:** State Machine Introspection (Phase 3) or Performance Profiling (Phase 6)
 
 ---
 
@@ -285,46 +286,95 @@ async fn fetch_user(id: u64) -> User {
 
 ---
 
-### **Phase 5: Deadlock Detection** ⏳ (0% Complete)
+### **Phase 5: Deadlock Detection** ✅ (100% Complete)
 
 **Priority:** 🔥 HIGH
-**Estimated Effort:** 1-2 weeks
-**Complexity:** ⭐⭐⭐⭐ Complex
+**Status:** ✅ COMPLETE
+**Completed:** January 2025
 
 **Goal:** Detect circular wait conditions and lock ordering violations.
 
-**Technical Approach:**
-- Build wait-for graph: `Task -> Resource -> Task`
-- Use Tarjan's algorithm for cycle detection
-- Track `tokio::sync::Mutex`, `RwLock`, `Semaphore`
+**Implemented Features:**
 
-**Tasks:**
-- [ ] Resource tracking (locks, channels, semaphores)
-- [ ] Wait-for graph construction
-- [ ] Cycle detection algorithm
-- [ ] Deadlock report generation
-- [ ] Lock ordering violation detection
-- [ ] Integration with common sync primitives
-- [ ] Suggestions for fixes
+1. **Resource Tracking** ([src/deadlock/mod.rs](src/deadlock/mod.rs))
+   - `ResourceId` - Unique resource identifiers
+   - `ResourceKind` - Mutex, RwLock, Semaphore, Channel, Other
+   - `ResourceInfo` - Complete resource metadata with holder and waiters
+   - Memory address tracking for debugging
 
-**Example Output:**
+2. **Wait-For Graph Construction**
+   - HashMap-based graph: `Task -> Task` via `Resource`
+   - Automatic tracking of task-resource relationships
+   - Real-time graph updates on acquire/release/wait
+
+3. **Cycle Detection Algorithm**
+   - DFS-based cycle detection (modified Tarjan's)
+   - Efficient O(V + E) complexity
+   - Detects all cycles in wait-for graph
+
+4. **Deadlock Reporting**
+   - `DeadlockCycle` - Complete cycle information
+   - `WaitEdge` - Task → Resource → Task chains
+   - Human-readable descriptions with suggestions
+   - Resource details with memory addresses
+
+5. **Inspector Integration**
+   - Integrated into `Inspector` via `deadlock_detector()` method
+   - Global access through `Inspector::global()`
+   - Unified enable/disable with inspector
+
+**Usage Example:**
+```rust
+use async_inspect::prelude::*;
+
+let detector = Inspector::global().deadlock_detector();
+
+// Register resources
+let res = ResourceInfo::new(ResourceKind::Mutex, "my_mutex".to_string());
+let res_id = detector.register_resource(res);
+
+// Track operations
+detector.acquire(task_id, res_id);
+detector.wait_for(task_id, other_res_id);
+
+// Detect deadlocks
+let deadlocks = detector.detect_deadlocks();
+for cycle in deadlocks {
+    println!("{}", cycle.describe());
+}
 ```
-💀 DEADLOCK DETECTED!
 
-Task #42 → Mutex<Data> @ 0x7f8a → Task #89
-Task #89 → Mutex<State> @ 0x7f9b → Task #42
+**Real Output Example:**
+```
+💀 Deadlock #1 detected!
+Deadlock cycle detected:
+  → Task #1 → Resource#2 → Task #2
+    Task #2 → Resource#1 → Task #1
 
-Circular dependency detected!
+2 tasks and 2 resources involved
 
-Suggestion:
-  • Acquire locks in consistent order
+Resources involved:
+  - Mutex 'mutex_b' (Resource#2) @ 0x134e0c560
+  - Mutex 'mutex_a' (Resource#1) @ 0x134e0c520
+
+📋 Suggestions:
+  • Acquire locks in consistent order (always A before B)
   • Use try_lock() with timeout
+  • Consider lock-free data structures
 ```
+
+**Testing:**
+- ✅ Unit tests for resource tracking
+- ✅ Unit tests for cycle detection
+- ✅ Integration tests with Tokio mutexes
+- ✅ Working example: `examples/deadlock_detection.rs`
+- ✅ Demonstrates both deadlock scenarios and proper lock ordering
 
 **Why This Matters:**
-- Catches common async bug class
-- Provides actionable suggestions
-- Easier to implement than state machine introspection
+- ✅ Catches common async bug class
+- ✅ Provides actionable suggestions
+- ✅ Works with existing manual instrumentation
+- ✅ Foundation for automatic tracking wrappers
 
 ---
 
@@ -481,6 +531,15 @@ Slowest Operations:
 ---
 
 ## 🔄 Recent Updates
+
+### 2025-01-23: Deadlock Detection Complete (Phase 5)
+- ✅ Implemented comprehensive deadlock detection system
+- ✅ Resource tracking (Mutex, RwLock, Semaphore, Channel)
+- ✅ Wait-for graph construction with DFS-based cycle detection
+- ✅ Integrated with Inspector via `deadlock_detector()` method
+- ✅ Working example demonstrates circular dependencies
+- ✅ Human-readable reports with actionable suggestions
+- Updated ROADMAP: Now ~88% production-ready
 
 ### 2025-01-23: Security Hardening
 - Added SLSA Level 3 provenance generation
