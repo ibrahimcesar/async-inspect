@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Manual workflow dispatch capability for testing releases
 - Code coverage reporting with Codecov integration
 
+### Security
+- **SLSA Level 3 Provenance**: Automated provenance generation for all release binaries using GitHub's attestation API
+- **Dependency Review**: Automated scanning on pull requests to detect vulnerable or non-compliant dependencies
+- **License Compliance**: cargo-deny configuration to block GPL/AGPL licenses and ensure MIT/Apache-2.0 compatibility
+- **Security Audits**: Continuous monitoring via cargo-audit and cargo-deny in CI pipeline
+- **Restricted Permissions**: Principle of least privilege applied to all GitHub Actions workflows
+- **Supply Chain Security**: Only allow dependencies from crates.io registry, blocking unknown git sources
+- Security documentation section in README with verification instructions
+
 ### Fixed
 - Windows test failures due to hardcoded Unix temp directory paths
 - Clippy warnings across all lint categories
@@ -25,13 +34,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI workflow to use focused clippy lints (correctness, suspicious, perf)
 - Test matrix to allow Windows failures without blocking CI success
 - Cache configuration to be non-blocking on missing Cargo.lock
+- GitHub Actions permissions to read-only by default with explicit grants per job
 
 ### Infrastructure
 - Multi-platform CI testing (Linux, macOS, Windows) on stable, beta, and nightly
 - Automated binary builds for 5 platform targets
 - Feature combination testing with cargo-hack
-- Security audit integration with cargo-audit
+- Security audit integration with cargo-audit and cargo-deny
 - Documentation build verification
+- SLSA provenance attestation for release artifacts
+- Dependency review workflow for pull requests
 
 ## [0.1.0] - TBD
 

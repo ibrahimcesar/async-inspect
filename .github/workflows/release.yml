@@ -13,6 +13,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write  # Required for SLSA provenance
+  attestations: write  # Required for artifact attestations
 
 env:
   CARGO_TERM_COLOR: always
@@ -84,6 +86,10 @@ jobs:
     name: Build Binary (${{ matrix.target }})
     needs: create-release
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+      id-token: write  # For SLSA provenance
+      attestations: write
     strategy:
       matrix:
         include:
@@ -151,6 +157,11 @@ jobs:
           else
             tar czf ../../../${{ matrix.asset_name }}.tar.gz ${{ matrix.binary_name }}
           fi
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: '${{ matrix.asset_name }}.*'
 
       - name: Upload binary to release
         uses: softprops/action-gh-release@v1

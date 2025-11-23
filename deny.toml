@@ -1,0 +1,60 @@
+# cargo-deny configuration for supply chain security
+# Documentation: https://embarkstudios.github.io/cargo-deny/
+
+[advisories]
+# Security vulnerability database
+version = 2
+db-path = "~/.cargo/advisory-db"
+db-urls = ["https://github.com/rustsec/advisory-db"]
+ignore = []
+severity-threshold = "low"
+
+[licenses]
+# License policy
+version = 2
+confidence-threshold = 0.8
+
+# Deny GPL-3.0 and AGPL-3.0 to ensure MIT compatibility
+deny = [
+    "GPL-3.0",
+    "AGPL-3.0",
+]
+
+# Allow common permissive licenses
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "ISC",
+    "Unicode-DFS-2016",
+]
+
+[[licenses.clarify]]
+name = "ring"
+expression = "MIT AND ISC AND OpenSSL"
+license-files = [
+    { path = "LICENSE", hash = 0xbd0eed23 }
+]
+
+[bans]
+# Banned crates
+multiple-versions = "warn"
+wildcards = "allow"
+highlight = "all"
+workspace-default-features = "allow"
+external-default-features = "allow"
+
+# Skip checking for duplicate versions (warnings only)
+skip = []
+skip-tree = []
+
+[sources]
+# Source control
+unknown-registry = "deny"
+unknown-git = "deny"
+
+# Only allow crates.io
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []

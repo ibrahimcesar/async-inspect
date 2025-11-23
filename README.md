@@ -635,6 +635,33 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 ---
 
+## 🔒 Security
+
+async-inspect is designed to be used in development and CI/CD environments for analyzing async code. We take security seriously:
+
+### Supply Chain Security
+
+- **SLSA Level 3 Provenance**: All release binaries include [SLSA](https://slsa.dev/) provenance attestations for verifiable builds
+- **Dependency Scanning**: Automated dependency review on all pull requests
+- **License Compliance**: Only permissive licenses (MIT, Apache-2.0, BSD) - GPL/AGPL excluded
+- **Security Audits**: Continuous monitoring via `cargo-audit` and `cargo-deny`
+
+### Build Verification
+
+You can verify the provenance of any release binary:
+
+```bash
+# Install GitHub CLI attestation verification
+gh attestation verify async-inspect-linux-x86_64.tar.gz \
+  --owner ibrahimcesar
+```
+
+### Reporting Security Issues
+
+If you discover a security vulnerability, please email security@ibrahimcesar.com instead of using the issue tracker.
+
+---
+
 ## 📝 License
 
 MIT OR Apache-2.0
