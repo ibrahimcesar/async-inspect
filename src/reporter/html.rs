@@ -14,16 +14,19 @@ pub struct HtmlReporter {
 
 impl HtmlReporter {
     /// Create a new HTML reporter
+    #[must_use] 
     pub fn new(inspector: Inspector) -> Self {
         Self { inspector }
     }
 
     /// Create a reporter using the global inspector
+    #[must_use] 
     pub fn global() -> Self {
         Self::new(Inspector::global().clone())
     }
 
     /// Generate a complete HTML report
+    #[must_use] 
     pub fn generate_html(&self) -> String {
         let mut html = String::new();
 
@@ -528,8 +531,8 @@ impl HtmlReporter {
     /// Add a stat card
     fn add_stat_card(&self, html: &mut String, label: &str, value: &str) {
         writeln!(html, "            <div class=\"stat-card\">").unwrap();
-        writeln!(html, "                <div class=\"label\">{}</div>", label).unwrap();
-        writeln!(html, "                <div class=\"value\">{}</div>", value).unwrap();
+        writeln!(html, "                <div class=\"label\">{label}</div>").unwrap();
+        writeln!(html, "                <div class=\"value\">{value}</div>").unwrap();
         writeln!(html, "            </div>").unwrap();
     }
 
@@ -629,7 +632,7 @@ impl HtmlReporter {
         let timeline_width = width - margin_left - 50.0;
         let height = (tasks.len() as f64 * row_height) + 60.0;
 
-        writeln!(svg, "<svg class=\"timeline-svg\" viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\">", width, height).unwrap();
+        writeln!(svg, "<svg class=\"timeline-svg\" viewBox=\"0 0 {width} {height}\" xmlns=\"http://www.w3.org/2000/svg\">").unwrap();
 
         // Time axis
         self.add_time_axis(&mut svg, margin_left, timeline_width, total_ms);
@@ -658,10 +661,10 @@ impl HtmlReporter {
         // Time markers
         let num_markers = 10;
         for i in 0..=num_markers {
-            let x = margin_left + (i as f64 / num_markers as f64) * width;
-            let time_ms = (i as f64 / num_markers as f64) * total_ms;
+            let x = margin_left + (f64::from(i) / f64::from(num_markers)) * width;
+            let time_ms = (f64::from(i) / f64::from(num_markers)) * total_ms;
 
-            writeln!(svg, "  <line x1=\"{}\" y1=\"30\" x2=\"{}\" y2=\"35\" stroke=\"#999\" stroke-width=\"1\" />", x, x).unwrap();
+            writeln!(svg, "  <line x1=\"{x}\" y1=\"30\" x2=\"{x}\" y2=\"35\" stroke=\"#999\" stroke-width=\"1\" />").unwrap();
             writeln!(svg, "  <text x=\"{}\" y=\"25\" text-anchor=\"middle\" font-size=\"10\" fill=\"#666\">{}ms</text>", x, time_ms as u64).unwrap();
         }
 
@@ -799,8 +802,7 @@ impl HtmlReporter {
 
         writeln!(
             svg,
-            "<svg width=\"{}\" height=\"{}\" xmlns=\"http://www.w3.org/2000/svg\">",
-            width, height
+            "<svg width=\"{width}\" height=\"{height}\" xmlns=\"http://www.w3.org/2000/svg\">"
         )
         .unwrap();
 
@@ -846,11 +848,11 @@ impl HtmlReporter {
         let mut layers: Vec<Vec<crate::task::TaskId>> = Vec::new();
 
         // Layer 0: root tasks
-        if !root_tasks.is_empty() {
-            layers.push(root_tasks.iter().map(|t| t.id).collect());
-        } else {
+        if root_tasks.is_empty() {
             // If no root tasks, treat all as layer 0
             layers.push(tasks.iter().map(|t| t.id).collect());
+        } else {
+            layers.push(root_tasks.iter().map(|t| t.id).collect());
         }
 
         // Build subsequent layers from parent-child relationships
@@ -1002,7 +1004,7 @@ impl HtmlReporter {
 
         // Add legend
         let legend_y = height - 80.0;
-        writeln!(svg, "  <text x=\"20\" y=\"{}\" font-size=\"14\" font-weight=\"bold\" fill=\"#333\">Relationships:</text>", legend_y).unwrap();
+        writeln!(svg, "  <text x=\"20\" y=\"{legend_y}\" font-size=\"14\" font-weight=\"bold\" fill=\"#333\">Relationships:</text>").unwrap();
         writeln!(svg, "  <line x1=\"20\" y1=\"{}\" x2=\"80\" y2=\"{}\" stroke=\"#667eea\" stroke-width=\"2\" stroke-dasharray=\"5,5\" marker-end=\"url(#arrowhead-parent)\" />",
             legend_y + 15.0, legend_y + 15.0).unwrap();
         writeln!(
@@ -1070,8 +1072,7 @@ impl HtmlReporter {
         .unwrap();
         writeln!(
             html,
-            "                    <div class=\"task-state state-{}\">{}</div>",
-            state_class, state_text
+            "                    <div class=\"task-state state-{state_class}\">{state_text}</div>"
         )
         .unwrap();
         writeln!(html, "                </div>").unwrap();

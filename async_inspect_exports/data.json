@@ -1,0 +1,297 @@
+{
+  "tasks": [
+    {
+      "id": 6,
+      "name": "cache_write",
+      "state": "Completed",
+      "created_at_ms": 91,
+      "duration_ms": 91.42408300000001,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 5,
+      "name": "data_processing",
+      "state": "Completed",
+      "created_at_ms": 268,
+      "duration_ms": 268.525959,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 3,
+      "name": "api_call_3",
+      "state": "Completed",
+      "created_at_ms": 435,
+      "duration_ms": 435.19970800000004,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 2,
+      "name": "api_call_2",
+      "state": "Completed",
+      "created_at_ms": 435,
+      "duration_ms": 435.203917,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 1,
+      "name": "api_call_1",
+      "state": "Completed",
+      "created_at_ms": 435,
+      "duration_ms": 435.252208,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    },
+    {
+      "id": 4,
+      "name": "database_query",
+      "state": "Completed",
+      "created_at_ms": 435,
+      "duration_ms": 435.198917,
+      "poll_count": 0,
+      "run_time_ms": 0.0,
+      "parent_id": null
+    }
+  ],
+  "events": [
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 435,
+      "kind": "TaskSpawned",
+      "details": "name=api_call_1, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 2,
+      "timestamp_ms": 435,
+      "kind": "TaskSpawned",
+      "details": "name=api_call_2, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 3,
+      "timestamp_ms": 435,
+      "kind": "TaskSpawned",
+      "details": "name=api_call_3, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 4,
+      "timestamp_ms": 435,
+      "kind": "TaskSpawned",
+      "details": "name=database_query, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 2,
+      "timestamp_ms": 435,
+      "kind": "InspectionPoint",
+      "details": "label=http_start, message=Some(\"GET https://api.example.com/endpoint/2\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 435,
+      "kind": "InspectionPoint",
+      "details": "label=http_start, message=Some(\"GET https://api.example.com/endpoint/1\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 3,
+      "timestamp_ms": 435,
+      "kind": "InspectionPoint",
+      "details": "label=http_start, message=Some(\"GET https://api.example.com/endpoint/3\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 4,
+      "timestamp_ms": 435,
+      "kind": "InspectionPoint",
+      "details": "label=db_start, message=Some(\"Query: SELECT * FROM users WHERE active = true\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 300,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 299,
+      "kind": "TaskCompleted",
+      "details": "duration=134.98499999999999ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 2,
+      "timestamp_ms": 293,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 2,
+      "timestamp_ms": 293,
+      "kind": "TaskCompleted",
+      "details": "duration=141.669958ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 4,
+      "timestamp_ms": 283,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 4,
+      "timestamp_ms": 283,
+      "kind": "TaskCompleted",
+      "details": "duration=151.30416699999998ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 3,
+      "timestamp_ms": 268,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 3,
+      "timestamp_ms": 268,
+      "kind": "TaskCompleted",
+      "details": "duration=166.349458ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 5,
+      "timestamp_ms": 268,
+      "kind": "TaskSpawned",
+      "details": "name=data_processing, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 5,
+      "timestamp_ms": 268,
+      "kind": "InspectionPoint",
+      "details": "label=processing_start, message=Some(\"6 items\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 240,
+      "kind": "InspectionPoint",
+      "details": "label=process_item, message=Some(\"Processing item 0: Response from https://api.example.com/endpoint/1\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 182,
+      "kind": "InspectionPoint",
+      "details": "label=process_item, message=Some(\"Processing item 1: Response from https://api.example.com/endpoint/2\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 156,
+      "kind": "InspectionPoint",
+      "details": "label=process_item, message=Some(\"Processing item 2: Response from https://api.example.com/endpoint/3\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 134,
+      "kind": "InspectionPoint",
+      "details": "label=process_item, message=Some(\"Processing item 3: row1\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 113,
+      "kind": "InspectionPoint",
+      "details": "label=process_item, message=Some(\"Processing item 4: row2\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 91,
+      "kind": "InspectionPoint",
+      "details": "label=process_item, message=Some(\"Processing item 5: row3\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 1,
+      "timestamp_ms": 91,
+      "kind": "InspectionPoint",
+      "details": "label=processing_complete, message=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 5,
+      "timestamp_ms": 91,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 5,
+      "timestamp_ms": 91,
+      "kind": "TaskCompleted",
+      "details": "duration=177.011792ms"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 91,
+      "kind": "TaskSpawned",
+      "details": "name=cache_write, parent=None, location=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 91,
+      "kind": "InspectionPoint",
+      "details": "label=cache_start, message=Some(\"Key: workflow_result\")"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 55,
+      "kind": "InspectionPoint",
+      "details": "label=cache_complete, message=None"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 55,
+      "kind": "StateChanged",
+      "details": "old=Pending, new=Completed"
+    },
+    {
+      "event_id": 0,
+      "task_id": 6,
+      "timestamp_ms": 55,
+      "kind": "TaskCompleted",
+      "details": "duration=35.701707999999996ms"
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "timestamp": "2025-11-23T03:54:22.147438+00:00",
+    "total_tasks": 6,
+    "total_events": 32,
+    "duration_ms": 435.47304199999996
+  }
+}

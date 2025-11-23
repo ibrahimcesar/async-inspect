@@ -26,6 +26,7 @@ impl FlamegraphExporter {
     }
 
     /// Export to flamegraph folded stack format string
+    #[must_use] 
     pub fn export_to_string(inspector: &Inspector) -> String {
         Self::generate_folded_stacks(inspector)
     }
@@ -113,7 +114,7 @@ impl FlamegraphExporter {
         // Generate folded output
         for (stack, count) in sorted_stacks {
             if count > 0 {
-                output.push_str(&format!("{} {}\n", stack, count));
+                output.push_str(&format!("{stack} {count}\n"));
             }
         }
 
@@ -141,7 +142,6 @@ impl FlamegraphExporter {
         let mut options = Options::default();
         options.title = "async-inspect Flamegraph".to_string();
         options.subtitle = Some("Async task execution time".to_string());
-        options.colors = inferno::flamegraph::color::Palette::Rust;
 
         let mut svg_output = File::create(path)?;
 
@@ -178,23 +178,27 @@ impl Default for FlamegraphBuilder {
 
 impl FlamegraphBuilder {
     /// Create a new flamegraph builder
+    #[must_use] 
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Set whether to include poll events
+    #[must_use] 
     pub fn include_polls(mut self, include: bool) -> Self {
         self.include_polls = include;
         self
     }
 
     /// Set whether to include await points
+    #[must_use] 
     pub fn include_awaits(mut self, include: bool) -> Self {
         self.include_awaits = include;
         self
     }
 
     /// Set minimum duration threshold (in milliseconds)
+    #[must_use] 
     pub fn min_duration_ms(mut self, ms: u64) -> Self {
         self.min_duration_ms = ms;
         self
@@ -212,6 +216,7 @@ impl FlamegraphBuilder {
     }
 
     /// Build and export flamegraph as string
+    #[must_use] 
     pub fn export_to_string(self, inspector: &Inspector) -> String {
         // For now, use default implementation
         // TODO: Apply builder options when generating stacks

@@ -1,0 +1,451 @@
+{
+  "displayTimeUnit": "ms",
+  "traceEvents": [
+    {
+      "name": "process_name",
+      "ph": "M",
+      "ts": 0,
+      "pid": 14374,
+      "tid": 0,
+      "args": {
+        "name": "async-inspect"
+      }
+    },
+    {
+      "name": "thread_name",
+      "ph": "M",
+      "ts": 0,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "name": "api_call_1"
+      }
+    },
+    {
+      "name": "spawn: api_call_1",
+      "cat": "task",
+      "ph": "i",
+      "ts": 0,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "location": null,
+        "parent": null
+      }
+    },
+    {
+      "name": "thread_name",
+      "ph": "M",
+      "ts": 0,
+      "pid": 14374,
+      "tid": 2,
+      "args": {
+        "name": "api_call_2"
+      }
+    },
+    {
+      "name": "spawn: api_call_2",
+      "cat": "task",
+      "ph": "i",
+      "ts": 47,
+      "pid": 14374,
+      "tid": 2,
+      "args": {
+        "location": null,
+        "parent": null
+      }
+    },
+    {
+      "name": "thread_name",
+      "ph": "M",
+      "ts": 0,
+      "pid": 14374,
+      "tid": 3,
+      "args": {
+        "name": "api_call_3"
+      }
+    },
+    {
+      "name": "spawn: api_call_3",
+      "cat": "task",
+      "ph": "i",
+      "ts": 51,
+      "pid": 14374,
+      "tid": 3,
+      "args": {
+        "location": null,
+        "parent": null
+      }
+    },
+    {
+      "name": "thread_name",
+      "ph": "M",
+      "ts": 0,
+      "pid": 14374,
+      "tid": 4,
+      "args": {
+        "name": "database_query"
+      }
+    },
+    {
+      "name": "spawn: database_query",
+      "cat": "task",
+      "ph": "i",
+      "ts": 53,
+      "pid": 14374,
+      "tid": 4,
+      "args": {
+        "location": null,
+        "parent": null
+      }
+    },
+    {
+      "name": "http_start",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 83,
+      "pid": 14374,
+      "tid": 2,
+      "args": {
+        "message": "GET https://api.example.com/endpoint/2"
+      }
+    },
+    {
+      "name": "http_start",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 85,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "message": "GET https://api.example.com/endpoint/1"
+      }
+    },
+    {
+      "name": "http_start",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 84,
+      "pid": 14374,
+      "tid": 3,
+      "args": {
+        "message": "GET https://api.example.com/endpoint/3"
+      }
+    },
+    {
+      "name": "db_start",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 102,
+      "pid": 14374,
+      "tid": 4,
+      "args": {
+        "message": "Query: SELECT * FROM users WHERE active = true"
+      }
+    },
+    {
+      "name": "state_change",
+      "cat": "task",
+      "ph": "i",
+      "ts": 134987,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "new_state": "Completed",
+        "old_state": "Pending"
+      }
+    },
+    {
+      "name": "api_call_1",
+      "cat": "task",
+      "ph": "X",
+      "ts": 626,
+      "dur": 134985,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "status": "completed"
+      }
+    },
+    {
+      "name": "state_change",
+      "cat": "task",
+      "ph": "i",
+      "ts": 141720,
+      "pid": 14374,
+      "tid": 2,
+      "args": {
+        "new_state": "Completed",
+        "old_state": "Pending"
+      }
+    },
+    {
+      "name": "api_call_2",
+      "cat": "task",
+      "ph": "X",
+      "ts": 53,
+      "dur": 141669,
+      "pid": 14374,
+      "tid": 2,
+      "args": {
+        "status": "completed"
+      }
+    },
+    {
+      "name": "state_change",
+      "cat": "task",
+      "ph": "i",
+      "ts": 151360,
+      "pid": 14374,
+      "tid": 4,
+      "args": {
+        "new_state": "Completed",
+        "old_state": "Pending"
+      }
+    },
+    {
+      "name": "database_query",
+      "cat": "task",
+      "ph": "X",
+      "ts": 57,
+      "dur": 151304,
+      "pid": 14374,
+      "tid": 4,
+      "args": {
+        "status": "completed"
+      }
+    },
+    {
+      "name": "state_change",
+      "cat": "task",
+      "ph": "i",
+      "ts": 166403,
+      "pid": 14374,
+      "tid": 3,
+      "args": {
+        "new_state": "Completed",
+        "old_state": "Pending"
+      }
+    },
+    {
+      "name": "api_call_3",
+      "cat": "task",
+      "ph": "X",
+      "ts": 55,
+      "dur": 166349,
+      "pid": 14374,
+      "tid": 3,
+      "args": {
+        "status": "completed"
+      }
+    },
+    {
+      "name": "thread_name",
+      "ph": "M",
+      "ts": 0,
+      "pid": 14374,
+      "tid": 5,
+      "args": {
+        "name": "data_processing"
+      }
+    },
+    {
+      "name": "spawn: data_processing",
+      "cat": "task",
+      "ph": "i",
+      "ts": 166725,
+      "pid": 14374,
+      "tid": 5,
+      "args": {
+        "location": null,
+        "parent": null
+      }
+    },
+    {
+      "name": "processing_start",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 166984,
+      "pid": 14374,
+      "tid": 5,
+      "args": {
+        "message": "6 items"
+      }
+    },
+    {
+      "name": "process_item",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 195261,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "message": "Processing item 0: Response from https://api.example.com/endpoint/1"
+      }
+    },
+    {
+      "name": "process_item",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 253155,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "message": "Processing item 1: Response from https://api.example.com/endpoint/2"
+      }
+    },
+    {
+      "name": "process_item",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 278347,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "message": "Processing item 2: Response from https://api.example.com/endpoint/3"
+      }
+    },
+    {
+      "name": "process_item",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 300338,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "message": "Processing item 3: row1"
+      }
+    },
+    {
+      "name": "process_item",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 321502,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "message": "Processing item 4: row2"
+      }
+    },
+    {
+      "name": "process_item",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 343714,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "message": "Processing item 5: row3"
+      }
+    },
+    {
+      "name": "processing_complete",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 343718,
+      "pid": 14374,
+      "tid": 1,
+      "args": {
+        "message": null
+      }
+    },
+    {
+      "name": "state_change",
+      "cat": "task",
+      "ph": "i",
+      "ts": 343738,
+      "pid": 14374,
+      "tid": 5,
+      "args": {
+        "new_state": "Completed",
+        "old_state": "Pending"
+      }
+    },
+    {
+      "name": "data_processing",
+      "cat": "task",
+      "ph": "X",
+      "ts": 166728,
+      "dur": 177011,
+      "pid": 14374,
+      "tid": 5,
+      "args": {
+        "status": "completed"
+      }
+    },
+    {
+      "name": "thread_name",
+      "ph": "M",
+      "ts": 0,
+      "pid": 14374,
+      "tid": 6,
+      "args": {
+        "name": "cache_write"
+      }
+    },
+    {
+      "name": "spawn: cache_write",
+      "cat": "task",
+      "ph": "i",
+      "ts": 343825,
+      "pid": 14374,
+      "tid": 6,
+      "args": {
+        "location": null,
+        "parent": null
+      }
+    },
+    {
+      "name": "cache_start",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 343889,
+      "pid": 14374,
+      "tid": 6,
+      "args": {
+        "message": "Key: workflow_result"
+      }
+    },
+    {
+      "name": "cache_complete",
+      "cat": "inspection",
+      "ph": "i",
+      "ts": 379515,
+      "pid": 14374,
+      "tid": 6,
+      "args": {
+        "message": null
+      }
+    },
+    {
+      "name": "state_change",
+      "cat": "task",
+      "ph": "i",
+      "ts": 379529,
+      "pid": 14374,
+      "tid": 6,
+      "args": {
+        "new_state": "Completed",
+        "old_state": "Pending"
+      }
+    },
+    {
+      "name": "cache_write",
+      "cat": "task",
+      "ph": "X",
+      "ts": 343828,
+      "dur": 35701,
+      "pid": 14374,
+      "tid": 6,
+      "args": {
+        "status": "completed"
+      }
+    }
+  ],
+  "metadata": {
+    "async-inspect-version": "0.0.1",
+    "duration_ms": 459.87987499999997,
+    "total_events": 32,
+    "total_tasks": 6
+  }
+}

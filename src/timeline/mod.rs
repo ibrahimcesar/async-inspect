@@ -13,11 +13,13 @@ pub struct EventId(u64);
 
 impl EventId {
     /// Create a new event ID
+    #[must_use] 
     pub fn new(id: u64) -> Self {
         Self(id)
     }
 
     /// Get the raw u64 value
+    #[must_use] 
     pub fn as_u64(&self) -> u64 {
         self.0
     }
@@ -93,12 +95,12 @@ pub enum EventKind {
 impl fmt::Display for EventKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::TaskSpawned { name, .. } => write!(f, "Spawned: {}", name),
+            Self::TaskSpawned { name, .. } => write!(f, "Spawned: {name}"),
             Self::PollStarted => write!(f, "Poll started"),
             Self::PollEnded { duration } => {
                 write!(f, "Poll ended ({:.2}ms)", duration.as_secs_f64() * 1000.0)
             }
-            Self::AwaitStarted { await_point, .. } => write!(f, "Await started: {}", await_point),
+            Self::AwaitStarted { await_point, .. } => write!(f, "Await started: {await_point}"),
             Self::AwaitEnded {
                 await_point,
                 duration,
@@ -115,23 +117,23 @@ impl fmt::Display for EventKind {
             }
             Self::TaskFailed { error } => {
                 if let Some(err) = error {
-                    write!(f, "Failed: {}", err)
+                    write!(f, "Failed: {err}")
                 } else {
                     write!(f, "Failed")
                 }
             }
             Self::InspectionPoint { label, message } => {
                 if let Some(msg) = message {
-                    write!(f, "Inspection[{}]: {}", label, msg)
+                    write!(f, "Inspection[{label}]: {msg}")
                 } else {
-                    write!(f, "Inspection[{}]", label)
+                    write!(f, "Inspection[{label}]")
                 }
             }
             Self::StateChanged {
                 old_state,
                 new_state,
             } => {
-                write!(f, "State: {} → {}", old_state, new_state)
+                write!(f, "State: {old_state} → {new_state}")
             }
         }
     }
@@ -155,6 +157,7 @@ pub struct Event {
 
 impl Event {
     /// Create a new event
+    #[must_use] 
     pub fn new(id: u64, task_id: TaskId, kind: EventKind) -> Self {
         Self {
             id: EventId::new(id),
@@ -165,6 +168,7 @@ impl Event {
     }
 
     /// Get the age of this event
+    #[must_use] 
     pub fn age(&self) -> Duration {
         self.timestamp.elapsed()
     }
@@ -194,6 +198,7 @@ pub struct Timeline {
 
 impl Timeline {
     /// Create a new timeline
+    #[must_use] 
     pub fn new() -> Self {
         Self {
             events: Vec::new(),
@@ -210,11 +215,13 @@ impl Timeline {
     }
 
     /// Get all events
+    #[must_use] 
     pub fn events(&self) -> &[Event] {
         &self.events
     }
 
     /// Get events for a specific task
+    #[must_use] 
     pub fn events_for_task(&self, task_id: TaskId) -> Vec<&Event> {
         self.events
             .iter()
@@ -223,18 +230,20 @@ impl Timeline {
     }
 
     /// Get the total duration of the timeline
+    #[must_use] 
     pub fn duration(&self) -> Duration {
         self.start_time
-            .map(|start| start.elapsed())
-            .unwrap_or(Duration::ZERO)
+            .map_or(Duration::ZERO, |start| start.elapsed())
     }
 
     /// Get number of events
+    #[must_use] 
     pub fn len(&self) -> usize {
         self.events.len()
     }
 
     /// Check if timeline is empty
+    #[must_use] 
     pub fn is_empty(&self) -> bool {
         self.events.is_empty()
     }

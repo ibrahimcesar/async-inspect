@@ -1,0 +1,33 @@
+event_id,task_id,timestamp_ms,kind,details
+0,1,458,TaskSpawned,name=api_call_1, parent=None, location=None
+0,2,458,TaskSpawned,name=api_call_2, parent=None, location=None
+0,3,458,TaskSpawned,name=api_call_3, parent=None, location=None
+0,4,458,TaskSpawned,name=database_query, parent=None, location=None
+0,2,458,InspectionPoint,label=http_start, message=Some("GET https://api.example.com/endpoint/2")
+0,1,458,InspectionPoint,label=http_start, message=Some("GET https://api.example.com/endpoint/1")
+0,3,458,InspectionPoint,label=http_start, message=Some("GET https://api.example.com/endpoint/3")
+0,4,458,InspectionPoint,label=db_start, message=Some("Query: SELECT * FROM users WHERE active = true")
+0,1,323,StateChanged,old=Pending, new=Completed
+0,1,323,TaskCompleted,duration=134.98499999999999ms
+0,2,317,StateChanged,old=Pending, new=Completed
+0,2,317,TaskCompleted,duration=141.669958ms
+0,4,307,StateChanged,old=Pending, new=Completed
+0,4,307,TaskCompleted,duration=151.30416699999998ms
+0,3,292,StateChanged,old=Pending, new=Completed
+0,3,292,TaskCompleted,duration=166.349458ms
+0,5,292,TaskSpawned,name=data_processing, parent=None, location=None
+0,5,292,InspectionPoint,label=processing_start, message=Some("6 items")
+0,1,264,InspectionPoint,label=process_item, message=Some("Processing item 0: Response from https://api.example.com/endpoint/1")
+0,1,206,InspectionPoint,label=process_item, message=Some("Processing item 1: Response from https://api.example.com/endpoint/2")
+0,1,181,InspectionPoint,label=process_item, message=Some("Processing item 2: Response from https://api.example.com/endpoint/3")
+0,1,159,InspectionPoint,label=process_item, message=Some("Processing item 3: row1")
+0,1,138,InspectionPoint,label=process_item, message=Some("Processing item 4: row2")
+0,1,115,InspectionPoint,label=process_item, message=Some("Processing item 5: row3")
+0,1,115,InspectionPoint,label=processing_complete, message=None
+0,5,115,StateChanged,old=Pending, new=Completed
+0,5,115,TaskCompleted,duration=177.011792ms
+0,6,115,TaskSpawned,name=cache_write, parent=None, location=None
+0,6,115,InspectionPoint,label=cache_start, message=Some("Key: workflow_result")
+0,6,80,InspectionPoint,label=cache_complete, message=None
+0,6,80,StateChanged,old=Pending, new=Completed
+0,6,80,TaskCompleted,duration=35.701707999999996ms

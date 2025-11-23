@@ -44,4 +44,4 @@ task_hierarchy_report.html
 *_export.json
 *_trace.json
 ecosystem_trace.json
-production_export.json
+production_export.jsonasync_inspect_exports/

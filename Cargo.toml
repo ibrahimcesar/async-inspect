@@ -59,6 +59,9 @@ prometheus = { version = "0.13", optional = true }
 opentelemetry = { version = "0.21", optional = true }
 opentelemetry_sdk = { version = "0.21", optional = true }
 
+# Flamegraph generation (optional)
+inferno = { version = "0.11", optional = true }
+
 # Time tracking
 parking_lot = "0.12"
 once_cell = "1.19"
@@ -86,8 +89,11 @@ tracing-sub = ["tracing-subscriber"]
 prometheus-export = ["prometheus"]
 opentelemetry-export = ["opentelemetry", "opentelemetry_sdk"]
 
+# Flamegraph SVG generation
+flamegraph = ["inferno"]
+
 # All features
-full = ["cli", "tokio", "tracing-sub", "prometheus-export", "opentelemetry-export"]
+full = ["cli", "tokio", "tracing-sub", "prometheus-export", "opentelemetry-export", "flamegraph"]
 
 [profile.dev]
 opt-level = 0
@@ -151,4 +157,9 @@ path = "examples/relationship_graph.rs"
 [[example]]
 name = "ecosystem_integration"
 path = "examples/ecosystem_integration.rs"
+required-features = ["tokio"]
+
+[[example]]
+name = "export_formats"
+path = "examples/export_formats.rs"
 required-features = ["tokio"]

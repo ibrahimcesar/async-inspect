@@ -72,6 +72,7 @@ pub struct TaskGraph {
 
 impl TaskGraph {
     /// Create a new task graph
+    #[must_use] 
     pub fn new() -> Self {
         Self {
             relationships: Vec::new(),
@@ -91,18 +92,19 @@ impl TaskGraph {
         // Update adjacency lists
         self.adjacency
             .entry(relationship.from)
-            .or_insert_with(Vec::new)
+            .or_default()
             .push((relationship.to, relationship.relationship_type));
 
         self.reverse_adjacency
             .entry(relationship.to)
-            .or_insert_with(Vec::new)
+            .or_default()
             .push((relationship.from, relationship.relationship_type));
 
         self.relationships.push(relationship);
     }
 
     /// Get all relationships of a specific type
+    #[must_use] 
     pub fn get_relationships_by_type(&self, rel_type: RelationshipType) -> Vec<&Relationship> {
         self.relationships
             .iter()
@@ -111,11 +113,13 @@ impl TaskGraph {
     }
 
     /// Get all tasks that a given task has a relationship with
+    #[must_use] 
     pub fn get_related_tasks(&self, task_id: TaskId) -> Vec<(TaskId, RelationshipType)> {
         self.adjacency.get(&task_id).cloned().unwrap_or_default()
     }
 
     /// Get all tasks that have a relationship to a given task
+    #[must_use] 
     pub fn get_dependent_tasks(&self, task_id: TaskId) -> Vec<(TaskId, RelationshipType)> {
         self.reverse_adjacency
             .get(&task_id)
@@ -124,11 +128,13 @@ impl TaskGraph {
     }
 
     /// Get a task by ID
+    #[must_use] 
     pub fn get_task(&self, task_id: &TaskId) -> Option<&TaskInfo> {
         self.tasks.get(task_id)
     }
 
     /// Find the critical path (longest dependency chain)
+    #[must_use] 
     pub fn find_critical_path(&self) -> Vec<TaskId> {
         let mut longest_path = Vec::new();
         let mut visited = HashSet::new();
@@ -175,6 +181,7 @@ impl TaskGraph {
     }
 
     /// Find all transitive dependencies of a task
+    #[must_use] 
     pub fn find_transitive_dependencies(&self, task_id: TaskId) -> HashSet<TaskId> {
         let mut dependencies = HashSet::new();
         let mut queue = VecDeque::new();
@@ -186,11 +193,10 @@ impl TaskGraph {
                     if matches!(
                         rel_type,
                         RelationshipType::Dependency | RelationshipType::AwaitsOn
-                    ) {
-                        if dependencies.insert(*next_id) {
+                    )
+                        && dependencies.insert(*next_id) {
                             queue.push_back(*next_id);
                         }
-                    }
                 }
             }
         }
@@ -199,6 +205,7 @@ impl TaskGraph {
     }
 
     /// Find all tasks sharing a resource
+    #[must_use] 
     pub fn find_tasks_sharing_resource(&self, resource_name: &str) -> Vec<TaskId> {
         let mut tasks = HashSet::new();
 
@@ -217,6 +224,7 @@ impl TaskGraph {
     }
 
     /// Find channel communication pairs
+    #[must_use] 
     pub fn find_channel_pairs(&self) -> Vec<(TaskId, TaskId)> {
         let mut pairs = Vec::new();
 
@@ -233,6 +241,7 @@ impl TaskGraph {
     }
 
     /// Detect potential deadlocks based on resource sharing
+    #[must_use] 
     pub fn detect_potential_deadlocks(&self) -> Vec<Vec<TaskId>> {
         let mut deadlock_cycles = Vec::new();
         let mut visited = HashSet::new();
@@ -283,6 +292,7 @@ impl TaskGraph {
     }
 
     /// Generate DOT format for graphviz visualization
+    #[must_use] 
     pub fn to_dot(&self) -> String {
         let mut dot = String::from("digraph TaskGraph {\n");
         dot.push_str("  rankdir=LR;\n");
@@ -307,7 +317,7 @@ impl TaskGraph {
             ));
         }
 
-        dot.push_str("\n");
+        dot.push('\n');
 
         // Add edges with different styles for different relationship types
         for rel in &self.relationships {
@@ -323,7 +333,7 @@ impl TaskGraph {
 
             let mut edge_label = label.to_string();
             if let Some(ref resource) = rel.resource_name {
-                edge_label = format!("{}\n{}", label, resource);
+                edge_label = format!("{label}\n{resource}");
             }
 
             dot.push_str(&format!(
@@ -354,6 +364,7 @@ impl TaskGraph {
     }
 
     /// Generate a text-based visualization
+    #[must_use] 
     pub fn to_text(&self) -> String {
         let mut output = String::new();
         output.push_str("Task Relationship Graph\n");
@@ -371,23 +382,21 @@ impl TaskGraph {
         ] {
             let rels = self.get_relationships_by_type(*rel_type);
             if !rels.is_empty() {
-                output.push_str(&format!("\n{} Relationships:\n", rel_type));
+                output.push_str(&format!("\n{rel_type} Relationships:\n"));
                 for rel in rels {
                     let from_name = self
                         .tasks
                         .get(&rel.from)
-                        .map(|t| t.name.as_str())
-                        .unwrap_or("?");
+                        .map_or("?", |t| t.name.as_str());
                     let to_name = self
                         .tasks
                         .get(&rel.to)
-                        .map(|t| t.name.as_str())
-                        .unwrap_or("?");
+                        .map_or("?", |t| t.name.as_str());
 
-                    output.push_str(&format!("  {} {} {}", from_name, rel_type, to_name));
+                    output.push_str(&format!("  {from_name} {rel_type} {to_name}"));
 
                     if let Some(ref resource) = rel.resource_name {
-                        output.push_str(&format!(" ({})", resource));
+                        output.push_str(&format!(" ({resource})"));
                     }
                     output.push('\n');
                 }
@@ -412,11 +421,11 @@ impl TaskGraph {
                 if let Some(ref name) = rel.resource_name {
                     resources
                         .entry(name.clone())
-                        .or_insert_with(Vec::new)
+                        .or_default()
                         .push(rel.from);
                     resources
                         .entry(name.clone())
-                        .or_insert_with(Vec::new)
+                        .or_default()
                         .push(rel.to);
                 }
             }
@@ -454,6 +463,7 @@ static GRAPH: once_cell::sync::Lazy<Arc<RwLock<TaskGraph>>> =
     once_cell::sync::Lazy::new(|| Arc::new(RwLock::new(TaskGraph::new())));
 
 /// Get the global task graph
+#[must_use] 
 pub fn global_graph() -> Arc<RwLock<TaskGraph>> {
     Arc::clone(&GRAPH)
 }

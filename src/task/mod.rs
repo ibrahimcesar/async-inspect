@@ -20,11 +20,13 @@ impl TaskId {
     }
 
     /// Get the raw ID value
+    #[must_use] 
     pub fn as_u64(&self) -> u64 {
         self.0
     }
 
-    /// Create a TaskId from a raw u64 value (for testing/examples)
+    /// Create a `TaskId` from a raw u64 value (for testing/examples)
+    #[must_use] 
     pub fn from_u64(id: u64) -> Self {
         Self(id)
     }
@@ -65,7 +67,7 @@ impl fmt::Display for TaskState {
         match self {
             Self::Pending => write!(f, "PENDING"),
             Self::Running => write!(f, "RUNNING"),
-            Self::Blocked { await_point } => write!(f, "BLOCKED({})", await_point),
+            Self::Blocked { await_point } => write!(f, "BLOCKED({await_point})"),
             Self::Completed => write!(f, "COMPLETED"),
             Self::Failed => write!(f, "FAILED"),
         }
@@ -99,12 +101,13 @@ pub struct TaskInfo {
     /// Parent task ID, if any
     pub parent: Option<TaskId>,
 
-    /// Source location (file:line)
+    /// Source location (<file:line>)
     pub location: Option<String>,
 }
 
 impl TaskInfo {
     /// Create a new task info
+    #[must_use] 
     pub fn new(name: String) -> Self {
         let now = Instant::now();
         Self {
@@ -134,22 +137,26 @@ impl TaskInfo {
     }
 
     /// Get the age of the task
+    #[must_use] 
     pub fn age(&self) -> Duration {
         self.created_at.elapsed()
     }
 
     /// Get time since last update
+    #[must_use] 
     pub fn time_since_update(&self) -> Duration {
         self.last_updated.elapsed()
     }
 
     /// Set the parent task
+    #[must_use] 
     pub fn with_parent(mut self, parent: TaskId) -> Self {
         self.parent = Some(parent);
         self
     }
 
     /// Set the source location
+    #[must_use] 
     pub fn with_location(mut self, location: String) -> Self {
         self.location = Some(location);
         self

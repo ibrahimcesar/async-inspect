@@ -62,7 +62,7 @@ pub struct ExportEvent {
     pub task_id: u64,
     /// Event timestamp in milliseconds
     pub timestamp_ms: u128,
-    /// Event kind (TaskSpawned, Poll, Wake, etc.)
+    /// Event kind (`TaskSpawned`, Poll, Wake, etc.)
     pub kind: String,
     /// Additional event details
     pub details: Option<String>,
@@ -78,8 +78,7 @@ impl From<&Event> for ExportEvent {
             } => (
                 "TaskSpawned".to_string(),
                 Some(format!(
-                    "name={}, parent={:?}, location={:?}",
-                    name, parent, location
+                    "name={name}, parent={parent:?}, location={location:?}"
                 )),
             ),
             EventKind::PollStarted => ("PollStarted".to_string(), None),
@@ -92,7 +91,7 @@ impl From<&Event> for ExportEvent {
                 location,
             } => (
                 "AwaitStarted".to_string(),
-                Some(format!("point={}, location={:?}", await_point, location)),
+                Some(format!("point={await_point}, location={location:?}")),
             ),
             EventKind::AwaitEnded {
                 await_point,
@@ -111,18 +110,18 @@ impl From<&Event> for ExportEvent {
             ),
             EventKind::TaskFailed { error } => (
                 "TaskFailed".to_string(),
-                error.as_ref().map(|e| format!("error={}", e)),
+                error.as_ref().map(|e| format!("error={e}")),
             ),
             EventKind::InspectionPoint { label, message } => (
                 "InspectionPoint".to_string(),
-                Some(format!("label={}, message={:?}", label, message)),
+                Some(format!("label={label}, message={message:?}")),
             ),
             EventKind::StateChanged {
                 old_state,
                 new_state,
             } => (
                 "StateChanged".to_string(),
-                Some(format!("old={:?}, new={:?}", old_state, new_state)),
+                Some(format!("old={old_state:?}, new={new_state:?}")),
             ),
         };
 
@@ -238,7 +237,7 @@ impl CsvExporter {
                 export_task.run_time_ms,
                 export_task
                     .parent_id
-                    .map_or("".to_string(), |id| id.to_string())
+                    .map_or(String::new(), |id| id.to_string())
             )?;
         }
 

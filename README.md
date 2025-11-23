@@ -531,6 +531,153 @@ async-inspect = { version = "0.0.1", features = [
 
 ---
 
+## 📤 Export Formats
+
+async-inspect supports multiple industry-standard export formats for visualization and analysis:
+
+### JSON Export
+
+Export complete task and event data as structured JSON:
+
+```rust
+use async_inspect::export::JsonExporter;
+
+// Export to file
+JsonExporter::export_to_file(&inspector, "data.json")?;
+
+// Or get as string
+let json = JsonExporter::export_to_string(&inspector)?;
+```
+
+**Use with:** `jq`, Python pandas, JavaScript tools, data pipelines
+
+### CSV Export
+
+Export tasks and events in spreadsheet-compatible format:
+
+```rust
+use async_inspect::export::CsvExporter;
+
+// Export tasks (id, name, duration, poll_count, etc.)
+CsvExporter::export_tasks_to_file(&inspector, "tasks.csv")?;
+
+// Export events (event_id, task_id, timestamp, kind, details)
+CsvExporter::export_events_to_file(&inspector, "events.csv")?;
+```
+
+**Use with:** Excel, Google Sheets, pandas, data analysis
+
+### Chrome Trace Event Format
+
+Export for visualization in chrome://tracing or Perfetto UI:
+
+```rust
+use async_inspect::export::ChromeTraceExporter;
+
+ChromeTraceExporter::export_to_file(&inspector, "trace.json")?;
+```
+
+**How to visualize:**
+
+1. **Chrome DevTools** (built-in):
+   - Open Chrome/Chromium
+   - Navigate to `chrome://tracing`
+   - Click "Load" and select `trace.json`
+   - Explore the interactive timeline!
+
+2. **Perfetto UI** (recommended):
+   - Go to [https://ui.perfetto.dev/](https://ui.perfetto.dev/)
+   - Click "Open trace file"
+   - Select `trace.json`
+   - Get advanced analysis features:
+     - Thread-level view
+     - SQL-based queries
+     - Statistical summaries
+     - Custom tracks
+
+**What you see:**
+- Task spawning and completion as events
+- Poll operations with precise durations
+- Await points showing blocking time
+- Complete async execution timeline
+- Task relationships and dependencies
+
+### Flamegraph Export
+
+Generate flamegraphs for performance analysis:
+
+```rust
+use async_inspect::export::{FlamegraphExporter, FlamegraphBuilder};
+
+// Basic export (folded stack format)
+FlamegraphExporter::export_to_file(&inspector, "flamegraph.txt")?;
+
+// Customized export
+FlamegraphBuilder::new()
+    .include_polls(false)      // Exclude poll events
+    .include_awaits(true)       // Include await points
+    .min_duration_ms(10)        // Filter < 10ms operations
+    .export_to_file(&inspector, "flamegraph_filtered.txt")?;
+
+// Generate SVG directly (requires 'flamegraph' feature)
+#[cfg(feature = "flamegraph")]
+FlamegraphExporter::generate_svg(&inspector, "flamegraph.svg")?;
+```
+
+**How to visualize:**
+
+1. **Speedscope** (easiest, online):
+   - Go to [https://www.speedscope.app/](https://www.speedscope.app/)
+   - Drop `flamegraph.txt` onto the page
+   - Explore interactive flamegraph
+
+2. **inferno** (local SVG generation):
+   ```bash
+   cargo install inferno
+   cat flamegraph.txt | inferno-flamegraph > output.svg
+   open output.svg
+   ```
+
+3. **flamegraph.pl** (classic):
+   ```bash
+   git clone https://github.com/brendangregg/FlameGraph
+   ./FlameGraph/flamegraph.pl flamegraph.txt > output.svg
+   ```
+
+**What you see:**
+- Call stacks showing task hierarchies
+- Time spent in each async operation
+- Hotspots and bottlenecks
+- Parent-child task relationships
+
+### Comprehensive Example
+
+See [examples/export_formats.rs](examples/export_formats.rs) for a complete example:
+
+```bash
+cargo run --example export_formats
+```
+
+This demonstrates:
+- All export formats in one workflow
+- Realistic async operations
+- Multiple concurrent tasks
+- Export to JSON, CSV, Chrome Trace, and Flamegraph
+- Usage instructions for each format
+
+**Output files:**
+```
+async_inspect_exports/
+├── data.json                    # Complete JSON export
+├── tasks.csv                    # Task metrics
+├── events.csv                   # Event timeline
+├── trace.json                   # Chrome Trace Event Format
+├── flamegraph.txt               # Basic flamegraph
+└── flamegraph_filtered.txt      # Filtered flamegraph
+```
+
+---
+
 ## 🗺️ Roadmap
 
 ### Phase 1: Core Inspector (Current)

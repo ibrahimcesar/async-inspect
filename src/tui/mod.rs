@@ -77,6 +77,7 @@ pub struct TuiApp {
 
 impl TuiApp {
     /// Create a new TUI application
+    #[must_use] 
     pub fn new(inspector: Inspector) -> Self {
         Self {
             inspector,
@@ -113,7 +114,7 @@ impl TuiApp {
             SortMode::Name => tasks.sort_by(|a, b| a.name.cmp(&b.name)),
             SortMode::Duration => tasks.sort_by(|a, b| b.age().cmp(&a.age())),
             SortMode::State => {
-                tasks.sort_by(|a, b| format!("{:?}", a.state).cmp(&format!("{:?}", b.state)))
+                tasks.sort_by(|a, b| format!("{:?}", a.state).cmp(&format!("{:?}", b.state)));
             }
             SortMode::PollCount => tasks.sort_by(|a, b| b.poll_count.cmp(&a.poll_count)),
         }

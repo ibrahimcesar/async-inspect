@@ -42,6 +42,7 @@ struct InspectorState {
 
 impl Inspector {
     /// Create a new inspector
+    #[must_use] 
     pub fn new() -> Self {
         Self {
             state: Arc::new(InspectorState {
@@ -55,11 +56,13 @@ impl Inspector {
     }
 
     /// Get the global inspector instance
+    #[must_use] 
     pub fn global() -> &'static Self {
         &GLOBAL_INSPECTOR
     }
 
     /// Check if the inspector is enabled
+    #[must_use] 
     pub fn is_enabled(&self) -> bool {
         *self.state.enabled.read()
     }
@@ -75,6 +78,7 @@ impl Inspector {
     }
 
     /// Register a new task
+    #[must_use] 
     pub fn register_task(&self, name: String) -> TaskId {
         if !self.is_enabled() {
             return TaskId::new();
@@ -100,6 +104,7 @@ impl Inspector {
     }
 
     /// Register a child task with a parent
+    #[must_use] 
     pub fn register_child_task(&self, name: String, parent_id: TaskId) -> TaskId {
         if !self.is_enabled() {
             return TaskId::new();
@@ -126,6 +131,7 @@ impl Inspector {
     }
 
     /// Register a task with additional metadata
+    #[must_use] 
     pub fn register_task_with_info(&self, task: TaskInfo) -> TaskId {
         if !self.is_enabled() {
             return task.id;
@@ -237,7 +243,7 @@ impl Inspector {
         }
 
         // Get duration while holding read lock, then release it
-        let duration = { self.state.tasks.read().get(&task_id).map(|task| task.age()) };
+        let duration = { self.state.tasks.read().get(&task_id).map(super::task::TaskInfo::age) };
 
         if let Some(duration) = duration {
             self.update_task_state(task_id, TaskState::Completed);
@@ -272,21 +278,25 @@ impl Inspector {
     }
 
     /// Get a task by ID
+    #[must_use] 
     pub fn get_task(&self, task_id: TaskId) -> Option<TaskInfo> {
         self.state.tasks.read().get(&task_id).cloned()
     }
 
     /// Get all tasks
+    #[must_use] 
     pub fn get_all_tasks(&self) -> Vec<TaskInfo> {
         self.state.tasks.read().values().cloned().collect()
     }
 
     /// Get all events
+    #[must_use] 
     pub fn get_events(&self) -> Vec<Event> {
         self.state.timeline.read().events().to_vec()
     }
 
     /// Get events for a specific task
+    #[must_use] 
     pub fn get_task_events(&self, task_id: TaskId) -> Vec<Event> {
         self.state
             .timeline
@@ -298,6 +308,7 @@ impl Inspector {
     }
 
     /// Build a performance profiler from collected data
+    #[must_use] 
     pub fn build_profiler(&self) -> crate::profile::Profiler {
         use crate::profile::{Profiler, TaskMetrics};
         use crate::timeline::EventKind;
@@ -332,7 +343,7 @@ impl Inspector {
             // Collect await durations from events
             let task_events: Vec<&Event> = timeline
                 .events()
-                .into_iter()
+                .iter()
                 .filter(|e| e.task_id == task.id)
                 .collect();
 
@@ -361,6 +372,7 @@ impl Inspector {
     }
 
     /// Get statistics
+    #[must_use] 
     pub fn stats(&self) -> InspectorStats {
         let tasks = self.state.tasks.read();
         let timeline = self.state.timeline.read();
@@ -416,6 +428,7 @@ impl Inspector {
     ///
     /// Returns a reference to the integrated deadlock detector for resource
     /// tracking and deadlock analysis.
+    #[must_use] 
     pub fn deadlock_detector(&self) -> &DeadlockDetector {
         &self.state.deadlock_detector
     }

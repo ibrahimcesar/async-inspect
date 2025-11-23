@@ -16,6 +16,7 @@ pub struct InspectContext {
 
 impl InspectContext {
     /// Create a new inspect context
+    #[must_use] 
     pub fn new(task_id: TaskId) -> Self {
         Self {
             task_id,
@@ -24,6 +25,7 @@ impl InspectContext {
     }
 
     /// Get elapsed time since context creation
+    #[must_use] 
     pub fn elapsed(&self) -> std::time::Duration {
         self.start_time.elapsed()
     }
@@ -37,6 +39,7 @@ pub struct PollGuard {
 
 impl PollGuard {
     /// Create a new poll guard
+    #[must_use] 
     pub fn new(task_id: TaskId) -> Self {
         Inspector::global().poll_started(task_id);
         Self {
@@ -62,6 +65,7 @@ pub struct AwaitGuard {
 
 impl AwaitGuard {
     /// Create a new await guard
+    #[must_use] 
     pub fn new(task_id: TaskId, await_point: String) -> Self {
         Inspector::global().await_started(task_id, await_point.clone(), None);
         Self {
@@ -165,10 +169,11 @@ macro_rules! inspect_task_failed {
 
 // Thread-local storage for current task ID
 thread_local! {
-    static CURRENT_TASK_ID: std::cell::RefCell<Option<TaskId>> = std::cell::RefCell::new(None);
+    static CURRENT_TASK_ID: std::cell::RefCell<Option<TaskId>> = const { std::cell::RefCell::new(None) };
 }
 
 /// Get the current task ID
+#[must_use] 
 pub fn current_task_id() -> Option<TaskId> {
     CURRENT_TASK_ID.with(|id| *id.borrow())
 }
@@ -190,6 +195,7 @@ pub struct TaskGuard {
 
 impl TaskGuard {
     /// Create a new task guard
+    #[must_use] 
     pub fn new(name: String) -> Self {
         let task_id = Inspector::global().register_task(name);
         set_current_task_id(task_id);
@@ -197,6 +203,7 @@ impl TaskGuard {
     }
 
     /// Get the task ID
+    #[must_use] 
     pub fn task_id(&self) -> TaskId {
         self.task_id
     }

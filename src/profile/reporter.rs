@@ -10,6 +10,7 @@ pub struct PerformanceReporter<'a> {
 
 impl<'a> PerformanceReporter<'a> {
     /// Create a new performance reporter
+    #[must_use] 
     pub fn new(profiler: &'a Profiler) -> Self {
         Self { profiler }
     }
@@ -253,6 +254,7 @@ impl<'a> PerformanceReporter<'a> {
     }
 
     /// Generate a compact performance summary
+    #[must_use] 
     pub fn generate_summary(&self) -> String {
         let mut summary = String::new();
         let stats = self.profiler.calculate_stats();
@@ -314,8 +316,7 @@ impl<'a> PerformanceReporter<'a> {
             let max_polls = busiest[0].poll_count;
             if max_polls > 100 {
                 recommendations.push(format!(
-                    "🔄 Task with {} polls detected - possible busy loop or fine-grained awaits",
-                    max_polls
+                    "🔄 Task with {max_polls} polls detected - possible busy loop or fine-grained awaits"
                 ));
                 recommendations.push(
                     "   → Consider batching operations or using coarser-grained awaits".to_string(),
@@ -340,7 +341,7 @@ impl<'a> PerformanceReporter<'a> {
             println!("  ✨ Your async code looks well-optimized.");
         } else {
             for rec in recommendations {
-                println!("  {}", rec);
+                println!("  {rec}");
             }
         }
 

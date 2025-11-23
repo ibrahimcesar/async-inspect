@@ -16,11 +16,13 @@ pub struct Reporter {
 
 impl Reporter {
     /// Create a new reporter
+    #[must_use] 
     pub fn new(inspector: Inspector) -> Self {
         Self { inspector }
     }
 
     /// Create a reporter using the global inspector
+    #[must_use] 
     pub fn global() -> Self {
         Self::new(Inspector::global().clone())
     }
@@ -94,7 +96,7 @@ impl Reporter {
         };
 
         let status = format!("{} {} {}", task.id, state_icon, task.name);
-        println!("│ {:<59} │", status);
+        println!("│ {status:<59} │");
 
         // Show additional info for blocked tasks
         if let TaskState::Blocked { ref await_point } = task.state {
@@ -103,14 +105,14 @@ impl Reporter {
                 await_point,
                 task.time_since_update().as_secs_f64()
             );
-            println!("│ {:<59} │", detail);
+            println!("│ {detail:<59} │");
         }
     }
 
     /// Print detailed information about a specific task
     pub fn print_task_details(&self, task_id: crate::task::TaskId) {
         let Some(task) = self.inspector.get_task(task_id) else {
-            println!("Task {} not found", task_id);
+            println!("Task {task_id} not found");
             return;
         };
 
@@ -140,7 +142,7 @@ impl Reporter {
         }
 
         if let Some(location) = &task.location {
-            println!("│ Location:        {:<44}│", location);
+            println!("│ Location:        {location:<44}│");
         }
 
         println!("│                                                             │");
@@ -154,7 +156,7 @@ impl Reporter {
         } else {
             for event in events.iter().take(20) {
                 let event_str = format!("{}", event.kind);
-                println!("│ {:<59} │", event_str);
+                println!("│ {event_str:<59} │");
             }
 
             if events.len() > 20 {
@@ -180,7 +182,7 @@ impl Reporter {
             println!("│ No events recorded                                          │");
         } else {
             for event in events.iter().take(50) {
-                self.print_event_line(&event);
+                self.print_event_line(event);
             }
 
             if events.len() > 50 {
@@ -207,10 +209,11 @@ impl Reporter {
             event_str
         };
 
-        println!("│ {:<59} │", truncated);
+        println!("│ {truncated:<59} │");
     }
 
     /// Generate a text report
+    #[must_use] 
     pub fn generate_report(&self) -> String {
         let mut report = String::new();
         let stats = self.inspector.stats();
@@ -237,7 +240,7 @@ impl Reporter {
 
         writeln!(report, "Tasks:").unwrap();
         for task in &tasks {
-            writeln!(report, "  {}", task).unwrap();
+            writeln!(report, "  {task}").unwrap();
         }
 
         report
@@ -291,7 +294,7 @@ impl Reporter {
 
         // Print time scale
         let time_markers = self.generate_time_markers(total_duration, TIMELINE_WIDTH);
-        println!("│ Time:  {}│", time_markers);
+        println!("│ Time:  {time_markers}│");
         println!("│        {}│", self.generate_timeline_ruler(TIMELINE_WIDTH));
         println!("│                                                                            │");
 
@@ -299,7 +302,7 @@ impl Reporter {
         for task in &tasks {
             let task_line =
                 self.generate_task_timeline(task, start_time, total_duration, TIMELINE_WIDTH);
-            println!("│ {}│", task_line);
+            println!("│ {task_line}│");
         }
 
         println!("│                                                                            │");
@@ -318,7 +321,7 @@ impl Reporter {
 
         for &pos in &positions {
             let time_ms = (millis as f64 * pos as f64 / width as f64) as u128;
-            let marker = format!("{}ms", time_ms);
+            let marker = format!("{time_ms}ms");
 
             // Add spacing
             if pos > last_end {

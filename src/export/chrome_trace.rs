@@ -1,9 +1,9 @@
 //! Chrome Trace Event Format exporter
 //!
-//! Exports async-inspect data to Chrome Trace Event Format for viewing in chrome://tracing
+//! Exports async-inspect data to Chrome Trace Event Format for viewing in <chrome://tracing>
 //! or compatible tools like Perfetto UI.
 //!
-//! Format specification: https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU/
+//! Format specification: <https://docs.google.com/document/d/1CvAClvFfyA5R-PhYUmn5OOQtYMH4h6I0nSsKchNAySU>/
 
 use crate::inspector::Inspector;
 use crate::timeline::EventKind;
@@ -46,6 +46,7 @@ pub struct TraceEvent {
 
 impl TraceEvent {
     /// Create a complete event (X) with duration
+    #[must_use] 
     pub fn complete(
         name: String,
         cat: &str,
@@ -67,6 +68,7 @@ impl TraceEvent {
     }
 
     /// Create an instant event (i)
+    #[must_use] 
     pub fn instant(
         name: String,
         cat: &str,
@@ -87,6 +89,7 @@ impl TraceEvent {
     }
 
     /// Create a metadata event (M) for thread name
+    #[must_use] 
     pub fn thread_name(tid: u64, name: String) -> Self {
         Self {
             name: "thread_name".to_string(),
@@ -101,6 +104,7 @@ impl TraceEvent {
     }
 
     /// Create a metadata event (M) for process name
+    #[must_use] 
     pub fn process_name(name: String) -> Self {
         Self {
             name: "process_name".to_string(),
@@ -170,9 +174,7 @@ impl ChromeTraceExporter {
         // Get timeline baseline (earliest event timestamp)
         let events = inspector.get_events();
         let baseline = events
-            .first()
-            .map(|e| e.timestamp)
-            .unwrap_or_else(Instant::now);
+            .first().map_or_else(Instant::now, |e| e.timestamp);
 
         // Track task names for thread metadata
         let mut task_names = std::collections::HashMap::new();
@@ -201,7 +203,7 @@ impl ChromeTraceExporter {
 
                     // Add instant event for task spawn
                     document.trace_events.push(TraceEvent::instant(
-                        format!("spawn: {}", name),
+                        format!("spawn: {name}"),
                         "task",
                         ts_us,
                         task_id,
@@ -264,7 +266,7 @@ impl ChromeTraceExporter {
                     let task_name = task_names
                         .get(&task_id)
                         .cloned()
-                        .unwrap_or_else(|| format!("task_{}", task_id));
+                        .unwrap_or_else(|| format!("task_{task_id}"));
 
                     document.trace_events.push(TraceEvent::complete(
                         task_name,

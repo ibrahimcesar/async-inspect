@@ -163,7 +163,7 @@ impl<F: Future> InspectExt for F {}
 
 /// Spawn a local task with automatic tracking (for !Send futures)
 ///
-/// This is similar to `spawn_tracked` but for `!Send` futures on a LocalSet.
+/// This is similar to `spawn_tracked` but for `!Send` futures on a `LocalSet`.
 ///
 /// # Examples
 ///

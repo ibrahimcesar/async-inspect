@@ -77,6 +77,7 @@ impl Config {
     }
 
     /// Get current sampling rate
+    #[must_use] 
     pub fn sampling_rate(&self) -> usize {
         self.inner.sampling_rate.load(Ordering::Relaxed)
     }
@@ -87,6 +88,7 @@ impl Config {
     }
 
     /// Get maximum number of events
+    #[must_use] 
     pub fn max_events(&self) -> usize {
         self.inner.max_events.load(Ordering::Relaxed)
     }
@@ -97,6 +99,7 @@ impl Config {
     }
 
     /// Get maximum number of tasks
+    #[must_use] 
     pub fn max_tasks(&self) -> usize {
         self.inner.max_tasks.load(Ordering::Relaxed)
     }
@@ -105,10 +108,11 @@ impl Config {
     pub fn set_track_awaits(&self, enabled: bool) {
         self.inner
             .track_awaits
-            .store(enabled as usize, Ordering::Relaxed);
+            .store(usize::from(enabled), Ordering::Relaxed);
     }
 
     /// Check if await tracking is enabled
+    #[must_use] 
     pub fn track_awaits(&self) -> bool {
         self.inner.track_awaits.load(Ordering::Relaxed) != 0
     }
@@ -117,10 +121,11 @@ impl Config {
     pub fn set_track_polls(&self, enabled: bool) {
         self.inner
             .track_polls
-            .store(enabled as usize, Ordering::Relaxed);
+            .store(usize::from(enabled), Ordering::Relaxed);
     }
 
     /// Check if poll tracking is enabled
+    #[must_use] 
     pub fn track_polls(&self) -> bool {
         self.inner.track_polls.load(Ordering::Relaxed) != 0
     }
@@ -129,15 +134,17 @@ impl Config {
     pub fn set_enable_html(&self, enabled: bool) {
         self.inner
             .enable_html
-            .store(enabled as usize, Ordering::Relaxed);
+            .store(usize::from(enabled), Ordering::Relaxed);
     }
 
     /// Check if HTML reports are enabled
+    #[must_use] 
     pub fn enable_html(&self) -> bool {
         self.inner.enable_html.load(Ordering::Relaxed) != 0
     }
 
     /// Decide whether to sample this task
+    #[must_use] 
     pub fn should_sample(&self) -> bool {
         let rate = self.sampling_rate();
         if rate <= 1 {
@@ -157,16 +164,19 @@ impl Config {
     }
 
     /// Get total overhead in nanoseconds
+    #[must_use] 
     pub fn total_overhead_ns(&self) -> u64 {
         self.inner.overhead_ns.load(Ordering::Relaxed)
     }
 
     /// Get total instrumentation calls
+    #[must_use] 
     pub fn instrumentation_calls(&self) -> u64 {
         self.inner.instrumentation_calls.load(Ordering::Relaxed)
     }
 
     /// Get average overhead per call in nanoseconds
+    #[must_use] 
     pub fn avg_overhead_ns(&self) -> f64 {
         let calls = self.instrumentation_calls();
         if calls == 0 {
@@ -203,6 +213,7 @@ impl Config {
     }
 
     /// Get overhead statistics
+    #[must_use] 
     pub fn overhead_stats(&self) -> OverheadStats {
         OverheadStats {
             total_ns: self.total_overhead_ns(),
@@ -239,11 +250,13 @@ pub struct OverheadStats {
 
 impl OverheadStats {
     /// Get total overhead in milliseconds
+    #[must_use] 
     pub fn total_ms(&self) -> f64 {
         self.total_ns as f64 / 1_000_000.0
     }
 
     /// Get average overhead in microseconds
+    #[must_use] 
     pub fn avg_us(&self) -> f64 {
         self.avg_ns / 1_000.0
     }

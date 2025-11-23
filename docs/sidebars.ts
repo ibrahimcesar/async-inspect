@@ -31,6 +31,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'cli-usage',
         'examples',
+        'visualization',
       ],
     },
     {
