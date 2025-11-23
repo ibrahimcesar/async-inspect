@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **State Machine Introspection (Phase 3)**: `#[async_inspect::trace]` proc macro for automatic .await point instrumentation
+  - Procedural macro in `async-inspect-macros` crate using `syn` and `quote`
+  - Automatic sequential labeling of await points (await#1, await#2, etc.)
+  - AST transformation that preserves semantics and error propagation
+  - Source location tracking (file, line, column)
+  - Automatic task registration and cleanup
+  - Full integration with existing Inspector infrastructure
+  - Working example: `examples/proc_macro_test.rs` (16 tasks, 74 events tracked)
+- **Deadlock Detection Integration (Phase 5)**: Full integration with Inspector
+  - Added `deadlock_detector()` method to Inspector for global access
+  - DFS-based cycle detection in wait-for graphs
+  - Resource tracking (Mutex, RwLock, Semaphore, Channel)
+  - Human-readable cycle descriptions with actionable suggestions
+  - Working example: `examples/deadlock_detection.rs`
 - GNU Terry Pratchett `X-Clacks-Overhead` header to documentation site
 - Comprehensive CI/CD workflows with multi-platform testing
 - GitHub Actions workflow for automated releases
