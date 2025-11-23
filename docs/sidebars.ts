@@ -30,6 +30,7 @@ const sidebars: SidebarsConfig = {
       label: 'Usage',
       items: [
         'cli-usage',
+        'tui-monitor',
         'examples',
         'visualization',
       ],

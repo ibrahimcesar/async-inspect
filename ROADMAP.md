@@ -551,21 +551,38 @@ FlamegraphBuilder::new()
 
 ---
 
-### **Phase 7: Enhanced TUI** ⏳ (Basic Complete, Enhancements Needed)
+### **Phase 7: Enhanced TUI** ✅ (Complete)
 
 **Priority:** 🟡 MEDIUM
-**Estimated Effort:** 1 week
 **Complexity:** ⭐⭐ Easy
 
-**Current Status:** Basic TUI exists, needs enhancements.
+**Status:** ✅ COMPLETE - All major enhancements implemented
 
-**Remaining Tasks:**
-- [ ] Dependency graph view
-- [ ] Enhanced filtering and search
-- [ ] Mouse support
-- [ ] Export from TUI
-- [ ] Help screens
-- [ ] Keyboard shortcut customization
+**Completed Features:**
+- ✅ Dependency graph view ([src/tui/mod.rs](src/tui/mod.rs))
+  - Hierarchical tree structure showing parent-child relationships
+  - Toggle with `v` key between list and graph views
+- ✅ Enhanced filtering and search
+  - Real-time search with `/` key
+  - Filter by task name or ID
+  - Combined with state filters
+- ✅ Mouse support
+  - Scroll wheel navigation
+  - Event handling for mouse interactions
+- ✅ Export from TUI
+  - Press `e` to export to multiple formats (JSON, CSV, Chrome Trace)
+  - Exports to `tui_exports/` directory
+- ✅ Enhanced help screens
+  - Comprehensive help with `h` or `?`
+  - Categorized shortcuts (Navigation, View, Search & Export)
+  - View mode indicators
+- ✅ Documentation ([docs/content/tui-monitor.md](docs/content/tui-monitor.md))
+  - Complete TUI guide with screenshots
+  - Keyboard shortcuts reference
+  - Tips & tricks section
+
+**Deferred:**
+- [ ] Keyboard shortcut customization (requires config file system)
 
 ---
 

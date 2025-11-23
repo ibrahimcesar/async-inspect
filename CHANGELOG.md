@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Enhanced TUI (Phase 7)**: Powerful interactive terminal interface with advanced features
+  - Dependency graph view showing parent-child task relationships (toggle with `v`)
+  - Real-time search functionality (activate with `/`, filter by name or ID)
+  - Mouse support for scroll wheel navigation
+  - Direct export from TUI (press `e` for JSON, CSV, Chrome Trace)
+  - Enhanced help screen with categorized shortcuts
+  - View mode indicators and improved UI layout
+  - Module: `src/tui/mod.rs` (~850 lines)
+  - Documentation: `docs/content/tui-monitor.md` (complete guide)
+  - Updated example: `examples/tui_monitor.rs` showcasing new features
+  - Deferred: Keyboard shortcut customization (requires config file system)
 - **Visualization & Export (Phase 4 @ 80%)**: Industry-standard format compatibility
   - Chrome Trace Event Format exporter for chrome://tracing and Perfetto UI
   - Flamegraph folded stack format for inferno/speedscope/flamegraph.pl

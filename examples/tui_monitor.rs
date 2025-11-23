@@ -107,8 +107,17 @@ async fn main() -> std::io::Result<()> {
     println!();
     println!("🎯 Starting background workload...");
     println!();
+    println!("New TUI Features:");
+    println!("  🔍 Search: Press / to search tasks by name or ID");
+    println!("  📊 Views: Press v to toggle between List and Dependency Graph");
+    println!("  📤 Export: Press e to export data to tui_exports/");
+    println!("  🖱️  Mouse: Use scroll wheel to navigate");
+    println!();
     println!("Keyboard shortcuts:");
     println!("  [q]     Quit");
+    println!("  [v]     Toggle view (List/Graph)");
+    println!("  [/]     Activate search");
+    println!("  [e]     Export data");
     println!("  [s]     Cycle sort mode");
     println!("  [f]     Cycle filter mode");
     println!("  [↑↓]    Navigate tasks");
