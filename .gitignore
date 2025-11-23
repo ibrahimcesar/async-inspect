@@ -44,4 +44,13 @@ task_hierarchy_report.html
 *_export.json
 *_trace.json
 ecosystem_trace.json
-production_export.jsonasync_inspect_exports/
+production_export.json
+
+# CSV exports from examples/tests
+production_events.csv
+production_tasks.csv
+*_events.csv
+*_tasks.csv
+
+# Export directories
+async_inspect_exports/
