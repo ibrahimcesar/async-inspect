@@ -1,7 +1,13 @@
 //! Export functionality for various formats
 //!
 //! This module provides exporters for task data in industry-standard formats
-//! like JSON, CSV, and others.
+//! like JSON, CSV, Chrome Trace Event Format, flamegraphs, and others.
+
+pub mod chrome_trace;
+pub mod flamegraph;
+
+pub use chrome_trace::ChromeTraceExporter;
+pub use flamegraph::{FlamegraphBuilder, FlamegraphExporter};
 
 use crate::inspector::Inspector;
 use crate::task::TaskInfo;

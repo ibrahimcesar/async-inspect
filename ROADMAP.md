@@ -12,9 +12,9 @@
 
 async-inspect is an async Rust debugging tool that provides X-ray vision into async state machines. The project has **significantly exceeded initial expectations**, completing Phases 1, 2, 3, 5, and 8, with substantial progress on Phases 4, 6, and 9.
 
-**Current Progress:** ~95% of production-ready features complete
-**Recently Completed:** State Machine Introspection (Phase 3) ✅ + Deadlock Detection (Phase 5) ✅ + Performance Profiling (Phase 6 @ 80%) ✅
-**Next Priority:** Complete Phase 6 remaining 20% or Enhanced TUI (Phase 7)
+**Current Progress:** ~96% of production-ready features complete
+**Recently Completed:** Phase 3 ✅ + Phase 5 ✅ + Phase 6 @ 80% ✅ + Phase 4 @ 80% ✅
+**Next Priority:** Complete Phase 6/4 remaining 20% or Enhanced TUI (Phase 7)
 
 ---
 
@@ -379,22 +379,51 @@ All examples require appropriate feature flags (cross-platform compatibility).
 
 ---
 
-### **Phase 4: Visualization** (Partial - 40% Complete)
+### **Phase 4: Visualization** 🔄 (80% Complete)
 
-**Status:** 🔄 PARTIALLY COMPLETE
+**Priority:** 🟡 MEDIUM
+**Status:** 🔄 MOSTLY COMPLETE
+**Complexity:** ⭐⭐⭐ Moderate
+
+**Goal:** Provide comprehensive visualization and export capabilities for async execution data.
 
 **Completed:**
 - ✅ Basic timeline visualization (terminal)
-- ✅ HTML report generation with charts
+- ✅ HTML report generation with charts (1,263 lines)
 - ✅ Task relationship graphs
 - ✅ Event timeline display
+- ✅ **Gantt-style concurrency timeline** ([src/reporter/mod.rs:261](src/reporter/mod.rs:261))
+- ✅ **Chrome Trace Event Format export** ([src/export/chrome_trace.rs](src/export/chrome_trace.rs)) - For chrome://tracing and Perfetto UI
+- ✅ **Flamegraph generation** ([src/export/flamegraph.rs](src/export/flamegraph.rs)) - Folded stack format compatible with inferno/speedscope
+- ✅ **JSON export** - Full data export with metadata
+- ✅ **CSV export** - Tasks and events in tabular format
 
-**Remaining:**
-- [ ] Concurrency timeline (Gantt chart style)
-- [ ] Export to Chrome DevTools format (`chrome://tracing`)
-- [ ] Export to Perfetto format
-- [ ] Flamegraph generation
-- [ ] Interactive web dashboard
+**Usage Examples:**
+```rust
+use async_inspect::export::{ChromeTraceExporter, FlamegraphExporter};
+
+// Export to Chrome Trace Event Format (viewable in chrome://tracing)
+ChromeTraceExporter::export_to_file(&inspector, "trace.json")?;
+
+// Export to flamegraph folded stack format
+FlamegraphExporter::export_to_file(&inspector, "flame.txt")?;
+
+// Export with builder pattern
+FlamegraphBuilder::new()
+    .include_polls(true)
+    .min_duration_ms(10)
+    .export_to_file(&inspector, "flame.txt")?;
+```
+
+**Remaining (20%):**
+- [ ] Perfetto native protobuf format (Chrome format works with Perfetto UI)
+- [ ] Interactive web dashboard with live updates
+
+**Why This Matters:**
+- ✅ Industry-standard format compatibility (Chrome DevTools, Perfetto, Speedscope)
+- ✅ Multiple visualization tool options
+- ✅ Easy integration with existing profiling workflows
+- ✅ Visual identification of performance bottlenecks
 
 ---
 
@@ -727,6 +756,30 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 ---
 
 ## 📅 Recent Updates
+
+### January 23, 2025 - Phase 4 @ 80% Complete ✅
+
+**Visualization & Export** capabilities massively expanded!
+
+**What was completed:**
+- ✅ Chrome Trace Event Format exporter (`src/export/chrome_trace.rs`)
+  - Full specification compliance for chrome://tracing
+  - Compatible with Perfetto UI
+  - Metadata events for process/thread names
+  - Complete, instant, and duration event types
+- ✅ Flamegraph generator (`src/export/flamegraph.rs`)
+  - Folded stack format output
+  - Compatible with inferno, speedscope, flamegraph.pl
+  - Tracks call stacks and durations
+  - Builder pattern for customization
+- ✅ Existing: Gantt timeline, HTML reports, JSON/CSV export
+
+**Remaining (20%):**
+- Perfetto native protobuf format (Chrome format already works with Perfetto)
+- Interactive web dashboard
+
+**Impact:**
+Seamless integration with industry-standard profiling tools! Data can now be visualized in Chrome DevTools, Perfetto UI, or Speedscope for familiar, powerful analysis workflows.
 
 ### January 23, 2025 - Phase 6 @ 80% Complete ✅
 

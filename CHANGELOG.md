@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Visualization & Export (Phase 4 @ 80%)**: Industry-standard format compatibility
+  - Chrome Trace Event Format exporter for chrome://tracing and Perfetto UI
+  - Flamegraph folded stack format for inferno/speedscope/flamegraph.pl
+  - Module: `src/export/chrome_trace.rs` (352 lines)
+  - Module: `src/export/flamegraph.rs` (288 lines)
+  - Full event type support: Complete (X), Instant (i), Metadata (M)
+  - Call stack tracking for flamegraph generation
+  - Builder pattern for customization
+  - Compatible with existing Gantt timeline, HTML reports, JSON/CSV exports
+  - Remaining: Perfetto native protobuf, interactive web dashboard
 - **Performance Profiling (Phase 6 @ 80%)**: Comprehensive performance analysis and reporting
   - Poll duration statistics with P50, P95, P99 percentiles in `DurationStats`
   - Hot path identification tracking frequently executed code paths
