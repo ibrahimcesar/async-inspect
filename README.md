@@ -4,7 +4,15 @@
 
 _X-ray vision for async Rust_
 
+[![CI](https://github.com/ibrahimcesar/async-inspect/actions/workflows/ci.yml/badge.svg)](https://github.com/ibrahimcesar/async-inspect/actions/workflows/ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/async-inspect.svg)](https://crates.io/crates/async-inspect)
+[![Documentation](https://docs.rs/async-inspect/badge.svg)](https://docs.rs/async-inspect)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![codecov](https://codecov.io/gh/ibrahimcesar/async-inspect/branch/main/graph/badge.svg)](https://codecov.io/gh/ibrahimcesar/async-inspect)
+
 **async-inspect** is a debugging tool that visualizes and inspects async state machines in Rust. See exactly what your futures are doing, where they're stuck, and why.
+
+[Documentation](https://ibrahimcesar.github.io/async-inspect/) | [Crates.io](https://crates.io/crates/async-inspect) | [API Docs](https://docs.rs/async-inspect)
 
 </div>
 
