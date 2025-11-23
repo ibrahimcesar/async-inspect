@@ -56,7 +56,7 @@ tracing-subscriber = { version = "0.3", optional = true }
 
 # Ecosystem integrations (optional)
 prometheus = { version = "0.13", optional = true }
-opentelemetry = { version = "0.21", optional = true }
+opentelemetry = { version = "0.31", optional = true }
 opentelemetry_sdk = { version = "0.21", optional = true }
 
 # Flamegraph generation (optional)
