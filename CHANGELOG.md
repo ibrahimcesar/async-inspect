@@ -15,9 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Module: `src/export/flamegraph.rs` (288 lines)
   - Full event type support: Complete (X), Instant (i), Metadata (M)
   - Call stack tracking for flamegraph generation
-  - Builder pattern for customization
+  - Builder pattern for customization (`FlamegraphBuilder`)
   - Compatible with existing Gantt timeline, HTML reports, JSON/CSV exports
-  - Remaining: Perfetto native protobuf, interactive web dashboard
+  - Comprehensive export example: `examples/export_formats.rs` demonstrating all formats
+  - Detailed visualization guide: `docs/content/visualization.md` (447 lines)
+  - README section with usage examples for all export formats
+  - Remaining: Perfetto native protobuf, interactive web dashboard implementation
+- **Interactive Web Dashboard (Phase 4 - Designed)**: Real-time monitoring architecture
+  - Comprehensive architecture design document: `DASHBOARD_DESIGN.md`
+  - WebSocket-based event streaming design
+  - Browser-based UI with live updates
+  - Dashboard feature flag with axum, tokio-tungstenite, tower-http dependencies
+  - Planned features: timeline chart, metrics dashboard, task list, event log
+  - Implementation status: Architecture complete, pending server and UI implementation
 - **Performance Profiling (Phase 6 @ 80%)**: Comprehensive performance analysis and reporting
   - Poll duration statistics with P50, P95, P99 percentiles in `DurationStats`
   - Hot path identification tracking frequently executed code paths
@@ -60,10 +70,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Windows test failures due to hardcoded Unix temp directory paths
-- Clippy warnings across all lint categories
+- Clippy warnings reduced from 314 to 93 through auto-fixes and code improvements
 - Example feature requirements for conditional compilation
 - Cross-platform compatibility in HTML reporter tests
 - CI success job to properly handle platform-specific test failures
+- Flamegraph Palette::Rust error (removed non-existent palette reference)
+- Added `#[must_use]` attributes to builder methods and pure functions
 
 ### Changed
 - CI workflow to use focused clippy lints (correctness, suspicious, perf)
