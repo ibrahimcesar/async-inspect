@@ -19,7 +19,7 @@ jobs:
     name: Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -50,7 +50,7 @@ jobs:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -65,7 +65,7 @@ jobs:
     name: Clippy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -100,7 +100,7 @@ jobs:
           - os: windows-latest
             rust: beta
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@master
@@ -131,7 +131,7 @@ jobs:
     name: Test Examples
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -168,7 +168,7 @@ jobs:
     name: Documentation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -192,7 +192,7 @@ jobs:
     name: Feature Combinations
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -217,7 +217,7 @@ jobs:
     name: MSRV (Rust 1.70)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust 1.70
         uses: dtolnay/rust-toolchain@master
@@ -245,7 +245,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
@@ -262,7 +262,7 @@ jobs:
       contents: read
       security-events: write  # For SARIF upload
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run cargo-audit
         uses: actions-rs/audit-check@v1
@@ -283,7 +283,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
