@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Runtime Support**: Multi-runtime compatibility for broader ecosystem support
+  - async-std runtime integration with `async-std-runtime` feature flag
+  - smol runtime integration with `smol-runtime` feature flag
+  - `spawn_tracked()` function for both runtimes
+  - `InspectExt` trait adding `.inspect()` method to all futures
+  - Modules: `src/runtime/async_std.rs` (237 lines), `src/runtime/smol.rs` (199 lines)
+  - Examples: `examples/async_std_integration.rs`, `examples/smol_integration.rs`
+  - Full feature parity with existing Tokio integration
+  - Documentation updated in README.md and ROADMAP.md
 - **Enhanced TUI (Phase 7)**: Powerful interactive terminal interface with advanced features
   - Dependency graph view showing parent-child task relationships (toggle with `v`)
   - Real-time search functionality (activate with `/`, filter by name or ID)

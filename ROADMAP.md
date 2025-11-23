@@ -476,9 +476,13 @@ FlamegraphBuilder::new()
    - Inline performance annotations
    - See: Extension documentation in vscode-extension/README.md
 
+8. **Runtime Support** ✅ (Complete)
+   - ✅ async-std integration ([src/runtime/async_std.rs](src/runtime/async_std.rs))
+   - ✅ smol integration ([src/runtime/smol.rs](src/runtime/smol.rs))
+   - ✅ spawn_tracked and InspectExt trait for both runtimes
+   - ✅ Examples: [examples/async_std_integration.rs](examples/async_std_integration.rs), [examples/smol_integration.rs](examples/smol_integration.rs)
+
 **Remaining:**
-- [ ] async-std runtime support
-- [ ] smol runtime support
 - [ ] IntelliJ IDEA plugin
 - [ ] Language Server Protocol (LSP) integration
 - [ ] Cloud deployment monitoring

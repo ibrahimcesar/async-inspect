@@ -194,6 +194,56 @@ Task    Duration    Polls   State
 
 Use both together for complete visibility!
 
+### Runtime Support
+
+**async-inspect** works with multiple async runtimes:
+
+- ✅ **Tokio** - Full support with `tokio` feature
+- ✅ **async-std** - Full support with `async-std-runtime` feature
+- ✅ **smol** - Full support with `smol-runtime` feature
+
+Example usage with different runtimes:
+
+```rust
+// Tokio
+use async_inspect::runtime::tokio::{spawn_tracked, InspectExt};
+
+#[tokio::main]
+async fn main() {
+    spawn_tracked("my_task", async {
+        // Your code here
+    }).await;
+
+    let result = fetch_data()
+        .inspect("fetch_data")
+        .await;
+}
+
+// async-std
+use async_inspect::runtime::async_std::{spawn_tracked, InspectExt};
+
+fn main() {
+    async_std::task::block_on(async {
+        spawn_tracked("my_task", async {
+            // Your code here
+        }).await;
+    });
+}
+
+// smol
+use async_inspect::runtime::smol::{spawn_tracked, InspectExt};
+
+fn main() {
+    smol::block_on(async {
+        spawn_tracked("my_task", async {
+            // Your code here
+        }).await;
+    });
+}
+```
+
+See the [examples/](https://github.com/ibrahimcesar/async-inspect/tree/main/examples) directory for complete working examples.
+
 ---
 
 ## ✨ Features (Planned)
