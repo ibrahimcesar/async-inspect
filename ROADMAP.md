@@ -491,10 +491,10 @@ FlamegraphBuilder::new()
 
 ## 📋 Remaining Work
 
-### **Phase 6: Performance Profiling** 🔄 (80% Complete)
+### **Phase 6: Performance Profiling** ✅ (Complete)
 
 **Priority:** 🟡 MEDIUM
-**Status:** 🔄 MOSTLY COMPLETE
+**Status:** ✅ COMPLETE
 **Complexity:** ⭐⭐⭐ Moderate
 
 **Goal:** Identify slow operations, hot paths, and lock contention.
@@ -507,12 +507,10 @@ FlamegraphBuilder::new()
 - ✅ Efficiency analysis - Task efficiency calculation (running/total time ratio)
 - ✅ Busy task detection - Identifies tasks with excessive polls
 - ✅ Statistical analysis - Mean, median, std dev, min/max
-- ✅ Working example: `examples/performance_analysis.rs`
-
-**Remaining:**
-- [ ] Lock contention metrics (data available via DeadlockDetector, needs integration)
-- [ ] Comparison between runs (needs serialization)
-- [ ] Regression detection (needs comparison logic)
+- ✅ **Lock contention metrics** - `LockContentionMetrics` with full tracking ([src/profile/mod.rs](src/profile/mod.rs:193-288))
+- ✅ **Performance comparison** - Compare snapshots between runs ([src/profile/comparison.rs](src/profile/comparison.rs))
+- ✅ **Regression detection** - Automatic detection of performance regressions with severity levels
+- ✅ Working examples: `examples/performance_analysis.rs`, `examples/performance_profiling.rs`
 
 **Real Output:**
 ```

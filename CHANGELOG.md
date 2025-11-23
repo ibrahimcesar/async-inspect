@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Performance Profiling (Phase 6 - Complete)**: Advanced profiling with lock contention and regression detection
+  - **Lock contention metrics** tracking resource contention with detailed statistics
+    * Contention rate calculation (contentions / acquisitions)
+    * Wait time tracking (total, average, maximum)
+    * Per-resource metrics with task tracking
+    * Automatic identification of highly contended locks
+    * Methods: `record_lock_wait()`, `record_lock_acquisition()`, `most_contended_locks()`
+  - **Performance snapshots** for serializable performance capture
+    * Complete task and lock metrics serialization to JSON
+    * Save/load snapshots for historical comparison
+    * Includes task stats, durations, and resource metrics
+  - **Performance comparison** between baseline and current runs
+    * Automatic calculation of performance deltas
+    * Task duration changes (mean, median, P95, P99)
+    * Lock contention rate changes
+    * Throughput comparison
+  - **Regression detection** with severity-based findings
+    * Critical (>50%), Major (20-50%), Minor (5-20%) severity levels
+    * Automatic status determination (Improved/Regressed/Similar/Mixed)
+    * Detailed findings with impact percentages
+    * `has_regressions()` and `get_regressions()` methods
+  - Module: `src/profile/comparison.rs` (468 lines)
+  - Updated: `src/profile/mod.rs` with `LockContentionMetrics` structure
+  - Example: `examples/performance_profiling.rs` demonstrating all features
+  - Documentation: Performance profiling complete in Phase 6
 - **Runtime Support**: Multi-runtime compatibility for broader ecosystem support
   - async-std runtime integration with `async-std-runtime` feature flag
   - smol runtime integration with `smol-runtime` feature flag

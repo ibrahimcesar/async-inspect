@@ -3,16 +3,19 @@
 //! This module provides tools for analyzing async task performance,
 //! identifying bottlenecks, and generating performance reports.
 
+pub mod comparison;
 pub mod reporter;
 
+use crate::deadlock::ResourceId;
 use crate::task::TaskId;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::time::Duration;
 
 pub use reporter::PerformanceReporter;
 
 /// Performance metrics for a single task
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TaskMetrics {
     /// Task ID
     pub task_id: TaskId,
@@ -80,7 +83,7 @@ impl TaskMetrics {
 }
 
 /// Statistical percentiles for durations
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DurationStats {
     /// Minimum duration
     pub min: Duration,
@@ -188,6 +191,103 @@ pub struct HotPath {
     pub avg_time: Duration,
 }
 
+/// Lock contention metrics for a specific resource
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LockContentionMetrics {
+    /// Resource ID
+    pub resource_id: ResourceId,
+
+    /// Resource name
+    pub name: String,
+
+    /// Number of acquire attempts
+    pub acquire_attempts: u64,
+
+    /// Number of successful acquisitions
+    pub successful_acquisitions: u64,
+
+    /// Number of times tasks had to wait
+    pub contention_count: u64,
+
+    /// Total time spent waiting for this lock
+    pub total_wait_time: Duration,
+
+    /// Average wait time per contention
+    pub avg_wait_time: Duration,
+
+    /// Maximum wait time observed
+    pub max_wait_time: Duration,
+
+    /// Tasks that waited for this resource
+    pub waiting_tasks: Vec<TaskId>,
+
+    /// Contention rate (contentions / acquisitions)
+    pub contention_rate: f64,
+}
+
+impl LockContentionMetrics {
+    /// Create new lock contention metrics
+    #[must_use]
+    pub fn new(resource_id: ResourceId, name: String) -> Self {
+        Self {
+            resource_id,
+            name,
+            acquire_attempts: 0,
+            successful_acquisitions: 0,
+            contention_count: 0,
+            total_wait_time: Duration::ZERO,
+            avg_wait_time: Duration::ZERO,
+            max_wait_time: Duration::ZERO,
+            waiting_tasks: Vec::new(),
+            contention_rate: 0.0,
+        }
+    }
+
+    /// Record a wait event
+    pub fn record_wait(&mut self, wait_time: Duration, task_id: TaskId) {
+        self.contention_count += 1;
+        self.total_wait_time += wait_time;
+
+        if wait_time > self.max_wait_time {
+            self.max_wait_time = wait_time;
+        }
+
+        if !self.waiting_tasks.contains(&task_id) {
+            self.waiting_tasks.push(task_id);
+        }
+
+        self.update_averages();
+    }
+
+    /// Record an acquisition
+    pub fn record_acquisition(&mut self) {
+        self.successful_acquisitions += 1;
+        self.update_averages();
+    }
+
+    /// Record an acquire attempt
+    pub fn record_attempt(&mut self) {
+        self.acquire_attempts += 1;
+    }
+
+    /// Update calculated averages
+    fn update_averages(&mut self) {
+        if self.contention_count > 0 {
+            self.avg_wait_time = self.total_wait_time / self.contention_count as u32;
+        }
+
+        if self.successful_acquisitions > 0 {
+            self.contention_rate = self.contention_count as f64 / self.successful_acquisitions as f64;
+        }
+    }
+
+    /// Check if this lock is highly contended
+    #[must_use]
+    pub fn is_highly_contended(&self, threshold: f64) -> bool {
+        self.contention_rate > threshold
+    }
+}
+
 /// Performance profiler
 pub struct Profiler {
     /// Metrics for each task
@@ -196,24 +296,96 @@ pub struct Profiler {
     /// Hot paths (frequently executed code paths)
     hot_paths: HashMap<String, HotPath>,
 
+    /// Lock contention metrics
+    lock_contention: HashMap<ResourceId, LockContentionMetrics>,
+
     /// Bottleneck threshold in milliseconds
     bottleneck_threshold: u64,
+
+    /// High contention threshold (default: 0.3 = 30% contention rate)
+    contention_threshold: f64,
 }
 
 impl Profiler {
     /// Create a new profiler
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             task_metrics: HashMap::new(),
             hot_paths: HashMap::new(),
+            lock_contention: HashMap::new(),
             bottleneck_threshold: 100, // 100ms default
+            contention_threshold: 0.3, // 30% contention rate
         }
     }
 
     /// Set bottleneck detection threshold
     pub fn set_bottleneck_threshold(&mut self, threshold_ms: u64) {
         self.bottleneck_threshold = threshold_ms;
+    }
+
+    /// Set contention threshold
+    pub fn set_contention_threshold(&mut self, threshold: f64) {
+        self.contention_threshold = threshold;
+    }
+
+    /// Record lock wait event
+    pub fn record_lock_wait(&mut self, resource_id: ResourceId, name: String, wait_time: Duration, task_id: TaskId) {
+        let metrics = self
+            .lock_contention
+            .entry(resource_id)
+            .or_insert_with(|| LockContentionMetrics::new(resource_id, name));
+
+        metrics.record_wait(wait_time, task_id);
+    }
+
+    /// Record lock acquisition
+    pub fn record_lock_acquisition(&mut self, resource_id: ResourceId, name: String) {
+        let metrics = self
+            .lock_contention
+            .entry(resource_id)
+            .or_insert_with(|| LockContentionMetrics::new(resource_id, name));
+
+        metrics.record_acquisition();
+    }
+
+    /// Record lock acquire attempt
+    pub fn record_lock_attempt(&mut self, resource_id: ResourceId, name: String) {
+        let metrics = self
+            .lock_contention
+            .entry(resource_id)
+            .or_insert_with(|| LockContentionMetrics::new(resource_id, name));
+
+        metrics.record_attempt();
+    }
+
+    /// Get lock contention metrics
+    #[must_use]
+    pub fn get_lock_metrics(&self, resource_id: &ResourceId) -> Option<&LockContentionMetrics> {
+        self.lock_contention.get(resource_id)
+    }
+
+    /// Get all lock contention metrics
+    #[must_use]
+    pub fn all_lock_metrics(&self) -> Vec<&LockContentionMetrics> {
+        self.lock_contention.values().collect()
+    }
+
+    /// Get most contended locks
+    #[must_use]
+    pub fn most_contended_locks(&self, count: usize) -> Vec<&LockContentionMetrics> {
+        let mut metrics: Vec<_> = self.lock_contention.values().collect();
+        metrics.sort_by(|a, b| b.contention_rate.partial_cmp(&a.contention_rate).unwrap_or(std::cmp::Ordering::Equal));
+        metrics.into_iter().take(count).collect()
+    }
+
+    /// Identify highly contended locks
+    #[must_use]
+    pub fn identify_highly_contended_locks(&self) -> Vec<&LockContentionMetrics> {
+        self.lock_contention
+            .values()
+            .filter(|m| m.is_highly_contended(self.contention_threshold))
+            .collect()
     }
 
     /// Record task metrics
@@ -307,7 +479,7 @@ impl Profiler {
     }
 
     /// Find least efficient tasks (high blocked time ratio)
-    #[must_use] 
+    #[must_use]
     pub fn least_efficient_tasks(&self, count: usize) -> Vec<&TaskMetrics> {
         let mut metrics: Vec<_> = self.task_metrics.values().collect();
         metrics.sort_by(|a, b| {
@@ -316,6 +488,41 @@ impl Profiler {
                 .unwrap_or(std::cmp::Ordering::Equal)
         });
         metrics.into_iter().take(count).collect()
+    }
+
+    /// Create a performance snapshot
+    #[must_use]
+    pub fn create_snapshot(&self, run_id: String) -> comparison::PerformanceSnapshot {
+        let task_stats = self.calculate_stats();
+        let task_metrics = self.task_metrics.values().cloned().collect();
+        let lock_metrics = self.lock_contention.values().cloned().collect();
+
+        let total_tasks = self.task_metrics.len();
+        let total_execution_time: Duration = self
+            .task_metrics
+            .values()
+            .map(|m| m.total_duration)
+            .sum();
+
+        let avg_task_duration = if total_tasks > 0 {
+            total_execution_time / total_tasks as u32
+        } else {
+            Duration::ZERO
+        };
+
+        comparison::PerformanceSnapshot {
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs(),
+            run_id,
+            task_stats,
+            task_metrics,
+            lock_metrics,
+            total_tasks,
+            avg_task_duration,
+            total_execution_time,
+        }
     }
 }
 
