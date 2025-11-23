@@ -1249,10 +1249,12 @@ mod tests {
         let inspector = Inspector::new();
         let reporter = HtmlReporter::new(inspector);
 
-        let temp_file = "/tmp/async_inspect_test.html";
-        reporter.save_to_file(temp_file).unwrap();
+        // Use cross-platform temp directory
+        let temp_dir = std::env::temp_dir();
+        let temp_file = temp_dir.join("async_inspect_test.html");
+        reporter.save_to_file(temp_file.to_str().unwrap()).unwrap();
 
-        let content = std::fs::read_to_string(temp_file).unwrap();
+        let content = std::fs::read_to_string(&temp_file).unwrap();
         assert!(content.contains("<!DOCTYPE html>"));
 
         // Cleanup
