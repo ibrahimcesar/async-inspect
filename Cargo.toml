@@ -55,7 +55,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", optional = true }
 
 # Ecosystem integrations (optional)
-prometheus = { version = "0.13", optional = true }
+prometheus = { version = "0.14", optional = true }
 opentelemetry = { version = "0.21", optional = true }
 opentelemetry_sdk = { version = "0.21", optional = true }
 
