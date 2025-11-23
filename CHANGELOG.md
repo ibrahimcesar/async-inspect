@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Performance Profiling (Phase 6 @ 80%)**: Comprehensive performance analysis and reporting
+  - Poll duration statistics with P50, P95, P99 percentiles in `DurationStats`
+  - Hot path identification tracking frequently executed code paths
+  - Slowest task detection and bottleneck identification
+  - Performance recommendations with actionable optimization suggestions
+  - Efficiency analysis (running time / total time ratio)
+  - Busy task detection for tasks with excessive polls
+  - Statistical analysis: mean, median, standard deviation, min/max
+  - Modules: `src/profile/mod.rs` and `src/profile/reporter.rs`
+  - Working example: `examples/performance_analysis.rs`
+  - Remaining: lock contention metrics integration, run comparisons, regression detection
 - **State Machine Introspection (Phase 3)**: `#[async_inspect::trace]` proc macro for automatic .await point instrumentation
   - Procedural macro in `async-inspect-macros` crate using `syn` and `quote`
   - Automatic sequential labeling of await points (await#1, await#2, etc.)

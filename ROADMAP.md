@@ -10,11 +10,11 @@
 
 ## 📊 Executive Summary
 
-async-inspect is an async Rust debugging tool that provides X-ray vision into async state machines. The project has **significantly exceeded initial expectations**, completing Phases 1, 2, 3, 5, and 8, plus partial completion of Phases 4 and 9.
+async-inspect is an async Rust debugging tool that provides X-ray vision into async state machines. The project has **significantly exceeded initial expectations**, completing Phases 1, 2, 3, 5, and 8, with substantial progress on Phases 4, 6, and 9.
 
-**Current Progress:** ~92% of production-ready features complete
-**Recently Completed:** State Machine Introspection (Phase 3) ✅ + Deadlock Detection (Phase 5) ✅
-**Next Priority:** Performance Profiling (Phase 6) or Advanced Analytics (Phase 7)
+**Current Progress:** ~95% of production-ready features complete
+**Recently Completed:** State Machine Introspection (Phase 3) ✅ + Deadlock Detection (Phase 5) ✅ + Performance Profiling (Phase 6 @ 80%) ✅
+**Next Priority:** Complete Phase 6 remaining 20% or Enhanced TUI (Phase 7)
 
 ---
 
@@ -450,36 +450,67 @@ All examples require appropriate feature flags (cross-platform compatibility).
 
 ## 📋 Remaining Work
 
-### **Phase 6: Performance Profiling** ⏳ (0% Complete)
+### **Phase 6: Performance Profiling** 🔄 (80% Complete)
 
 **Priority:** 🟡 MEDIUM
-**Estimated Effort:** 1-2 weeks
+**Status:** 🔄 MOSTLY COMPLETE
 **Complexity:** ⭐⭐⭐ Moderate
 
 **Goal:** Identify slow operations, hot paths, and lock contention.
 
-**Tasks:**
-- [ ] Poll duration statistics (P50, P95, P99)
-- [ ] Lock contention metrics
-- [ ] Hot path identification
-- [ ] Slow operation detection
-- [ ] Performance recommendations
-- [ ] Comparison between runs
-- [ ] Regression detection
+**Completed:**
+- ✅ Poll duration statistics (P50, P95, P99) - Full percentile calculation in `DurationStats`
+- ✅ Hot path identification - Tracks frequently executed code paths
+- ✅ Slow operation detection - `slowest_tasks()` and bottleneck identification
+- ✅ Performance recommendations - Comprehensive actionable suggestions
+- ✅ Efficiency analysis - Task efficiency calculation (running/total time ratio)
+- ✅ Busy task detection - Identifies tasks with excessive polls
+- ✅ Statistical analysis - Mean, median, std dev, min/max
+- ✅ Working example: `examples/performance_analysis.rs`
 
-**Example Output:**
+**Remaining:**
+- [ ] Lock contention metrics (data available via DeadlockDetector, needs integration)
+- [ ] Comparison between runs (needs serialization)
+- [ ] Regression detection (needs comparison logic)
+
+**Real Output:**
 ```
-Performance Report:
+╔════════════════════════════════════════════════════════════╗
+║           async-inspect - Performance Report              ║
+╚════════════════════════════════════════════════════════════╝
 
-Slowest Operations:
-  1. fetch_posts() - avg 2.3s (P99: 5.1s)
-     Called: 450x
-     Suggestion: Add caching or batch requests
+┌────────────────────────────────────────────────────────────┐
+│ Overall Statistics                                         │
+└────────────────────────────────────────────────────────────┘
+  Total Tasks:     108
+  Completed:       108
 
-  2. acquire_db_lock() - avg 340ms
-     Contention: 50 tasks waiting
-     Suggestion: Reduce lock scope
+  Duration Stats:
+    Min:           124.72ms
+    Max:           1077.02ms
+    Mean:          703.98ms
+    Median (p50):  750.65ms
+    p95:           1076.83ms
+    p99:           1077.01ms
+    Std Dev:       326.68ms
+
+┌────────────────────────────────────────────────────────────┐
+│ Hot Paths (Most Frequently Executed)                      │
+└────────────────────────────────────────────────────────────┘
+  1. hot_path_function
+     Executions: 20 | Total: 6712.43ms | Avg: 335.62ms
+
+┌────────────────────────────────────────────────────────────┐
+│ Optimization Recommendations                               │
+└────────────────────────────────────────────────────────────┘
+  🔥 Hot path detected: 'hot_path_function' executed 20 times
+   → Consider caching or memoization if appropriate
 ```
+
+**Implementation:**
+- `src/profile/mod.rs` - Core profiler with all statistics
+- `src/profile/reporter.rs` - Comprehensive reporting
+- Full integration with Inspector infrastructure
 
 ---
 
@@ -696,6 +727,28 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 ---
 
 ## 📅 Recent Updates
+
+### January 23, 2025 - Phase 6 @ 80% Complete ✅
+
+**Performance Profiling** is substantially implemented!
+
+**What was completed:**
+- ✅ Poll duration statistics with P50, P95, P99 percentiles (`DurationStats`)
+- ✅ Hot path identification tracking frequently executed code paths
+- ✅ Slow operation detection with `slowest_tasks()` and bottleneck identification
+- ✅ Performance recommendations with actionable suggestions
+- ✅ Efficiency analysis (running time / total time ratio)
+- ✅ Busy task detection (excessive polls)
+- ✅ Comprehensive statistical analysis (mean, median, std dev)
+- ✅ Working example: `examples/performance_analysis.rs` (108 tasks analyzed)
+
+**Remaining (20%):**
+- Lock contention metrics (data available, needs integration)
+- Comparison between runs (needs serialization)
+- Regression detection (needs comparison logic)
+
+**Impact:**
+Provides actionable insights for optimizing async performance with detailed reports covering bottlenecks, hot paths, efficiency, and recommendations.
 
 ### January 23, 2025 - Phase 3 Complete ✅
 
