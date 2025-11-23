@@ -32,3 +32,16 @@ Cargo.lock
 # Generated files
 /generated/
 .vscode/branch-timer.json
+
+# HTML reports from examples/tests
+*_report.html
+async_inspect_report.html
+performance_analysis_report.html
+proc_macro_test_report.html
+task_hierarchy_report.html
+
+# JSON exports from examples/tests
+*_export.json
+*_trace.json
+ecosystem_trace.json
+production_export.json
