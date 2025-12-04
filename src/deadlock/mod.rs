@@ -23,7 +23,7 @@ impl ResourceId {
     }
 
     /// Get the raw ID value
-    #[must_use] 
+    #[must_use]
     pub fn as_u64(&self) -> u64 {
         self.0
     }
@@ -92,7 +92,7 @@ pub struct ResourceInfo {
 
 impl ResourceInfo {
     /// Create a new resource info
-    #[must_use] 
+    #[must_use]
     pub fn new(kind: ResourceKind, name: String) -> Self {
         Self {
             id: ResourceId::new(),
@@ -105,20 +105,20 @@ impl ResourceInfo {
     }
 
     /// Set the memory address
-    #[must_use] 
+    #[must_use]
     pub fn with_address(mut self, address: usize) -> Self {
         self.address = Some(address);
         self
     }
 
     /// Check if resource is held
-    #[must_use] 
+    #[must_use]
     pub fn is_held(&self) -> bool {
         self.holder.is_some()
     }
 
     /// Check if resource has waiters
-    #[must_use] 
+    #[must_use]
     pub fn has_waiters(&self) -> bool {
         !self.waiters.is_empty()
     }
@@ -162,7 +162,7 @@ pub struct WaitEdge {
 
 impl DeadlockCycle {
     /// Get a human-readable description of the cycle
-    #[must_use] 
+    #[must_use]
     pub fn describe(&self) -> String {
         let mut desc = String::from("Deadlock cycle detected:\n");
 
@@ -206,7 +206,7 @@ struct DetectorState {
 
 impl DeadlockDetector {
     /// Create a new deadlock detector
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             state: Arc::new(RwLock::new(DetectorState {
@@ -228,13 +228,13 @@ impl DeadlockDetector {
     }
 
     /// Check if detection is enabled
-    #[must_use] 
+    #[must_use]
     pub fn is_enabled(&self) -> bool {
         self.state.read().enabled
     }
 
     /// Register a new resource
-    #[must_use] 
+    #[must_use]
     pub fn register_resource(&self, info: ResourceInfo) -> ResourceId {
         if !self.is_enabled() {
             return info.id;
@@ -298,7 +298,7 @@ impl DeadlockDetector {
     }
 
     /// Detect deadlocks using cycle detection
-    #[must_use] 
+    #[must_use]
     pub fn detect_deadlocks(&self) -> Vec<DeadlockCycle> {
         let state = self.state.read();
 
@@ -413,13 +413,13 @@ impl DeadlockDetector {
     }
 
     /// Get all resources
-    #[must_use] 
+    #[must_use]
     pub fn get_resources(&self) -> Vec<ResourceInfo> {
         self.state.read().resources.values().cloned().collect()
     }
 
     /// Get a specific resource
-    #[must_use] 
+    #[must_use]
     pub fn get_resource(&self, id: ResourceId) -> Option<ResourceInfo> {
         self.state.read().resources.get(&id).cloned()
     }

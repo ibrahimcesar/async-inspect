@@ -5,13 +5,20 @@
 
 use async_inspect::deadlock::{DeadlockDetector, ResourceInfo, ResourceKind};
 use async_inspect::task::TaskId;
+use colored::Colorize;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::Mutex;
 
 /// Simulated deadlock scenario: Classic dining philosophers problem (simplified)
 async fn deadlock_scenario_1() {
-    println!("=== Scenario 1: Classic Mutex Deadlock ===\n");
+    println!(
+        "{}",
+        "=== Scenario 1: Classic Mutex Deadlock ==="
+            .bright_yellow()
+            .bold()
+    );
+    println!();
 
     let detector = DeadlockDetector::new();
 
@@ -28,8 +35,8 @@ async fn deadlock_scenario_1() {
     let res_a_id = res_a.id;
     let res_b_id = res_b.id;
 
-    detector.register_resource(res_a);
-    detector.register_resource(res_b);
+    let _ = detector.register_resource(res_a);
+    let _ = detector.register_resource(res_b);
 
     // Spawn task 1: locks A then tries to lock B
     let task1_id = TaskId::new();
@@ -81,14 +88,20 @@ async fn deadlock_scenario_1() {
     tokio::time::sleep(Duration::from_millis(200)).await;
 
     // Detect deadlocks
-    println!("\n🔍 Checking for deadlocks...\n");
+    println!("\n{}\n", "[*] Checking for deadlocks...".bright_cyan());
     let deadlocks = detector.detect_deadlocks();
 
     if deadlocks.is_empty() {
-        println!("✅ No deadlocks detected");
+        println!("{}", "[OK] No deadlocks detected".on_green().white().bold());
     } else {
         for (i, cycle) in deadlocks.iter().enumerate() {
-            println!("💀 Deadlock #{} detected!", i + 1);
+            println!(
+                "{}",
+                format!("[FAIL] Deadlock #{} detected!", i + 1)
+                    .on_red()
+                    .white()
+                    .bold()
+            );
             println!("{}", cycle.describe());
             println!();
 
@@ -102,10 +115,22 @@ async fn deadlock_scenario_1() {
             println!();
         }
 
-        println!("📋 Suggestions:");
-        println!("  • Acquire locks in consistent order (always A before B)");
-        println!("  • Use try_lock() with timeout");
-        println!("  • Consider lock-free data structures");
+        println!("{}", "[*] Suggestions:".on_yellow().white().bold());
+        println!(
+            "  {} {}",
+            "•".bright_yellow(),
+            "Acquire locks in consistent order (always A before B)".bright_white()
+        );
+        println!(
+            "  {} {}",
+            "•".bright_yellow(),
+            "Use try_lock() with timeout".bright_white()
+        );
+        println!(
+            "  {} {}",
+            "•".bright_yellow(),
+            "Consider lock-free data structures".bright_white()
+        );
     }
 
     // Abort tasks (they're deadlocked)
@@ -117,7 +142,13 @@ async fn deadlock_scenario_1() {
 
 /// Scenario 2: No deadlock (proper lock ordering)
 async fn no_deadlock_scenario() {
-    println!("=== Scenario 2: Proper Lock Ordering (No Deadlock) ===\n");
+    println!(
+        "{}",
+        "=== Scenario 2: Proper Lock Ordering (No Deadlock) ==="
+            .bright_yellow()
+            .bold()
+    );
+    println!();
 
     let detector = DeadlockDetector::new();
 
@@ -130,8 +161,8 @@ async fn no_deadlock_scenario() {
     let res_a_id = res_a.id;
     let res_b_id = res_b.id;
 
-    detector.register_resource(res_a);
-    detector.register_resource(res_b);
+    let _ = detector.register_resource(res_a);
+    let _ = detector.register_resource(res_b);
 
     // Both tasks acquire locks in the SAME order: A then B
     let tasks: Vec<_> = (1..=3)
@@ -172,13 +203,25 @@ async fn no_deadlock_scenario() {
     }
 
     // Check for deadlocks
-    println!("\n🔍 Checking for deadlocks...\n");
+    println!("\n{}\n", "[*] Checking for deadlocks...".bright_cyan());
     let deadlocks = detector.detect_deadlocks();
 
     if deadlocks.is_empty() {
-        println!("✅ No deadlocks detected - all tasks completed successfully!");
+        println!(
+            "{}",
+            "[OK] No deadlocks detected - all tasks completed successfully!"
+                .on_green()
+                .white()
+                .bold()
+        );
     } else {
-        println!("💀 Unexpected deadlock detected!");
+        println!(
+            "{}",
+            "[FAIL] Unexpected deadlock detected!"
+                .on_red()
+                .white()
+                .bold()
+        );
     }
 
     println!();
@@ -186,7 +229,8 @@ async fn no_deadlock_scenario() {
 
 #[tokio::main]
 async fn main() {
-    println!("🔍 async-inspect - Deadlock Detection Example");
+    println!("{}", "[async-inspect]".on_purple().white().bold());
+    println!("{}", "Deadlock Detection Example".bright_blue());
     println!("===============================================\n");
 
     // Scenario 1: Demonstrate deadlock detection
@@ -195,11 +239,35 @@ async fn main() {
     // Scenario 2: Show proper lock ordering
     no_deadlock_scenario().await;
 
-    println!("=== Summary ===\n");
-    println!("async-inspect successfully:");
-    println!("  ✅ Detected circular dependencies");
-    println!("  ✅ Identified involved tasks and resources");
-    println!("  ✅ Generated actionable suggestions");
-    println!("\nDeadlock detection helps you find and fix");
-    println!("circular wait conditions before they reach production!");
+    println!("{}", "=== Summary ===".bright_yellow().bold());
+    println!();
+    println!(
+        "{} {}",
+        "[async-inspect]".on_purple().white().bold(),
+        "successfully:".bright_white().bold()
+    );
+    println!(
+        "  {} {}",
+        "[OK]".on_green().white().bold(),
+        "Detected circular dependencies".bright_white()
+    );
+    println!(
+        "  {} {}",
+        "[OK]".on_green().white().bold(),
+        "Identified involved tasks and resources".bright_white()
+    );
+    println!(
+        "  {} {}",
+        "[OK]".on_green().white().bold(),
+        "Generated actionable suggestions".bright_white()
+    );
+    println!();
+    println!(
+        "{}",
+        "Deadlock detection helps you find and fix".bright_cyan()
+    );
+    println!(
+        "{}",
+        "circular wait conditions before they reach production!".bright_cyan()
+    );
 }

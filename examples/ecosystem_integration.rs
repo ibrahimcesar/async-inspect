@@ -15,6 +15,7 @@
 
 use async_inspect::prelude::*;
 use async_inspect::runtime::tokio::spawn_tracked;
+use colored::Colorize;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -63,13 +64,16 @@ async fn orchestrator(count: u32) {
 #[tokio::main]
 async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     println!("╔════════════════════════════════════════════════════════════╗");
-    println!("║  async-inspect - Ecosystem Integration Example            ║");
+    println!(
+        "║  {} - Ecosystem Integration Example            ║",
+        "[async-inspect]".on_purple().white().bold()
+    );
     println!("╚════════════════════════════════════════════════════════════╝\n");
 
     // Print tokio-console integration info
     async_inspect::integrations::tokio_console::print_integration_info();
 
-    println!("🚀 Starting workload...\n");
+    println!("{}\n", "[>] Starting workload...".bright_cyan().bold());
 
     // Run the orchestrator
     orchestrator(10).await;

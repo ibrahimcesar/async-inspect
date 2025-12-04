@@ -20,13 +20,13 @@ impl TaskId {
     }
 
     /// Get the raw ID value
-    #[must_use] 
+    #[must_use]
     pub fn as_u64(&self) -> u64 {
         self.0
     }
 
     /// Create a `TaskId` from a raw u64 value (for testing/examples)
-    #[must_use] 
+    #[must_use]
     pub fn from_u64(id: u64) -> Self {
         Self(id)
     }
@@ -107,7 +107,7 @@ pub struct TaskInfo {
 
 impl TaskInfo {
     /// Create a new task info
-    #[must_use] 
+    #[must_use]
     pub fn new(name: String) -> Self {
         let now = Instant::now();
         Self {
@@ -137,26 +137,26 @@ impl TaskInfo {
     }
 
     /// Get the age of the task
-    #[must_use] 
+    #[must_use]
     pub fn age(&self) -> Duration {
         self.created_at.elapsed()
     }
 
     /// Get time since last update
-    #[must_use] 
+    #[must_use]
     pub fn time_since_update(&self) -> Duration {
         self.last_updated.elapsed()
     }
 
     /// Set the parent task
-    #[must_use] 
+    #[must_use]
     pub fn with_parent(mut self, parent: TaskId) -> Self {
         self.parent = Some(parent);
         self
     }
 
     /// Set the source location
-    #[must_use] 
+    #[must_use]
     pub fn with_location(mut self, location: String) -> Self {
         self.location = Some(location);
         self
@@ -175,6 +175,243 @@ impl fmt::Display for TaskInfo {
             self.total_run_time.as_secs_f64(),
             self.age().as_secs_f64()
         )
+    }
+}
+
+/// Filter for querying tasks
+///
+/// Use the builder pattern to construct filters:
+///
+/// ```rust
+/// use async_inspect::task::{TaskFilter, TaskState};
+/// use std::time::Duration;
+///
+/// let filter = TaskFilter::new()
+///     .with_state(TaskState::Running)
+///     .with_name_pattern("fetch")
+///     .with_min_duration(Duration::from_secs(1));
+/// ```
+#[derive(Debug, Clone, Default)]
+pub struct TaskFilter {
+    /// Filter by task state
+    pub state: Option<TaskState>,
+    /// Filter by name pattern (substring match)
+    pub name_pattern: Option<String>,
+    /// Filter by minimum age/duration
+    pub min_duration: Option<Duration>,
+    /// Filter by maximum age/duration
+    pub max_duration: Option<Duration>,
+    /// Filter by minimum poll count
+    pub min_polls: Option<u64>,
+    /// Filter by maximum poll count
+    pub max_polls: Option<u64>,
+    /// Filter by parent task
+    pub parent: Option<TaskId>,
+    /// Only show tasks without a parent (root tasks)
+    pub root_only: bool,
+}
+
+impl TaskFilter {
+    /// Create a new empty filter (matches all tasks)
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Filter by task state
+    #[must_use]
+    pub fn with_state(mut self, state: TaskState) -> Self {
+        self.state = Some(state);
+        self
+    }
+
+    /// Filter by name pattern (case-insensitive substring match)
+    #[must_use]
+    pub fn with_name_pattern(mut self, pattern: impl Into<String>) -> Self {
+        self.name_pattern = Some(pattern.into());
+        self
+    }
+
+    /// Filter by minimum age/duration
+    #[must_use]
+    pub fn with_min_duration(mut self, duration: Duration) -> Self {
+        self.min_duration = Some(duration);
+        self
+    }
+
+    /// Filter by maximum age/duration
+    #[must_use]
+    pub fn with_max_duration(mut self, duration: Duration) -> Self {
+        self.max_duration = Some(duration);
+        self
+    }
+
+    /// Filter by minimum poll count
+    #[must_use]
+    pub fn with_min_polls(mut self, count: u64) -> Self {
+        self.min_polls = Some(count);
+        self
+    }
+
+    /// Filter by maximum poll count
+    #[must_use]
+    pub fn with_max_polls(mut self, count: u64) -> Self {
+        self.max_polls = Some(count);
+        self
+    }
+
+    /// Filter by parent task
+    #[must_use]
+    pub fn with_parent(mut self, parent: TaskId) -> Self {
+        self.parent = Some(parent);
+        self
+    }
+
+    /// Only show root tasks (no parent)
+    #[must_use]
+    pub fn root_only(mut self) -> Self {
+        self.root_only = true;
+        self
+    }
+
+    /// Check if a task matches this filter
+    #[must_use]
+    pub fn matches(&self, task: &TaskInfo) -> bool {
+        // Check state
+        if let Some(ref state) = self.state {
+            if !self.state_matches(&task.state, state) {
+                return false;
+            }
+        }
+
+        // Check name pattern (case-insensitive)
+        if let Some(ref pattern) = self.name_pattern {
+            if !task.name.to_lowercase().contains(&pattern.to_lowercase()) {
+                return false;
+            }
+        }
+
+        // Check min duration
+        if let Some(min) = self.min_duration {
+            if task.age() < min {
+                return false;
+            }
+        }
+
+        // Check max duration
+        if let Some(max) = self.max_duration {
+            if task.age() > max {
+                return false;
+            }
+        }
+
+        // Check min polls
+        if let Some(min) = self.min_polls {
+            if task.poll_count < min {
+                return false;
+            }
+        }
+
+        // Check max polls
+        if let Some(max) = self.max_polls {
+            if task.poll_count > max {
+                return false;
+            }
+        }
+
+        // Check parent
+        if let Some(parent) = self.parent {
+            if task.parent != Some(parent) {
+                return false;
+            }
+        }
+
+        // Check root only
+        if self.root_only && task.parent.is_some() {
+            return false;
+        }
+
+        true
+    }
+
+    /// Check if task state matches the filter state
+    fn state_matches(&self, task_state: &TaskState, filter_state: &TaskState) -> bool {
+        match (task_state, filter_state) {
+            (TaskState::Pending, TaskState::Pending) => true,
+            (TaskState::Running, TaskState::Running) => true,
+            (TaskState::Blocked { .. }, TaskState::Blocked { .. }) => true,
+            (TaskState::Completed, TaskState::Completed) => true,
+            (TaskState::Failed, TaskState::Failed) => true,
+            _ => false,
+        }
+    }
+
+    /// Filter a collection of tasks
+    pub fn filter<'a>(&self, tasks: impl IntoIterator<Item = &'a TaskInfo>) -> Vec<&'a TaskInfo> {
+        tasks.into_iter().filter(|t| self.matches(t)).collect()
+    }
+
+    /// Filter and clone a collection of tasks
+    pub fn filter_cloned(&self, tasks: impl IntoIterator<Item = TaskInfo>) -> Vec<TaskInfo> {
+        tasks.into_iter().filter(|t| self.matches(t)).collect()
+    }
+}
+
+/// Sorting options for tasks
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum TaskSortBy {
+    /// Sort by task ID (creation order)
+    #[default]
+    Id,
+    /// Sort by task name alphabetically
+    Name,
+    /// Sort by task age (oldest first)
+    Age,
+    /// Sort by poll count
+    Polls,
+    /// Sort by total run time
+    RunTime,
+    /// Sort by state
+    State,
+}
+
+/// Sort direction
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum SortDirection {
+    /// Ascending order
+    #[default]
+    Ascending,
+    /// Descending order
+    Descending,
+}
+
+/// Sort tasks by the given criteria
+pub fn sort_tasks(tasks: &mut [TaskInfo], sort_by: TaskSortBy, direction: SortDirection) {
+    tasks.sort_by(|a, b| {
+        let cmp = match sort_by {
+            TaskSortBy::Id => a.id.as_u64().cmp(&b.id.as_u64()),
+            TaskSortBy::Name => a.name.cmp(&b.name),
+            TaskSortBy::Age => a.created_at.cmp(&b.created_at),
+            TaskSortBy::Polls => a.poll_count.cmp(&b.poll_count),
+            TaskSortBy::RunTime => a.total_run_time.cmp(&b.total_run_time),
+            TaskSortBy::State => state_order(&a.state).cmp(&state_order(&b.state)),
+        };
+
+        match direction {
+            SortDirection::Ascending => cmp,
+            SortDirection::Descending => cmp.reverse(),
+        }
+    });
+}
+
+/// Get sort order for task states
+fn state_order(state: &TaskState) -> u8 {
+    match state {
+        TaskState::Running => 0,
+        TaskState::Blocked { .. } => 1,
+        TaskState::Pending => 2,
+        TaskState::Completed => 3,
+        TaskState::Failed => 4,
     }
 }
 

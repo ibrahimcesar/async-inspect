@@ -10,7 +10,7 @@ pub struct PerformanceReporter<'a> {
 
 impl<'a> PerformanceReporter<'a> {
     /// Create a new performance reporter
-    #[must_use] 
+    #[must_use]
     pub fn new(profiler: &'a Profiler) -> Self {
         Self { profiler }
     }
@@ -254,7 +254,7 @@ impl<'a> PerformanceReporter<'a> {
     }
 
     /// Generate a compact performance summary
-    #[must_use] 
+    #[must_use]
     pub fn generate_summary(&self) -> String {
         let mut summary = String::new();
         let stats = self.profiler.calculate_stats();

@@ -7,6 +7,7 @@ use async_inspect::config::Config;
 use async_inspect::export::{CsvExporter, JsonExporter};
 use async_inspect::prelude::*;
 use async_inspect::runtime::tokio::spawn_tracked;
+use colored::Colorize;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -88,7 +89,10 @@ async fn production_workload() {
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     println!("╔════════════════════════════════════════════════════════════╗");
-    println!("║  async-inspect - Production-Ready Example                 ║");
+    println!(
+        "║  {} - Production-Ready Example                 ║",
+        "[async-inspect]".on_purple().white().bold()
+    );
     println!("╚════════════════════════════════════════════════════════════╝");
     println!();
 
@@ -96,7 +100,10 @@ async fn main() -> std::io::Result<()> {
     let config = Config::global();
     config.production_mode();
 
-    println!("📊 Production Configuration:");
+    println!(
+        "{}",
+        "[STATS] Production Configuration:".on_blue().white().bold()
+    );
     println!("   Sampling rate:   1 in {}", config.sampling_rate());
     println!("   Max events:      {}", config.max_events());
     println!("   Max tasks:       {}", config.max_tasks());

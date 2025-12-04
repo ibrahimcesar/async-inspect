@@ -4,8 +4,8 @@
 //!
 //! Run with: cargo run --example smol_integration --features smol-runtime
 
-use async_inspect::runtime::smol::{spawn_tracked, InspectExt};
 use async_inspect::prelude::Inspector;
+use async_inspect::runtime::smol::{spawn_tracked, InspectExt};
 use std::time::Duration;
 
 async fn fetch_data(id: u32) -> String {
@@ -70,12 +70,16 @@ fn main() {
                 "Task: {} | ID: {} | Parent: {} | State: {:?}",
                 task.name,
                 task.id.as_u64(),
-                task.parent.map_or("None".to_string(), |p| p.as_u64().to_string()),
+                task.parent
+                    .map_or("None".to_string(), |p| p.as_u64().to_string()),
                 task.state
             );
         }
 
         println!("\n✅ Example completed successfully!");
-        println!("   {} tasks were tracked during execution", stats.total_tasks);
+        println!(
+            "   {} tasks were tracked during execution",
+            stats.total_tasks
+        );
     });
 }

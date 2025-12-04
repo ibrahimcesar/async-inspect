@@ -1,0 +1,111 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.async-inspect.intellij-plugin</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Async Inspect</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="support@async-inspect.dev" url="https://github.com/async-inspect/async-inspect">async-inspect</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+    Real-time async task monitoring and visualization for Rust applications.
+    <br><br>
+    <h3>Features:</h3>
+    <ul>
+        <li>Real-time task monitoring and state tracking</li>
+        <li>Interactive timeline visualization</li>
+        <li>Task hierarchy tree view</li>
+        <li>Performance metrics and statistics</li>
+        <li>Deadlock detection alerts</li>
+        <li>Seamless integration with Rust projects</li>
+    </ul>
+    <br>
+    <h3>Usage:</h3>
+    <ol>
+        <li>Add async-inspect to your Rust project's dependencies</li>
+        <li>Instrument your async tasks using spawn_tracked() or .inspect()</li>
+        <li>Open the Async Inspect tool window</li>
+        <li>Run your application and watch tasks in real-time</li>
+    </ol>
+  ]]></description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.rust.lang</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Tool Window -->
+        <toolWindow id="Async Inspect"
+                    secondary="true"
+                    anchor="bottom"
+                    icon="/icons/async-inspect-13x13.svg"
+                    factoryClass="com.asyncinspect.intellij.toolwindow.AsyncInspectToolWindowFactory"/>
+
+        <!-- Application Service -->
+        <applicationService serviceImplementation="com.asyncinspect.intellij.services.InspectorService"/>
+
+        <!-- Project Service -->
+        <projectService serviceImplementation="com.asyncinspect.intellij.services.ProjectInspectorService"/>
+
+        <!-- Notification Group -->
+        <notificationGroup id="Async Inspect Notifications"
+                          displayType="BALLOON"
+                          isLogByDefault="true"/>
+    </extensions>
+
+    <actions>
+        <!-- Toolbar Actions -->
+        <group id="AsyncInspect.ToolbarActions" text="Async Inspect Toolbar">
+            <action id="AsyncInspect.StartMonitoring"
+                    class="com.asyncinspect.intellij.actions.StartMonitoringAction"
+                    text="Start Monitoring"
+                    description="Start monitoring async tasks"
+                    icon="/icons/start-13x13.svg"/>
+
+            <action id="AsyncInspect.StopMonitoring"
+                    class="com.asyncinspect.intellij.actions.StopMonitoringAction"
+                    text="Stop Monitoring"
+                    description="Stop monitoring async tasks"
+                    icon="/icons/stop-13x13.svg"/>
+
+            <action id="AsyncInspect.ClearTasks"
+                    class="com.asyncinspect.intellij.actions.ClearTasksAction"
+                    text="Clear Tasks"
+                    description="Clear all tracked tasks"
+                    icon="/icons/clear-13x13.svg"/>
+
+            <action id="AsyncInspect.ExportData"
+                    class="com.asyncinspect.intellij.actions.ExportDataAction"
+                    text="Export Data"
+                    description="Export task data to JSON"
+                    icon="/icons/export-13x13.svg"/>
+
+            <action id="AsyncInspect.Settings"
+                    class="com.asyncinspect.intellij.actions.SettingsAction"
+                    text="Settings"
+                    description="Open Async Inspect settings"
+                    icon="AllIcons.General.Settings"/>
+        </group>
+
+        <!-- Main Menu -->
+        <group id="AsyncInspect.MainMenu" text="Async Inspect" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <reference ref="AsyncInspect.StartMonitoring"/>
+            <reference ref="AsyncInspect.StopMonitoring"/>
+            <separator/>
+            <reference ref="AsyncInspect.ClearTasks"/>
+            <reference ref="AsyncInspect.ExportData"/>
+            <separator/>
+            <reference ref="AsyncInspect.Settings"/>
+        </group>
+    </actions>
+</idea-plugin>

@@ -220,7 +220,7 @@ The TUI is designed for minimal overhead:
 
 - **Update rate**: 100ms (configurable)
 - **Memory**: ~1MB overhead
-- **CPU**: <1% on typical workloads
+- **CPU**: Less than 1% on typical workloads
 - **Supported tasks**: Tested with 10,000+ concurrent tasks
 
 ## Customization

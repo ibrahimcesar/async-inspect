@@ -56,3 +56,5 @@ production_tasks.csv
 async_inspect_exports/
 tui_exports/
 *_snapshot.json
+
+.claude/

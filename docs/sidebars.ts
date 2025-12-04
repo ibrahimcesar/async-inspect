@@ -31,6 +31,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'cli-usage',
         'tui-monitor',
+        'task-filtering',
         'examples',
         'visualization',
       ],

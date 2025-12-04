@@ -46,7 +46,7 @@ pub struct TraceEvent {
 
 impl TraceEvent {
     /// Create a complete event (X) with duration
-    #[must_use] 
+    #[must_use]
     pub fn complete(
         name: String,
         cat: &str,
@@ -68,7 +68,7 @@ impl TraceEvent {
     }
 
     /// Create an instant event (i)
-    #[must_use] 
+    #[must_use]
     pub fn instant(
         name: String,
         cat: &str,
@@ -89,7 +89,7 @@ impl TraceEvent {
     }
 
     /// Create a metadata event (M) for thread name
-    #[must_use] 
+    #[must_use]
     pub fn thread_name(tid: u64, name: String) -> Self {
         Self {
             name: "thread_name".to_string(),
@@ -104,7 +104,7 @@ impl TraceEvent {
     }
 
     /// Create a metadata event (M) for process name
-    #[must_use] 
+    #[must_use]
     pub fn process_name(name: String) -> Self {
         Self {
             name: "process_name".to_string(),
@@ -173,8 +173,7 @@ impl ChromeTraceExporter {
 
         // Get timeline baseline (earliest event timestamp)
         let events = inspector.get_events();
-        let baseline = events
-            .first().map_or_else(Instant::now, |e| e.timestamp);
+        let baseline = events.first().map_or_else(Instant::now, |e| e.timestamp);
 
         // Track task names for thread metadata
         let mut task_names = std::collections::HashMap::new();
@@ -341,14 +340,7 @@ mod tests {
 
     #[test]
     fn test_trace_event_complete() {
-        let event = TraceEvent::complete(
-            "test_task".to_string(),
-            "task",
-            1000,
-            500,
-            42,
-            None,
-        );
+        let event = TraceEvent::complete("test_task".to_string(), "task", 1000, 500, 42, None);
 
         assert_eq!(event.name, "test_task");
         assert_eq!(event.ph, "X");

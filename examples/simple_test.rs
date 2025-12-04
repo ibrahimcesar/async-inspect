@@ -1,6 +1,7 @@
 //! Simple test example without spawning
 
 use async_inspect::prelude::*;
+use colored::Colorize;
 use std::time::Duration;
 
 async fn simple_task(id: u64) {
@@ -19,7 +20,10 @@ async fn simple_task(id: u64) {
 
 #[tokio::main]
 async fn main() {
-    println!("🔍 async-inspect - Simple Test\n");
+    println!(
+        "{} - Simple Test\n",
+        "[async-inspect]".on_purple().white().bold()
+    );
 
     // Reset the inspector
     Inspector::global().reset();

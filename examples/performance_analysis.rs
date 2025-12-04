@@ -10,6 +10,7 @@
 use async_inspect::prelude::*;
 use async_inspect::profile::PerformanceReporter;
 use async_inspect::runtime::tokio::spawn_tracked;
+use colored::Colorize;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -131,10 +132,19 @@ async fn performance_test_workload() {
 #[tokio::main]
 async fn main() {
     println!("╔════════════════════════════════════════════════════════════╗");
-    println!("║  async-inspect - Performance Analysis Example             ║");
+    println!(
+        "║  {} - Performance Analysis Example             ║",
+        "[async-inspect]".on_purple().white().bold()
+    );
     println!("╚════════════════════════════════════════════════════════════╝");
     println!();
-    println!("🎯 This example demonstrates performance profiling:");
+    println!(
+        "{}",
+        "[*] This example demonstrates performance profiling:"
+            .on_yellow()
+            .white()
+            .bold()
+    );
     println!("   • Task duration tracking");
     println!("   • Hot path detection");
     println!("   • Statistical analysis (p50, p95, p99)");

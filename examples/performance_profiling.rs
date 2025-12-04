@@ -7,11 +7,10 @@
 //!
 //! Run with: cargo run --example performance_profiling --features tokio
 
-use async_inspect::deadlock::{DeadlockDetector, ResourceId, ResourceInfo, ResourceKind};
-use async_inspect::profile::{
-    comparison::PerformanceComparison, LockContentionMetrics, Profiler, TaskMetrics,
-};
+use async_inspect::deadlock::ResourceId;
+use async_inspect::profile::{comparison::PerformanceComparison, Profiler, TaskMetrics};
 use async_inspect::task::TaskId;
+use colored::Colorize;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::Mutex;
@@ -123,7 +122,10 @@ async fn main() {
             println!("\nLock: {}", lock_metric.name);
             println!("  Acquisitions: {}", lock_metric.successful_acquisitions);
             println!("  Contentions: {}", lock_metric.contention_count);
-            println!("  Contention rate: {:.1}%", lock_metric.contention_rate * 100.0);
+            println!(
+                "  Contention rate: {:.1}%",
+                lock_metric.contention_rate * 100.0
+            );
             println!("  Avg wait time: {:?}", lock_metric.avg_wait_time);
             println!("  Max wait time: {:?}", lock_metric.max_wait_time);
             println!("  Waiting tasks: {}", lock_metric.waiting_tasks.len());
@@ -207,14 +209,20 @@ async fn main() {
 
     // Check for regressions
     if comparison.has_regressions() {
-        println!("\n❌ REGRESSIONS DETECTED!");
+        println!(
+            "\n{}",
+            "[FAIL] REGRESSIONS DETECTED!".on_red().white().bold()
+        );
         println!("\nRegression details:");
         for finding in comparison.get_regressions() {
             println!("  [{:?}] {}", finding.severity, finding.description);
             println!("      Impact: {:.1}%", finding.impact_percent);
         }
     } else {
-        println!("\n✅ No regressions detected");
+        println!(
+            "\n{}",
+            "[OK] No regressions detected".on_green().white().bold()
+        );
     }
 
     // Show improvements
@@ -229,10 +237,28 @@ async fn main() {
 
     println!("\n=== Example Complete ===");
     println!("Demonstrated features:");
-    println!("  ✅ Lock contention tracking");
-    println!("  ✅ Performance snapshots");
-    println!("  ✅ Snapshot serialization");
-    println!("  ✅ Performance comparison");
-    println!("  ✅ Regression detection");
-    println!("  ✅ Bottleneck identification");
+    println!(
+        "  {} Lock contention tracking",
+        "[OK]".on_green().white().bold()
+    );
+    println!(
+        "  {} Performance snapshots",
+        "[OK]".on_green().white().bold()
+    );
+    println!(
+        "  {} Snapshot serialization",
+        "[OK]".on_green().white().bold()
+    );
+    println!(
+        "  {} Performance comparison",
+        "[OK]".on_green().white().bold()
+    );
+    println!(
+        "  {} Regression detection",
+        "[OK]".on_green().white().bold()
+    );
+    println!(
+        "  {} Bottleneck identification",
+        "[OK]".on_green().white().bold()
+    );
 }

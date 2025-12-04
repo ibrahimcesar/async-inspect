@@ -5,6 +5,7 @@
 
 use async_inspect::prelude::*;
 use async_inspect::runtime::tokio::spawn_tracked;
+use colored::Colorize;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -118,10 +119,19 @@ async fn worker_task(team: String, id: u32) {
 #[tokio::main]
 async fn main() {
     println!("╔════════════════════════════════════════════════════════════╗");
-    println!("║  async-inspect - Task Hierarchy Example                   ║");
+    println!(
+        "║  {} - Task Hierarchy Example                   ║",
+        "[async-inspect]".on_purple().white().bold()
+    );
     println!("╚════════════════════════════════════════════════════════════╝\n");
 
-    println!("🎯 This example demonstrates parent-child task relationships\n");
+    println!(
+        "{}\n",
+        "[*] This example demonstrates parent-child task relationships"
+            .on_yellow()
+            .white()
+            .bold()
+    );
 
     // Scenario 1: Data pipeline with hierarchy
     println!("═══ Scenario 1: Data Pipeline ═══");

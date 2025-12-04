@@ -26,7 +26,7 @@ impl FlamegraphExporter {
     }
 
     /// Export to flamegraph folded stack format string
-    #[must_use] 
+    #[must_use]
     pub fn export_to_string(inspector: &Inspector) -> String {
         Self::generate_folded_stacks(inspector)
     }
@@ -145,12 +145,8 @@ impl FlamegraphExporter {
 
         let mut svg_output = File::create(path)?;
 
-        flamegraph::from_reader(
-            &mut options,
-            folded_bytes,
-            &mut svg_output,
-        )
-        .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+        flamegraph::from_reader(&mut options, folded_bytes, &mut svg_output)
+            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
 
         Ok(())
     }
@@ -178,45 +174,41 @@ impl Default for FlamegraphBuilder {
 
 impl FlamegraphBuilder {
     /// Create a new flamegraph builder
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Set whether to include poll events
-    #[must_use] 
+    #[must_use]
     pub fn include_polls(mut self, include: bool) -> Self {
         self.include_polls = include;
         self
     }
 
     /// Set whether to include await points
-    #[must_use] 
+    #[must_use]
     pub fn include_awaits(mut self, include: bool) -> Self {
         self.include_awaits = include;
         self
     }
 
     /// Set minimum duration threshold (in milliseconds)
-    #[must_use] 
+    #[must_use]
     pub fn min_duration_ms(mut self, ms: u64) -> Self {
         self.min_duration_ms = ms;
         self
     }
 
     /// Build and export flamegraph
-    pub fn export_to_file<P: AsRef<Path>>(
-        self,
-        inspector: &Inspector,
-        path: P,
-    ) -> io::Result<()> {
+    pub fn export_to_file<P: AsRef<Path>>(self, inspector: &Inspector, path: P) -> io::Result<()> {
         // For now, use default implementation
         // TODO: Apply builder options when generating stacks
         FlamegraphExporter::export_to_file(inspector, path)
     }
 
     /// Build and export flamegraph as string
-    #[must_use] 
+    #[must_use]
     pub fn export_to_string(self, inspector: &Inspector) -> String {
         // For now, use default implementation
         // TODO: Apply builder options when generating stacks
@@ -230,10 +222,7 @@ mod tests {
 
     #[test]
     fn test_sanitize_frame_name() {
-        assert_eq!(
-            FlamegraphExporter::sanitize_frame_name("simple"),
-            "simple"
-        );
+        assert_eq!(FlamegraphExporter::sanitize_frame_name("simple"), "simple");
         assert_eq!(
             FlamegraphExporter::sanitize_frame_name("with;semicolon"),
             "with:semicolon"

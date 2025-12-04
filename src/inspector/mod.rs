@@ -4,7 +4,7 @@
 //! and event collection.
 
 use crate::deadlock::DeadlockDetector;
-use crate::task::{TaskId, TaskInfo, TaskState};
+use crate::task::{sort_tasks, SortDirection, TaskFilter, TaskId, TaskInfo, TaskSortBy, TaskState};
 use crate::timeline::{Event, EventKind, Timeline};
 use parking_lot::RwLock;
 use std::collections::HashMap;
@@ -42,7 +42,7 @@ struct InspectorState {
 
 impl Inspector {
     /// Create a new inspector
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             state: Arc::new(InspectorState {
@@ -56,13 +56,13 @@ impl Inspector {
     }
 
     /// Get the global inspector instance
-    #[must_use] 
+    #[must_use]
     pub fn global() -> &'static Self {
         &GLOBAL_INSPECTOR
     }
 
     /// Check if the inspector is enabled
-    #[must_use] 
+    #[must_use]
     pub fn is_enabled(&self) -> bool {
         *self.state.enabled.read()
     }
@@ -78,7 +78,7 @@ impl Inspector {
     }
 
     /// Register a new task
-    #[must_use] 
+    #[must_use]
     pub fn register_task(&self, name: String) -> TaskId {
         if !self.is_enabled() {
             return TaskId::new();
@@ -104,7 +104,7 @@ impl Inspector {
     }
 
     /// Register a child task with a parent
-    #[must_use] 
+    #[must_use]
     pub fn register_child_task(&self, name: String, parent_id: TaskId) -> TaskId {
         if !self.is_enabled() {
             return TaskId::new();
@@ -131,7 +131,7 @@ impl Inspector {
     }
 
     /// Register a task with additional metadata
-    #[must_use] 
+    #[must_use]
     pub fn register_task_with_info(&self, task: TaskInfo) -> TaskId {
         if !self.is_enabled() {
             return task.id;
@@ -243,7 +243,13 @@ impl Inspector {
         }
 
         // Get duration while holding read lock, then release it
-        let duration = { self.state.tasks.read().get(&task_id).map(super::task::TaskInfo::age) };
+        let duration = {
+            self.state
+                .tasks
+                .read()
+                .get(&task_id)
+                .map(super::task::TaskInfo::age)
+        };
 
         if let Some(duration) = duration {
             self.update_task_state(task_id, TaskState::Completed);
@@ -278,25 +284,110 @@ impl Inspector {
     }
 
     /// Get a task by ID
-    #[must_use] 
+    #[must_use]
     pub fn get_task(&self, task_id: TaskId) -> Option<TaskInfo> {
         self.state.tasks.read().get(&task_id).cloned()
     }
 
     /// Get all tasks
-    #[must_use] 
+    #[must_use]
     pub fn get_all_tasks(&self) -> Vec<TaskInfo> {
         self.state.tasks.read().values().cloned().collect()
     }
 
+    /// Get tasks matching a filter
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use async_inspect::{Inspector, task::{TaskFilter, TaskState}};
+    /// use std::time::Duration;
+    ///
+    /// let inspector = Inspector::new();
+    ///
+    /// // Find all running tasks with "fetch" in the name
+    /// let filter = TaskFilter::new()
+    ///     .with_state(TaskState::Running)
+    ///     .with_name_pattern("fetch");
+    ///
+    /// let tasks = inspector.get_tasks_filtered(&filter);
+    /// ```
+    #[must_use]
+    pub fn get_tasks_filtered(&self, filter: &TaskFilter) -> Vec<TaskInfo> {
+        self.state
+            .tasks
+            .read()
+            .values()
+            .filter(|t| filter.matches(t))
+            .cloned()
+            .collect()
+    }
+
+    /// Get tasks matching a filter, sorted by the given criteria
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use async_inspect::{Inspector, task::{TaskFilter, TaskState, TaskSortBy, SortDirection}};
+    ///
+    /// let inspector = Inspector::new();
+    ///
+    /// // Get blocked tasks sorted by age (oldest first)
+    /// let filter = TaskFilter::new().with_state(TaskState::Blocked { await_point: String::new() });
+    /// let tasks = inspector.get_tasks_sorted(&filter, TaskSortBy::Age, SortDirection::Descending);
+    /// ```
+    #[must_use]
+    pub fn get_tasks_sorted(
+        &self,
+        filter: &TaskFilter,
+        sort_by: TaskSortBy,
+        direction: SortDirection,
+    ) -> Vec<TaskInfo> {
+        let mut tasks = self.get_tasks_filtered(filter);
+        sort_tasks(&mut tasks, sort_by, direction);
+        tasks
+    }
+
+    /// Get running tasks
+    #[must_use]
+    pub fn get_running_tasks(&self) -> Vec<TaskInfo> {
+        self.get_tasks_filtered(&TaskFilter::new().with_state(TaskState::Running))
+    }
+
+    /// Get blocked tasks
+    #[must_use]
+    pub fn get_blocked_tasks(&self) -> Vec<TaskInfo> {
+        self.get_tasks_filtered(&TaskFilter::new().with_state(TaskState::Blocked {
+            await_point: String::new(),
+        }))
+    }
+
+    /// Get long-running tasks (older than the specified duration)
+    #[must_use]
+    pub fn get_long_running_tasks(&self, min_duration: Duration) -> Vec<TaskInfo> {
+        self.get_tasks_filtered(&TaskFilter::new().with_min_duration(min_duration))
+    }
+
+    /// Get root tasks (tasks without a parent)
+    #[must_use]
+    pub fn get_root_tasks(&self) -> Vec<TaskInfo> {
+        self.get_tasks_filtered(&TaskFilter::new().root_only())
+    }
+
+    /// Get child tasks of a specific parent
+    #[must_use]
+    pub fn get_child_tasks(&self, parent_id: TaskId) -> Vec<TaskInfo> {
+        self.get_tasks_filtered(&TaskFilter::new().with_parent(parent_id))
+    }
+
     /// Get all events
-    #[must_use] 
+    #[must_use]
     pub fn get_events(&self) -> Vec<Event> {
         self.state.timeline.read().events().to_vec()
     }
 
     /// Get events for a specific task
-    #[must_use] 
+    #[must_use]
     pub fn get_task_events(&self, task_id: TaskId) -> Vec<Event> {
         self.state
             .timeline
@@ -308,7 +399,7 @@ impl Inspector {
     }
 
     /// Build a performance profiler from collected data
-    #[must_use] 
+    #[must_use]
     pub fn build_profiler(&self) -> crate::profile::Profiler {
         use crate::profile::{Profiler, TaskMetrics};
         use crate::timeline::EventKind;
@@ -372,7 +463,7 @@ impl Inspector {
     }
 
     /// Get statistics
-    #[must_use] 
+    #[must_use]
     pub fn stats(&self) -> InspectorStats {
         let tasks = self.state.tasks.read();
         let timeline = self.state.timeline.read();
@@ -428,7 +519,7 @@ impl Inspector {
     ///
     /// Returns a reference to the integrated deadlock detector for resource
     /// tracking and deadlock analysis.
-    #[must_use] 
+    #[must_use]
     pub fn deadlock_detector(&self) -> &DeadlockDetector {
         &self.state.deadlock_detector
     }

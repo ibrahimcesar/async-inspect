@@ -111,7 +111,7 @@ impl fmt::Display for ConsoleIntegrationConfig {
 }
 
 /// Check if tokio-console is likely active
-#[must_use] 
+#[must_use]
 pub fn is_console_active() -> bool {
     std::env::var("RUSTFLAGS")
         .map(|flags| flags.contains("tokio_unstable"))

@@ -1,0 +1,14 @@
+# async-inspect LSP configuration for Helix
+# Add this to your ~/.config/helix/languages.toml
+
+[[language]]
+name = "rust"
+language-servers = ["rust-analyzer", "async-inspect-lsp"]
+
+[language-server.async-inspect-lsp]
+command = "/path/to/async-inspect/target/release/async-inspect-lsp"
+
+# Optional: Configure diagnostics display
+[editor.lsp]
+display-messages = true
+display-inlay-hints = true

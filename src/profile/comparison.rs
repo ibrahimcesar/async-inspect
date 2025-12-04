@@ -201,9 +201,16 @@ impl PerformanceComparison {
     /// Compare two performance snapshots
     #[must_use]
     pub fn compare(baseline: PerformanceSnapshot, current: PerformanceSnapshot) -> Self {
-        let task_duration_change = Self::compare_durations(&baseline.task_stats, &current.task_stats);
-        let lock_contention_changes = Self::compare_locks(&baseline.lock_metrics, &current.lock_metrics);
-        let findings = Self::generate_findings(&baseline, &current, &task_duration_change, &lock_contention_changes);
+        let task_duration_change =
+            Self::compare_durations(&baseline.task_stats, &current.task_stats);
+        let lock_contention_changes =
+            Self::compare_locks(&baseline.lock_metrics, &current.lock_metrics);
+        let findings = Self::generate_findings(
+            &baseline,
+            &current,
+            &task_duration_change,
+            &lock_contention_changes,
+        );
         let status = Self::determine_status(&findings);
 
         Self {
@@ -217,25 +224,19 @@ impl PerformanceComparison {
     }
 
     fn compare_durations(baseline: &DurationStats, current: &DurationStats) -> DurationChange {
-        let mean_change = Self::calculate_change_percent(
-            baseline.mean.as_secs_f64(),
-            current.mean.as_secs_f64(),
-        );
+        let mean_change =
+            Self::calculate_change_percent(baseline.mean.as_secs_f64(), current.mean.as_secs_f64());
 
         let median_change = Self::calculate_change_percent(
             baseline.median.as_secs_f64(),
             current.median.as_secs_f64(),
         );
 
-        let p95_change = Self::calculate_change_percent(
-            baseline.p95.as_secs_f64(),
-            current.p95.as_secs_f64(),
-        );
+        let p95_change =
+            Self::calculate_change_percent(baseline.p95.as_secs_f64(), current.p95.as_secs_f64());
 
-        let p99_change = Self::calculate_change_percent(
-            baseline.p99.as_secs_f64(),
-            current.p99.as_secs_f64(),
-        );
+        let p99_change =
+            Self::calculate_change_percent(baseline.p99.as_secs_f64(), current.p99.as_secs_f64());
 
         let is_improvement = mean_change < 0.0 && median_change < 0.0;
 
@@ -248,7 +249,10 @@ impl PerformanceComparison {
         }
     }
 
-    fn compare_locks(baseline: &[LockContentionMetrics], current: &[LockContentionMetrics]) -> Vec<LockContentionChange> {
+    fn compare_locks(
+        baseline: &[LockContentionMetrics],
+        current: &[LockContentionMetrics],
+    ) -> Vec<LockContentionChange> {
         let mut changes = Vec::new();
         let baseline_map: HashMap<_, _> = baseline.iter().map(|m| (&m.name, m)).collect();
 
@@ -374,8 +378,10 @@ impl PerformanceComparison {
     #[must_use]
     pub fn has_regressions(&self) -> bool {
         self.findings.iter().any(|f| {
-            matches!(f.severity, FindingSeverity::Critical | FindingSeverity::Major)
-                && f.impact_percent < 0.0
+            matches!(
+                f.severity,
+                FindingSeverity::Critical | FindingSeverity::Major
+            ) && f.impact_percent < 0.0
         })
     }
 
@@ -406,10 +412,22 @@ impl PerformanceComparison {
         report.push_str(&format!("Status: {:?}\n\n", self.status));
 
         report.push_str("Task Duration Changes:\n");
-        report.push_str(&format!("  Mean: {:.1}%\n", self.task_duration_change.mean_change));
-        report.push_str(&format!("  Median: {:.1}%\n", self.task_duration_change.median_change));
-        report.push_str(&format!("  P95: {:.1}%\n", self.task_duration_change.p95_change));
-        report.push_str(&format!("  P99: {:.1}%\n\n", self.task_duration_change.p99_change));
+        report.push_str(&format!(
+            "  Mean: {:.1}%\n",
+            self.task_duration_change.mean_change
+        ));
+        report.push_str(&format!(
+            "  Median: {:.1}%\n",
+            self.task_duration_change.median_change
+        ));
+        report.push_str(&format!(
+            "  P95: {:.1}%\n",
+            self.task_duration_change.p95_change
+        ));
+        report.push_str(&format!(
+            "  P99: {:.1}%\n\n",
+            self.task_duration_change.p99_change
+        ));
 
         if !self.lock_contention_changes.is_empty() {
             report.push_str("Lock Contention Changes:\n");
@@ -442,9 +460,18 @@ mod tests {
 
     #[test]
     fn test_calculate_change_percent() {
-        assert_eq!(PerformanceComparison::calculate_change_percent(100.0, 110.0), 10.0);
-        assert_eq!(PerformanceComparison::calculate_change_percent(100.0, 90.0), -10.0);
-        assert_eq!(PerformanceComparison::calculate_change_percent(0.0, 10.0), 0.0);
+        assert_eq!(
+            PerformanceComparison::calculate_change_percent(100.0, 110.0),
+            10.0
+        );
+        assert_eq!(
+            PerformanceComparison::calculate_change_percent(100.0, 90.0),
+            -10.0
+        );
+        assert_eq!(
+            PerformanceComparison::calculate_change_percent(0.0, 10.0),
+            0.0
+        );
     }
 
     #[test]

@@ -1,0 +1,14 @@
+{
+  // async-inspect LSP configuration for Sublime Text
+  // Add this to your LSP.sublime-settings or project-specific settings
+
+  "clients": {
+    "async-inspect-lsp": {
+      "enabled": true,
+      "command": ["/path/to/async-inspect/target/release/async-inspect-lsp"],
+      "selector": "source.rust",
+      "settings": {},
+      "initializationOptions": {}
+    }
+  }
+}

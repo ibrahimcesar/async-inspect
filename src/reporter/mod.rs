@@ -16,13 +16,13 @@ pub struct Reporter {
 
 impl Reporter {
     /// Create a new reporter
-    #[must_use] 
+    #[must_use]
     pub fn new(inspector: Inspector) -> Self {
         Self { inspector }
     }
 
     /// Create a reporter using the global inspector
-    #[must_use] 
+    #[must_use]
     pub fn global() -> Self {
         Self::new(Inspector::global().clone())
     }
@@ -88,11 +88,11 @@ impl Reporter {
     /// Print a single task line
     fn print_task_line(&self, task: &TaskInfo) {
         let state_icon = match task.state {
-            TaskState::Pending => "⏸️ ",
-            TaskState::Running => "🏃",
-            TaskState::Blocked { .. } => "⏳",
-            TaskState::Completed => "✅",
-            TaskState::Failed => "❌",
+            TaskState::Pending => "[PEND]",
+            TaskState::Running => "[RUN] ",
+            TaskState::Blocked { .. } => "[WAIT]",
+            TaskState::Completed => "[OK]  ",
+            TaskState::Failed => "[FAIL]",
         };
 
         let status = format!("{} {} {}", task.id, state_icon, task.name);
@@ -213,14 +213,14 @@ impl Reporter {
     }
 
     /// Generate a text report
-    #[must_use] 
+    #[must_use]
     pub fn generate_report(&self) -> String {
         let mut report = String::new();
         let stats = self.inspector.stats();
         let tasks = self.inspector.get_all_tasks();
 
-        writeln!(report, "async-inspect Report").unwrap();
-        writeln!(report, "====================").unwrap();
+        writeln!(report, "[async-inspect] Report").unwrap();
+        writeln!(report, "=======================").unwrap();
         writeln!(report).unwrap();
         writeln!(report, "Statistics:").unwrap();
         writeln!(report, "  Total Tasks:     {}", stats.total_tasks).unwrap();
@@ -443,7 +443,7 @@ mod tests {
         let reporter = Reporter::new(inspector);
         let report = reporter.generate_report();
 
-        assert!(report.contains("async-inspect Report"));
+        assert!(report.contains("[async-inspect] Report"));
         assert!(report.contains("Total Tasks:     1"));
     }
 }

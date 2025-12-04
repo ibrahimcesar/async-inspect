@@ -14,19 +14,19 @@ pub struct HtmlReporter {
 
 impl HtmlReporter {
     /// Create a new HTML reporter
-    #[must_use] 
+    #[must_use]
     pub fn new(inspector: Inspector) -> Self {
         Self { inspector }
     }
 
     /// Create a reporter using the global inspector
-    #[must_use] 
+    #[must_use]
     pub fn global() -> Self {
         Self::new(Inspector::global().clone())
     }
 
     /// Generate a complete HTML report
-    #[must_use] 
+    #[must_use]
     pub fn generate_html(&self) -> String {
         let mut html = String::new();
 
