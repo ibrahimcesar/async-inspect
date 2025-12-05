@@ -183,11 +183,13 @@ impl PrometheusExporter {
     }
 
     /// Get the Prometheus registry
+    #[must_use]
     pub fn registry(&self) -> &Registry {
         &self.registry
     }
 
     /// Gather metrics in Prometheus text format
+    #[must_use]
     pub fn gather(&self) -> String {
         use prometheus::Encoder;
 
@@ -202,6 +204,7 @@ impl PrometheusExporter {
 
     /// Start a background metrics updater that updates metrics periodically
     #[cfg(feature = "tokio")]
+    #[must_use]
     pub fn start_background_updater(
         self: Arc<Self>,
         interval: std::time::Duration,

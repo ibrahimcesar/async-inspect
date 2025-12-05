@@ -98,9 +98,37 @@ pub mod graph;
 /// Ecosystem integrations
 pub mod integrations;
 
+/// Tracked synchronization primitives
+///
+/// Drop-in replacements for `tokio::sync::Mutex`, `RwLock`, and `Semaphore`
+/// with automatic contention tracking and deadlock detection integration.
+#[cfg(feature = "tokio")]
+pub mod sync;
+
+/// Tracked channel primitives
+///
+/// Drop-in replacements for `tokio::sync::mpsc`, `oneshot`, and `broadcast`
+/// channels with automatic message flow tracking.
+#[cfg(feature = "tokio")]
+pub mod channel;
+
 /// Terminal User Interface
 #[cfg(feature = "cli")]
 pub mod tui;
+
+/// Web Dashboard for real-time monitoring
+#[cfg(feature = "dashboard")]
+pub mod dashboard;
+
+/// Language Server Protocol (LSP) integration
+#[cfg(feature = "lsp")]
+pub mod lsp;
+
+/// Usage telemetry
+///
+/// Anonymous usage analytics to help improve async-inspect.
+/// Can be disabled via `ASYNC_INSPECT_NO_TELEMETRY=1` or `DO_NOT_TRACK=1`.
+pub mod telemetry;
 
 /// Error types
 ///
@@ -147,7 +175,11 @@ pub mod prelude {
     pub use crate::instrument::{InspectContext, TaskGuard};
     pub use crate::reporter::html::HtmlReporter;
     pub use crate::reporter::Reporter;
-    pub use crate::task::{TaskId, TaskInfo, TaskState};
+    #[cfg(feature = "tokio")]
+    pub use crate::sync::{LockMetrics, Mutex, MutexGuard, RwLock, Semaphore};
+    pub use crate::task::{
+        sort_tasks, SortDirection, TaskFilter, TaskId, TaskInfo, TaskSortBy, TaskState,
+    };
     pub use crate::timeline::{Event, EventKind};
 
     // Re-export macros
@@ -158,6 +190,7 @@ pub mod prelude {
 
 // Re-exports
 pub use error::{Error, Result};
+pub use inspector::Inspector;
 
 #[cfg(test)]
 mod tests {

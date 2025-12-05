@@ -8,6 +8,108 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Language Server Protocol (LSP) Support (Phase 9 - Complete)**: Universal editor integration via LSP
+  - **LSP server binary** (`async-inspect-lsp`) for any LSP-compatible editor
+    * Standalone binary built with `--features lsp`
+    * Communicates via stdin/stdout following LSP specification
+    * Lightweight and performant server implementation
+  - **Diagnostics** for async code quality
+    * Detects untracked `tokio::spawn` calls (code: `async-inspect-001`)
+    * Identifies missing `.inspect()` on await points (code: `async-inspect-002`)
+    * Real-time analysis as you type
+    * Configurable severity levels (hint, info, warning, error)
+  - **Code actions** for quick fixes
+    * Convert `tokio::spawn` to `spawn_tracked` with one click
+    * Add `.inspect("label")` before `.await` automatically
+    * Preserve code formatting and indentation
+    * Batch apply multiple fixes
+  - **Hover information** displaying live statistics
+    * Total tasks count
+    * Running, completed, failed, and blocked task counts
+    * Direct link to dashboard (http://localhost:8080)
+    * Markdown-formatted for rich display
+  - **Autocompletion** for async-inspect APIs
+    * `spawn_tracked` with snippet support
+    * `.inspect()` method completion
+    * Parameter hints and documentation
+  - **Editor configurations** for popular editors
+    * Neovim (nvim-lspconfig): [lsp-config/neovim.lua](lsp-config/neovim.lua)
+    * Emacs (lsp-mode): [lsp-config/emacs.el](lsp-config/emacs.el)
+    * Vim (vim-lsp): [lsp-config/vim.vim](lsp-config/vim.vim)
+    * Helix: [lsp-config/helix.toml](lsp-config/helix.toml)
+    * Sublime Text: [lsp-config/sublime-lsp.json](lsp-config/sublime-lsp.json)
+  - Module: `src/lsp/mod.rs` (420+ lines)
+  - Binary: `src/bin/async-inspect-lsp.rs`
+  - Documentation: [docs/lsp-guide.md](docs/lsp-guide.md) - Comprehensive LSP usage guide
+  - Dependencies: `tower-lsp` 0.20, `tokio-util` 0.7
+  - Feature flag: `lsp`
+  - **Phase 9 Ecosystem Integration is now 100% complete!** 🎉
+
+- **IntelliJ IDEA Plugin (Phase 9 - Ecosystem Integration)**: Real-time monitoring for IntelliJ IDEA and RustRover
+  - **WebSocket client** connecting to async-inspect dashboard server
+    * Automatic connection to localhost:8080
+    * Connection state management with visual indicators
+    * Event streaming with broadcast channels
+    * REST API fallback for initial state
+  - **Tool window UI** with comprehensive monitoring views
+    * Metrics panel showing total, running, completed, failed, and blocked tasks
+    * Task table with sortable columns (ID, Name, State, Parent, Polls, Duration)
+    * Event log with auto-scroll and 1000-event buffer
+    * Real-time updates via Kotlin coroutines and StateFlow
+  - **Timeline visualization panel** with custom Swing rendering
+    * Gantt-style timeline chart with interactive hover
+    * Color-coded task states (blue=running, green=completed, red=failed, yellow=blocked)
+    * Time-based scaling with automatic window adjustment
+    * Click to focus on specific tasks
+  - **Toolbar actions** for workflow integration
+    * Start/Stop Monitoring with connection state awareness
+    * Clear Tasks to reset view
+    * Export Data to JSON with file chooser dialog
+    * Settings dialog for host/port configuration
+  - **Service architecture** with application and project-level services
+    * InspectorService for global connection management
+    * ProjectInspectorService for per-project state
+    * Event listener interface for extensibility
+  - Directory: `intellij-plugin/` with Gradle build system
+  - Main files:
+    * `InspectorService.kt` (480+ lines) - Core WebSocket client and state management
+    * `AsyncInspectToolWindowFactory.kt` (200+ lines) - Main UI components
+    * `TimelinePanel.kt` (350+ lines) - Custom timeline visualization
+    * `plugin.xml` - Plugin manifest with actions and extensions
+  - Compatibility: IntelliJ IDEA 2023.3+ and RustRover
+  - Dependencies: Kotlin 1.9.22, kotlinx-coroutines, Gson, IntelliJ Platform SDK
+  - Documentation: `intellij-plugin/README.md` with setup and usage guide
+  - **Phase 9 is now 75% complete!**
+
+- **Web Dashboard (Phase 4 - Complete)**: Real-time browser-based monitoring with WebSockets
+  - **WebSocket server** using axum for real-time event streaming
+    * Event broadcasting to all connected clients
+    * Periodic metrics snapshots (100ms intervals)
+    * Automatic reconnection support
+    * Clean connection/disconnection handling
+  - **Interactive web frontend** with Chart.js and Tailwind CSS
+    * Live metrics dashboard with 5 key metrics cards (total, running, completed, failed, blocked)
+    * Real-time timeline chart showing running vs blocked tasks over time
+    * Searchable task table with state-based filtering
+    * Event log with auto-scroll, pause controls, and filtering
+    * Responsive design works on desktop and mobile
+  - **REST API fallback** for programmatic access
+    * `GET /` - Serve dashboard HTML
+    * `GET /ws` - WebSocket upgrade endpoint
+    * `GET /api/tasks` - Get all current tasks as JSON
+    * `GET /api/stats` - Get current statistics as JSON
+  - **Dashboard events** with comprehensive coverage
+    * TaskSpawned, TaskCompleted, TaskFailed events
+    * StateChanged for task state transitions
+    * MetricsSnapshot for periodic statistics
+    * AwaitStarted/AwaitEnded for await point tracking
+  - Module: `src/dashboard/mod.rs` (320 lines)
+  - Frontend: `src/dashboard/static/index.html` (500+ lines of HTML/JS/CSS)
+  - Example: `examples/dashboard_demo.rs` with 8 workers and background tasks
+  - Feature flag: `dashboard` (includes axum, tokio-tungstenite, tower-http)
+  - Usage: Start with `Dashboard::new(8080).start().await?`, open http://localhost:8080
+  - **Phase 4 is now 100% complete!**
+
 - **Performance Profiling (Phase 6 - Complete)**: Advanced profiling with lock contention and regression detection
   - **Lock contention metrics** tracking resource contention with detailed statistics
     * Contention rate calculation (contentions / acquisitions)

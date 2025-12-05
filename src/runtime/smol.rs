@@ -64,7 +64,6 @@ where
     })
 }
 
-
 /// A future wrapper that automatically tracks execution
 pub struct TrackedFuture<F> {
     future: F,

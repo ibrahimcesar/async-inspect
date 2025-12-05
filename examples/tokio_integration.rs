@@ -71,7 +71,7 @@ async fn main() {
     println!("\n=== Example 3: Complex operations ===\n");
 
     // Run complex operations that use .inspect() internally
-    let ops: Vec<_> = (20..=22).map(|i| complex_operation(i)).collect();
+    let ops: Vec<_> = (20..=22).map(complex_operation).collect();
 
     for op in ops {
         let result = op.await;

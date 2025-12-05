@@ -85,6 +85,11 @@ const config: Config = {
           label: 'crates.io',
           position: 'right',
         },
+        {
+          type: 'html',
+          position: 'right',
+          value: '<iframe src="https://github.com/sponsors/ibrahimcesar/button" title="Sponsor ibrahimcesar" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>',
+        },
       ],
     },
     footer: {

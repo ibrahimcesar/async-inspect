@@ -4,10 +4,12 @@
 //! async operations.
 
 use async_inspect::prelude::*;
+use colored::Colorize;
 use std::time::Duration;
 
 /// Simulated user data
 #[derive(Debug)]
+#[allow(dead_code)]
 struct User {
     id: u64,
     name: String,
@@ -101,7 +103,8 @@ async fn sequential_example() {
 
 #[tokio::main]
 async fn main() {
-    println!("🔍 async-inspect - Basic Inspection Example");
+    println!("{}", "[async-inspect]".on_purple().white().bold());
+    println!("{}", "Basic Inspection Example".bright_blue());
     println!("===========================================\n");
 
     // Reset the inspector

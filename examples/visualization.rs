@@ -6,6 +6,7 @@
 
 use async_inspect::prelude::*;
 use async_inspect::runtime::tokio::spawn_tracked;
+use colored::Colorize;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -115,14 +116,20 @@ async fn complex_workflow() {
 #[tokio::main]
 async fn main() {
     println!("╔════════════════════════════════════════════════════════════╗");
-    println!("║  async-inspect - Visualization Example                    ║");
+    println!(
+        "║  {} - Visualization Example                    ║",
+        "[async-inspect]".on_purple().white().bold()
+    );
     println!("╚════════════════════════════════════════════════════════════╝");
     println!();
 
     // Run the complex workflow
     complex_workflow().await;
 
-    println!("\n✅ Workflow completed!\n");
+    println!(
+        "\n{}\n",
+        "[OK] Workflow completed!".on_green().white().bold()
+    );
 
     // Get the reporter
     let reporter = Reporter::global();
@@ -153,20 +160,53 @@ async fn main() {
 
     match html_reporter.save_to_file(html_path) {
         Ok(_) => {
-            println!("\n✅ HTML report saved to: {}", html_path);
-            println!("\n🌐 Open it in your browser to explore:");
-            println!("   - Interactive timeline with hover details");
-            println!("   - Click on tasks to see full event history");
-            println!("   - Visual state machine flow");
-            println!("   - Expandable task details");
             println!(
-                "\n   Open: file://{}/{}",
+                "\n{} HTML report saved to: {}",
+                "[OK]".on_green().white().bold(),
+                html_path
+            );
+            println!(
+                "\n{} {}",
+                "[WEB]".on_truecolor(139, 69, 19).white().bold(),
+                "Open it in your browser to explore:".bright_white()
+            );
+            println!(
+                "   {} {}",
+                "-".bright_cyan(),
+                "Interactive timeline with hover details".bright_white()
+            );
+            println!(
+                "   {} {}",
+                "-".bright_cyan(),
+                "Click on tasks to see full event history".bright_white()
+            );
+            println!(
+                "   {} {}",
+                "-".bright_cyan(),
+                "Visual state machine flow".bright_white()
+            );
+            println!(
+                "   {} {}",
+                "-".bright_cyan(),
+                "Expandable task details".bright_white()
+            );
+            let url = format!(
+                "file://{}/{}",
                 std::env::current_dir().unwrap().display(),
                 html_path
             );
+            println!(
+                "\n   {} {}",
+                "Open:".bright_yellow().bold(),
+                url.bright_blue().underline()
+            );
         }
         Err(e) => {
-            println!("\n❌ Failed to save HTML report: {}", e);
+            println!(
+                "\n{} Failed to save HTML report: {}",
+                "[FAIL]".on_red().white().bold(),
+                e
+            );
         }
     }
 
@@ -177,21 +217,48 @@ async fn main() {
 
     let stats = Inspector::global().stats();
     println!(
-        "📊 Analyzed {} tasks with {} events",
-        stats.total_tasks, stats.total_events
+        "{} Analyzed {} tasks with {} events",
+        "[STATS]".on_blue().white().bold(),
+        stats.total_tasks,
+        stats.total_events
     );
     println!(
-        "⏱️  Total execution time: {:.2}s",
+        "{} Total execution time: {:.2}s",
+        "[TIME]".on_truecolor(204, 119, 34).white().bold(),
         stats.timeline_duration.as_secs_f64()
     );
-    println!("✅ Completed: {}", stats.completed_tasks);
-    println!("❌ Failed: {}", stats.failed_tasks);
+    println!(
+        "{} Completed: {}",
+        "[OK]".on_green().white().bold(),
+        stats.completed_tasks
+    );
+    println!(
+        "{} Failed: {}",
+        "[FAIL]".on_red().white().bold(),
+        stats.failed_tasks
+    );
 
-    println!("\n🎯 Next steps:");
-    println!("   1. Open the HTML report in your browser");
-    println!("   2. Examine the Gantt timeline above");
-    println!("   3. Look for bottlenecks and optimization opportunities");
-    println!("   4. Use async-inspect in your own async code!");
+    println!("\n{}", "[>] Next steps:".bright_cyan().bold());
+    println!(
+        "   {} {}",
+        "1.".bright_yellow(),
+        "Open the HTML report in your browser".bright_white()
+    );
+    println!(
+        "   {} {}",
+        "2.".bright_yellow(),
+        "Examine the Gantt timeline above".bright_white()
+    );
+    println!(
+        "   {} {}",
+        "3.".bright_yellow(),
+        "Look for bottlenecks and optimization opportunities".bright_white()
+    );
+    println!(
+        "   {} {}",
+        "4.".bright_yellow(),
+        "Use [async-inspect] in your own async code!".bright_white()
+    );
 
     println!();
 }

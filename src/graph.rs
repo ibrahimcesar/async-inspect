@@ -7,6 +7,8 @@ use crate::task::{TaskId, TaskInfo, TaskState};
 use parking_lot::RwLock;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt;
+use std::io::Write;
+use std::path::Path;
 use std::sync::Arc;
 
 /// Types of relationships between tasks
@@ -72,7 +74,7 @@ pub struct TaskGraph {
 
 impl TaskGraph {
     /// Create a new task graph
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             relationships: Vec::new(),
@@ -104,7 +106,7 @@ impl TaskGraph {
     }
 
     /// Get all relationships of a specific type
-    #[must_use] 
+    #[must_use]
     pub fn get_relationships_by_type(&self, rel_type: RelationshipType) -> Vec<&Relationship> {
         self.relationships
             .iter()
@@ -113,13 +115,13 @@ impl TaskGraph {
     }
 
     /// Get all tasks that a given task has a relationship with
-    #[must_use] 
+    #[must_use]
     pub fn get_related_tasks(&self, task_id: TaskId) -> Vec<(TaskId, RelationshipType)> {
         self.adjacency.get(&task_id).cloned().unwrap_or_default()
     }
 
     /// Get all tasks that have a relationship to a given task
-    #[must_use] 
+    #[must_use]
     pub fn get_dependent_tasks(&self, task_id: TaskId) -> Vec<(TaskId, RelationshipType)> {
         self.reverse_adjacency
             .get(&task_id)
@@ -128,13 +130,13 @@ impl TaskGraph {
     }
 
     /// Get a task by ID
-    #[must_use] 
+    #[must_use]
     pub fn get_task(&self, task_id: &TaskId) -> Option<&TaskInfo> {
         self.tasks.get(task_id)
     }
 
     /// Find the critical path (longest dependency chain)
-    #[must_use] 
+    #[must_use]
     pub fn find_critical_path(&self) -> Vec<TaskId> {
         let mut longest_path = Vec::new();
         let mut visited = HashSet::new();
@@ -181,7 +183,7 @@ impl TaskGraph {
     }
 
     /// Find all transitive dependencies of a task
-    #[must_use] 
+    #[must_use]
     pub fn find_transitive_dependencies(&self, task_id: TaskId) -> HashSet<TaskId> {
         let mut dependencies = HashSet::new();
         let mut queue = VecDeque::new();
@@ -193,10 +195,10 @@ impl TaskGraph {
                     if matches!(
                         rel_type,
                         RelationshipType::Dependency | RelationshipType::AwaitsOn
-                    )
-                        && dependencies.insert(*next_id) {
-                            queue.push_back(*next_id);
-                        }
+                    ) && dependencies.insert(*next_id)
+                    {
+                        queue.push_back(*next_id);
+                    }
                 }
             }
         }
@@ -205,7 +207,7 @@ impl TaskGraph {
     }
 
     /// Find all tasks sharing a resource
-    #[must_use] 
+    #[must_use]
     pub fn find_tasks_sharing_resource(&self, resource_name: &str) -> Vec<TaskId> {
         let mut tasks = HashSet::new();
 
@@ -224,7 +226,7 @@ impl TaskGraph {
     }
 
     /// Find channel communication pairs
-    #[must_use] 
+    #[must_use]
     pub fn find_channel_pairs(&self) -> Vec<(TaskId, TaskId)> {
         let mut pairs = Vec::new();
 
@@ -241,7 +243,7 @@ impl TaskGraph {
     }
 
     /// Detect potential deadlocks based on resource sharing
-    #[must_use] 
+    #[must_use]
     pub fn detect_potential_deadlocks(&self) -> Vec<Vec<TaskId>> {
         let mut deadlock_cycles = Vec::new();
         let mut visited = HashSet::new();
@@ -292,7 +294,7 @@ impl TaskGraph {
     }
 
     /// Generate DOT format for graphviz visualization
-    #[must_use] 
+    #[must_use]
     pub fn to_dot(&self) -> String {
         let mut dot = String::from("digraph TaskGraph {\n");
         dot.push_str("  rankdir=LR;\n");
@@ -364,7 +366,7 @@ impl TaskGraph {
     }
 
     /// Generate a text-based visualization
-    #[must_use] 
+    #[must_use]
     pub fn to_text(&self) -> String {
         let mut output = String::new();
         output.push_str("Task Relationship Graph\n");
@@ -384,14 +386,8 @@ impl TaskGraph {
             if !rels.is_empty() {
                 output.push_str(&format!("\n{rel_type} Relationships:\n"));
                 for rel in rels {
-                    let from_name = self
-                        .tasks
-                        .get(&rel.from)
-                        .map_or("?", |t| t.name.as_str());
-                    let to_name = self
-                        .tasks
-                        .get(&rel.to)
-                        .map_or("?", |t| t.name.as_str());
+                    let from_name = self.tasks.get(&rel.from).map_or("?", |t| t.name.as_str());
+                    let to_name = self.tasks.get(&rel.to).map_or("?", |t| t.name.as_str());
 
                     output.push_str(&format!("  {from_name} {rel_type} {to_name}"));
 
@@ -419,14 +415,8 @@ impl TaskGraph {
         for rel in &self.relationships {
             if rel.relationship_type == RelationshipType::SharedResource {
                 if let Some(ref name) = rel.resource_name {
-                    resources
-                        .entry(name.clone())
-                        .or_default()
-                        .push(rel.from);
-                    resources
-                        .entry(name.clone())
-                        .or_default()
-                        .push(rel.to);
+                    resources.entry(name.clone()).or_default().push(rel.from);
+                    resources.entry(name.clone()).or_default().push(rel.to);
                 }
             }
         }
@@ -450,6 +440,244 @@ impl TaskGraph {
 
         output
     }
+
+    /// Export the graph to a DOT file
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the file cannot be written.
+    ///
+    /// # Example
+    ///
+    /// ```rust,no_run
+    /// use async_inspect::graph::TaskGraph;
+    ///
+    /// let graph = TaskGraph::new();
+    /// graph.export_dot("task_graph.dot").unwrap();
+    /// ```
+    pub fn export_dot<P: AsRef<Path>>(&self, path: P) -> std::io::Result<()> {
+        let mut file = std::fs::File::create(path)?;
+        file.write_all(self.to_dot().as_bytes())?;
+        Ok(())
+    }
+
+    /// Export the graph to a JSON file
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the file cannot be written.
+    pub fn export_json<P: AsRef<Path>>(&self, path: P) -> std::io::Result<()> {
+        let json = self.to_json();
+        let mut file = std::fs::File::create(path)?;
+        file.write_all(json.as_bytes())?;
+        Ok(())
+    }
+
+    /// Generate JSON representation of the graph
+    #[must_use]
+    pub fn to_json(&self) -> String {
+        let mut json = String::from("{\n");
+
+        // Nodes
+        json.push_str("  \"nodes\": [\n");
+        let nodes: Vec<_> = self
+            .tasks
+            .iter()
+            .map(|(id, task)| {
+                format!(
+                    "    {{\"id\": {}, \"name\": \"{}\", \"state\": \"{}\"}}",
+                    id.as_u64(),
+                    task.name.replace('"', "\\\""),
+                    format!("{:?}", task.state).replace('"', "\\\"")
+                )
+            })
+            .collect();
+        json.push_str(&nodes.join(",\n"));
+        json.push_str("\n  ],\n");
+
+        // Edges
+        json.push_str("  \"edges\": [\n");
+        let edges: Vec<_> = self
+            .relationships
+            .iter()
+            .map(|rel| {
+                let mut edge = format!(
+                    "    {{\"from\": {}, \"to\": {}, \"type\": \"{:?}\"",
+                    rel.from.as_u64(),
+                    rel.to.as_u64(),
+                    rel.relationship_type
+                );
+                if let Some(ref resource) = rel.resource_name {
+                    edge.push_str(&format!(
+                        ", \"resource\": \"{}\"",
+                        resource.replace('"', "\\\"")
+                    ));
+                }
+                edge.push('}');
+                edge
+            })
+            .collect();
+        json.push_str(&edges.join(",\n"));
+        json.push_str("\n  ],\n");
+
+        // Stats
+        json.push_str("  \"stats\": {\n");
+        json.push_str(&format!("    \"total_tasks\": {},\n", self.tasks.len()));
+        json.push_str(&format!(
+            "    \"total_relationships\": {},\n",
+            self.relationships.len()
+        ));
+
+        let critical_path = self.find_critical_path();
+        json.push_str(&format!(
+            "    \"critical_path_length\": {}\n",
+            critical_path.len()
+        ));
+        json.push_str("  }\n");
+
+        json.push_str("}\n");
+        json
+    }
+
+    /// Generate Mermaid diagram format
+    ///
+    /// Mermaid is a JavaScript-based diagramming tool that renders
+    /// Markdown-inspired text definitions to create diagrams dynamically.
+    #[must_use]
+    pub fn to_mermaid(&self) -> String {
+        let mut mermaid = String::from("flowchart LR\n");
+
+        // Add nodes with styling based on state
+        for (task_id, task) in &self.tasks {
+            let id = format!("t{}", task_id.as_u64());
+            let label = task.name.replace('"', "'");
+
+            let node_def = match task.state {
+                TaskState::Pending => format!("    {id}[{label}]:::pending\n"),
+                TaskState::Running => format!("    {id}([{label}]):::running\n"),
+                TaskState::Blocked { .. } => format!("    {id}{{{{{label}}}}}:::blocked\n"),
+                TaskState::Completed => format!("    {id}[/{label}/]:::completed\n"),
+                TaskState::Failed => format!("    {id}[({label})]:::failed\n"),
+            };
+            mermaid.push_str(&node_def);
+        }
+
+        mermaid.push('\n');
+
+        // Add edges
+        for rel in &self.relationships {
+            let from = format!("t{}", rel.from.as_u64());
+            let to = format!("t{}", rel.to.as_u64());
+
+            let arrow = match rel.relationship_type {
+                RelationshipType::Spawned => "-->",
+                RelationshipType::ChannelSend | RelationshipType::ChannelReceive => "-.->",
+                RelationshipType::SharedResource => "o--o",
+                RelationshipType::DataFlow => "==>",
+                RelationshipType::AwaitsOn => "-->",
+                RelationshipType::Dependency => "-->",
+            };
+
+            let label = match (&rel.relationship_type, &rel.resource_name) {
+                (_, Some(resource)) => format!("|{resource}|"),
+                (RelationshipType::Spawned, None) => "|spawned|".to_string(),
+                (RelationshipType::ChannelSend, None) => "|send|".to_string(),
+                (RelationshipType::ChannelReceive, None) => "|recv|".to_string(),
+                (RelationshipType::SharedResource, None) => "|shares|".to_string(),
+                (RelationshipType::DataFlow, None) => "|data|".to_string(),
+                (RelationshipType::AwaitsOn, None) => "|awaits|".to_string(),
+                (RelationshipType::Dependency, None) => "|depends|".to_string(),
+            };
+
+            mermaid.push_str(&format!("    {from} {arrow}{label} {to}\n"));
+        }
+
+        // Add styling
+        mermaid.push_str("\n    classDef pending fill:#f9f9f9,stroke:#999\n");
+        mermaid.push_str("    classDef running fill:#bbdefb,stroke:#1976d2\n");
+        mermaid.push_str("    classDef blocked fill:#fff9c4,stroke:#fbc02d\n");
+        mermaid.push_str("    classDef completed fill:#c8e6c9,stroke:#388e3c\n");
+        mermaid.push_str("    classDef failed fill:#ffcdd2,stroke:#d32f2f\n");
+
+        mermaid
+    }
+
+    /// Export the graph to a Mermaid file
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the file cannot be written.
+    pub fn export_mermaid<P: AsRef<Path>>(&self, path: P) -> std::io::Result<()> {
+        let mut file = std::fs::File::create(path)?;
+        file.write_all(self.to_mermaid().as_bytes())?;
+        Ok(())
+    }
+
+    /// Get graph statistics
+    #[must_use]
+    pub fn stats(&self) -> GraphStats {
+        let mut stats = GraphStats::default();
+        stats.total_tasks = self.tasks.len();
+        stats.total_relationships = self.relationships.len();
+
+        for task in self.tasks.values() {
+            match task.state {
+                TaskState::Pending => stats.pending_tasks += 1,
+                TaskState::Running => stats.running_tasks += 1,
+                TaskState::Blocked { .. } => stats.blocked_tasks += 1,
+                TaskState::Completed => stats.completed_tasks += 1,
+                TaskState::Failed => stats.failed_tasks += 1,
+            }
+        }
+
+        for rel in &self.relationships {
+            match rel.relationship_type {
+                RelationshipType::Spawned => stats.spawn_relationships += 1,
+                RelationshipType::ChannelSend | RelationshipType::ChannelReceive => {
+                    stats.channel_relationships += 1;
+                }
+                RelationshipType::SharedResource => stats.resource_relationships += 1,
+                RelationshipType::DataFlow => stats.dataflow_relationships += 1,
+                RelationshipType::AwaitsOn | RelationshipType::Dependency => {
+                    stats.dependency_relationships += 1;
+                }
+            }
+        }
+
+        stats.critical_path_length = self.find_critical_path().len();
+        stats
+    }
+}
+
+/// Statistics about the task graph
+#[derive(Debug, Clone, Default)]
+pub struct GraphStats {
+    /// Total number of tasks
+    pub total_tasks: usize,
+    /// Total number of relationships
+    pub total_relationships: usize,
+    /// Number of pending tasks
+    pub pending_tasks: usize,
+    /// Number of running tasks
+    pub running_tasks: usize,
+    /// Number of blocked tasks
+    pub blocked_tasks: usize,
+    /// Number of completed tasks
+    pub completed_tasks: usize,
+    /// Number of failed tasks
+    pub failed_tasks: usize,
+    /// Number of spawn relationships
+    pub spawn_relationships: usize,
+    /// Number of channel relationships
+    pub channel_relationships: usize,
+    /// Number of shared resource relationships
+    pub resource_relationships: usize,
+    /// Number of data flow relationships
+    pub dataflow_relationships: usize,
+    /// Number of dependency relationships
+    pub dependency_relationships: usize,
+    /// Length of the critical path
+    pub critical_path_length: usize,
 }
 
 impl Default for TaskGraph {
@@ -463,7 +691,7 @@ static GRAPH: once_cell::sync::Lazy<Arc<RwLock<TaskGraph>>> =
     once_cell::sync::Lazy::new(|| Arc::new(RwLock::new(TaskGraph::new())));
 
 /// Get the global task graph
-#[must_use] 
+#[must_use]
 pub fn global_graph() -> Arc<RwLock<TaskGraph>> {
     Arc::clone(&GRAPH)
 }

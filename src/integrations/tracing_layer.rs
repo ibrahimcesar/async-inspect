@@ -34,6 +34,7 @@ pub struct AsyncInspectLayer {
 
 impl AsyncInspectLayer {
     /// Create a new tracing layer
+    #[must_use]
     pub fn new() -> Self {
         Self {
             span_map: Arc::new(Mutex::new(HashMap::new())),
@@ -82,8 +83,7 @@ where
                 // Update task state to running
                 let old_state = Inspector::global()
                     .get_task(task_id)
-                    .map(|t| t.state)
-                    .unwrap_or(TaskState::Pending);
+                    .map_or(TaskState::Pending, |t| t.state);
 
                 Inspector::global().update_task_state(task_id, TaskState::Running);
 
@@ -105,8 +105,7 @@ where
                 // Task is yielding/awaiting
                 let old_state = Inspector::global()
                     .get_task(task_id)
-                    .map(|t| t.state)
-                    .unwrap_or(TaskState::Running);
+                    .map_or(TaskState::Running, |t| t.state);
 
                 // Don't change state if already completed/failed
                 if !matches!(old_state, TaskState::Completed | TaskState::Failed) {
@@ -147,12 +146,12 @@ where
         // Try to get the current span's task_id
         if let Some(id) = _ctx.current_span().id() {
             if let Ok(map) = self.span_map.lock() {
-                if let Some(&task_id) = map.get(&id) {
+                if let Some(&task_id) = map.get(id) {
                     Inspector::global().add_event(
                         task_id,
                         EventKind::InspectionPoint {
                             label: metadata.name().to_string(),
-                            message: Some(format!("{:?}", event)),
+                            message: Some(format!("{event:?}")),
                         },
                     );
                 }

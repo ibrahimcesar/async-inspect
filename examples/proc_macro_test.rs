@@ -4,6 +4,7 @@
 //! for automatic instrumentation of async functions.
 
 use async_inspect::prelude::*;
+use colored::Colorize;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -86,10 +87,19 @@ async fn complex_pipeline() -> std::result::Result<String, String> {
 #[tokio::main]
 async fn main() {
     println!("╔════════════════════════════════════════════════════════════╗");
-    println!("║  async-inspect - Proc Macro Test Example                  ║");
+    println!(
+        "║  {} - Proc Macro Test Example                  ║",
+        "[async-inspect]".on_purple().white().bold()
+    );
     println!("╚════════════════════════════════════════════════════════════╝\n");
 
-    println!("🎯 This example tests the #[async_inspect::trace] macro\n");
+    println!(
+        "{}\n",
+        "[*] This example tests the #[async_inspect::trace] macro"
+            .on_yellow()
+            .white()
+            .bold()
+    );
     println!("   All async functions are automatically instrumented!");
     println!("   Every .await point is labeled and tracked.\n");
 

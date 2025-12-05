@@ -1,0 +1,5 @@
+{"version":3,"term":{"cols":80,"rows":24,"type":"xterm-256color"},"timestamp":1763909211,"command":"bash -c 'echo \"Running: cargo run --example performance_profiling --features tokio\" && timeout 5 cargo run --example performance_profiling --features tokio || echo \"Demo complete\"'","title":"async-inspect: Performance Profiling","env":{"SHELL":"/bin/zsh"}}
+[0.007, "o", "Running: cargo run --example performance_profiling --features tokio\r\n"]
+[0.000, "o", "bash: timeout: command not found\r\n"]
+[0.000, "o", "Demo complete\r\n"]
+[0.000, "x", "0"]

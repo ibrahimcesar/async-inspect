@@ -13,13 +13,13 @@ pub struct EventId(u64);
 
 impl EventId {
     /// Create a new event ID
-    #[must_use] 
+    #[must_use]
     pub fn new(id: u64) -> Self {
         Self(id)
     }
 
     /// Get the raw u64 value
-    #[must_use] 
+    #[must_use]
     pub fn as_u64(&self) -> u64 {
         self.0
     }
@@ -157,7 +157,7 @@ pub struct Event {
 
 impl Event {
     /// Create a new event
-    #[must_use] 
+    #[must_use]
     pub fn new(id: u64, task_id: TaskId, kind: EventKind) -> Self {
         Self {
             id: EventId::new(id),
@@ -168,7 +168,7 @@ impl Event {
     }
 
     /// Get the age of this event
-    #[must_use] 
+    #[must_use]
     pub fn age(&self) -> Duration {
         self.timestamp.elapsed()
     }
@@ -198,7 +198,7 @@ pub struct Timeline {
 
 impl Timeline {
     /// Create a new timeline
-    #[must_use] 
+    #[must_use]
     pub fn new() -> Self {
         Self {
             events: Vec::new(),
@@ -215,13 +215,13 @@ impl Timeline {
     }
 
     /// Get all events
-    #[must_use] 
+    #[must_use]
     pub fn events(&self) -> &[Event] {
         &self.events
     }
 
     /// Get events for a specific task
-    #[must_use] 
+    #[must_use]
     pub fn events_for_task(&self, task_id: TaskId) -> Vec<&Event> {
         self.events
             .iter()
@@ -230,20 +230,20 @@ impl Timeline {
     }
 
     /// Get the total duration of the timeline
-    #[must_use] 
+    #[must_use]
     pub fn duration(&self) -> Duration {
         self.start_time
             .map_or(Duration::ZERO, |start| start.elapsed())
     }
 
     /// Get number of events
-    #[must_use] 
+    #[must_use]
     pub fn len(&self) -> usize {
         self.events.len()
     }
 
     /// Check if timeline is empty
-    #[must_use] 
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.events.is_empty()
     }

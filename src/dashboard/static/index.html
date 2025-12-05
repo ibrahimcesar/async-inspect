@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>async-inspect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .status-dot {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .task-row:hover {
+            background-color: #f3f4f6;
+        }
+        .event-log {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <div class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-2xl font-bold text-gray-900">
+                    ⚡ async-inspect Dashboard
+                </h1>
+                <div class="flex items-center space-x-4">
+                    <div id="connection-status" class="flex items-center">
+                        <span class="status-dot h-3 w-3 rounded-full bg-green-500 mr-2"></span>
+                        <span class="text-sm text-gray-600">Live</span>
+                    </div>
+                    <button id="pause-btn" class="px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Pause
+                    </button>
+                    <button id="clear-btn" class="px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600">
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Metrics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">📊</span>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Total Tasks</dt>
+                                <dd class="text-2xl font-semibold text-gray-900" id="metric-total">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">▶️</span>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Running</dt>
+                                <dd class="text-2xl font-semibold text-blue-600" id="metric-running">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">✅</span>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Completed</dt>
+                                <dd class="text-2xl font-semibold text-green-600" id="metric-completed">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">❌</span>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Failed</dt>
+                                <dd class="text-2xl font-semibold text-red-600" id="metric-failed">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">⏸️</span>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Blocked</dt>
+                                <dd class="text-2xl font-semibold text-yellow-600" id="metric-blocked">0</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Chart -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">📈 Timeline (Last 60s)</h2>
+            <canvas id="timeline-chart" height="80"></canvas>
+        </div>
+
+        <!-- Task List -->
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-900">📋 Active Tasks</h2>
+                <input
+                    type="text"
+                    id="task-search"
+                    placeholder="Search tasks..."
+                    class="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Polls</th>
+                        </tr>
+                    </thead>
+                    <tbody id="task-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Tasks will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Event Log -->
+        <div class="bg-white shadow rounded-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-semibold text-gray-900">📜 Event Log</h2>
+                <div class="flex space-x-2">
+                    <label class="flex items-center text-sm text-gray-600">
+                        <input type="checkbox" id="auto-scroll" checked class="mr-2">
+                        Auto-scroll
+                    </label>
+                </div>
+            </div>
+            <div id="event-log" class="event-log bg-gray-900 text-green-400 p-4 rounded h-64 overflow-y-auto">
+                <div class="text-gray-500">Waiting for events...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // WebSocket connection
+        let ws;
+        let isPaused = false;
+        let tasks = new Map();
+        let taskStartTimes = new Map();
+        let eventLog = [];
+
+        // Chart setup
+        const ctx = document.getElementById('timeline-chart').getContext('2d');
+        const timelineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Running',
+                        data: [],
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Blocked',
+                        data: [],
+                        borderColor: 'rgb(234, 179, 8)',
+                        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Count'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Connect to WebSocket
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}/ws`;
+
+            ws = new WebSocket(wsUrl);
+
+            ws.onopen = () => {
+                console.log('Connected to dashboard');
+                updateConnectionStatus(true);
+            };
+
+            ws.onclose = () => {
+                console.log('Disconnected from dashboard');
+                updateConnectionStatus(false);
+                setTimeout(connect, 3000); // Reconnect after 3 seconds
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onmessage = (event) => {
+                if (isPaused) return;
+
+                try {
+                    const data = JSON.parse(event.data);
+                    handleEvent(data);
+                } catch (e) {
+                    console.error('Failed to parse event:', e);
+                }
+            };
+        }
+
+        // Handle dashboard events
+        function handleEvent(event) {
+            addToEventLog(event);
+
+            switch (event.type) {
+                case 'task_spawned':
+                    tasks.set(event.task_id, {
+                        id: event.task_id,
+                        name: event.name,
+                        state: 'Running',
+                        parent: event.parent,
+                        start_time: event.timestamp,
+                        polls: 0
+                    });
+                    taskStartTimes.set(event.task_id, Date.now());
+                    updateTaskTable();
+                    break;
+
+                case 'task_completed':
+                    if (tasks.has(event.task_id)) {
+                        tasks.get(event.task_id).state = 'Completed';
+                        tasks.get(event.task_id).duration_ms = event.duration_ms;
+                        updateTaskTable();
+                    }
+                    break;
+
+                case 'task_failed':
+                    if (tasks.has(event.task_id)) {
+                        tasks.get(event.task_id).state = 'Failed';
+                        updateTaskTable();
+                    }
+                    break;
+
+                case 'state_changed':
+                    if (tasks.has(event.task_id)) {
+                        tasks.get(event.task_id).state = event.new_state;
+                        updateTaskTable();
+                    }
+                    break;
+
+                case 'metrics_snapshot':
+                    updateMetrics(event);
+                    updateTimeline(event);
+                    break;
+
+                case 'await_started':
+                    if (tasks.has(event.task_id)) {
+                        tasks.get(event.task_id).state = 'Blocked';
+                        updateTaskTable();
+                    }
+                    break;
+
+                case 'await_ended':
+                    if (tasks.has(event.task_id)) {
+                        tasks.get(event.task_id).state = 'Running';
+                        updateTaskTable();
+                    }
+                    break;
+            }
+        }
+
+        // Update metrics cards
+        function updateMetrics(snapshot) {
+            document.getElementById('metric-total').textContent = snapshot.total_tasks;
+            document.getElementById('metric-running').textContent = snapshot.running_tasks;
+            document.getElementById('metric-completed').textContent = snapshot.completed_tasks;
+            document.getElementById('metric-failed').textContent = snapshot.failed_tasks;
+            document.getElementById('metric-blocked').textContent = snapshot.blocked_tasks;
+        }
+
+        // Update timeline chart
+        function updateTimeline(snapshot) {
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString();
+
+            timelineChart.data.labels.push(timeLabel);
+            timelineChart.data.datasets[0].data.push(snapshot.running_tasks);
+            timelineChart.data.datasets[1].data.push(snapshot.blocked_tasks);
+
+            // Keep only last 60 data points
+            if (timelineChart.data.labels.length > 60) {
+                timelineChart.data.labels.shift();
+                timelineChart.data.datasets[0].data.shift();
+                timelineChart.data.datasets[1].data.shift();
+            }
+
+            timelineChart.update('none'); // Update without animation
+        }
+
+        // Update task table
+        function updateTaskTable() {
+            const tbody = document.getElementById('task-table-body');
+            const searchTerm = document.getElementById('task-search').value.toLowerCase();
+
+            const filteredTasks = Array.from(tasks.values())
+                .filter(task => task.name.toLowerCase().includes(searchTerm))
+                .sort((a, b) => b.start_time - a.start_time)
+                .slice(0, 100); // Show max 100 tasks
+
+            tbody.innerHTML = filteredTasks.map(task => {
+                const duration = task.duration_ms !== undefined
+                    ? `${task.duration_ms.toFixed(2)}ms`
+                    : `${((Date.now() - taskStartTimes.get(task.id)) / 1000).toFixed(1)}s`;
+
+                const stateColor = {
+                    'Running': 'text-blue-600',
+                    'Blocked': 'text-yellow-600',
+                    'Completed': 'text-green-600',
+                    'Failed': 'text-red-600',
+                    'Pending': 'text-gray-600'
+                }[task.state] || 'text-gray-600';
+
+                return `
+                    <tr class="task-row">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${task.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${task.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm ${stateColor} font-medium">${task.state}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${duration}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${task.polls}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Add event to log
+        function addToEventLog(event) {
+            const log = document.getElementById('event-log');
+            const timestamp = new Date().toLocaleTimeString() + '.' + String(Date.now() % 1000).padStart(3, '0');
+
+            let message = `[${timestamp}] ${event.type}: `;
+
+            switch (event.type) {
+                case 'task_spawned':
+                    message += `${event.name} (id=${event.task_id})`;
+                    break;
+                case 'task_completed':
+                    message += `id=${event.task_id}, duration=${event.duration_ms.toFixed(2)}ms`;
+                    break;
+                case 'task_failed':
+                    message += `id=${event.task_id}${event.error ? ', error=' + event.error : ''}`;
+                    break;
+                case 'state_changed':
+                    message += `id=${event.task_id}, ${event.old_state} → ${event.new_state}`;
+                    break;
+                case 'metrics_snapshot':
+                    message += `tasks=${event.total_tasks}, running=${event.running_tasks}`;
+                    break;
+                default:
+                    message += JSON.stringify(event);
+            }
+
+            const entry = document.createElement('div');
+            entry.textContent = message;
+            entry.className = 'text-xs mb-1';
+
+            log.appendChild(entry);
+
+            // Auto-scroll
+            if (document.getElementById('auto-scroll').checked) {
+                log.scrollTop = log.scrollHeight;
+            }
+
+            // Keep only last 1000 entries
+            while (log.children.length > 1000) {
+                log.removeChild(log.firstChild);
+            }
+        }
+
+        // Update connection status indicator
+        function updateConnectionStatus(connected) {
+            const status = document.getElementById('connection-status');
+            const dot = status.querySelector('.status-dot');
+            const text = status.querySelector('span:last-child');
+
+            if (connected) {
+                dot.classList.remove('bg-red-500');
+                dot.classList.add('bg-green-500');
+                text.textContent = 'Live';
+            } else {
+                dot.classList.remove('bg-green-500');
+                dot.classList.add('bg-red-500');
+                text.textContent = 'Disconnected';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('pause-btn').addEventListener('click', () => {
+            isPaused = !isPaused;
+            document.getElementById('pause-btn').textContent = isPaused ? 'Resume' : 'Pause';
+            document.getElementById('pause-btn').classList.toggle('bg-blue-500');
+            document.getElementById('pause-btn').classList.toggle('bg-green-500');
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            tasks.clear();
+            taskStartTimes.clear();
+            document.getElementById('event-log').innerHTML = '<div class="text-gray-500">Event log cleared</div>';
+            updateTaskTable();
+        });
+
+        document.getElementById('task-search').addEventListener('input', updateTaskTable);
+
+        // Connect on load
+        connect();
+    </script>
+</body>
+</html>

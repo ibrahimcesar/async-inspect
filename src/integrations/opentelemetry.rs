@@ -36,6 +36,7 @@ impl OtelExporter {
     /// # Arguments
     ///
     /// * `service_name` - Name of the service for OTEL traces
+    #[must_use]
     pub fn new(service_name: &str) -> Self {
         // Create a tracer provider with basic configuration
         let provider = TracerProvider::builder()
@@ -155,8 +156,8 @@ impl OtelExporter {
                 old_state,
                 new_state,
             } => {
-                span.set_attribute(KeyValue::new("old_state", format!("{:?}", old_state)));
-                span.set_attribute(KeyValue::new("new_state", format!("{:?}", new_state)));
+                span.set_attribute(KeyValue::new("old_state", format!("{old_state:?}")));
+                span.set_attribute(KeyValue::new("new_state", format!("{new_state:?}")));
             }
             EventKind::TaskCompleted { duration } => {
                 span.set_attribute(KeyValue::new("duration_ms", duration.as_millis() as i64));

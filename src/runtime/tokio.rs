@@ -250,7 +250,7 @@ mod tests {
     #[tokio::test]
     async fn test_spawn_tracked_multiple() {
         let handles: Vec<_> = (0..5)
-            .map(|i| spawn_tracked(format!("test_multi_task_{}", i), async move { i * 2 }))
+            .map(|i| spawn_tracked(format!("test_multi_task_{i}"), async move { i * 2 }))
             .collect();
 
         for (i, handle) in handles.into_iter().enumerate() {
@@ -263,7 +263,7 @@ mod tests {
         for i in 0..5 {
             assert!(tasks
                 .iter()
-                .any(|t| t.name == format!("test_multi_task_{}", i)));
+                .any(|t| t.name == format!("test_multi_task_{i}")));
         }
     }
 }

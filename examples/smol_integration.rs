@@ -4,8 +4,8 @@
 //!
 //! Run with: cargo run --example smol_integration --features smol-runtime
 
-use async_inspect::runtime::smol::{spawn_tracked, InspectExt};
 use async_inspect::prelude::Inspector;
+use async_inspect::runtime::smol::{spawn_tracked, InspectExt};
 use std::time::Duration;
 
 async fn fetch_data(id: u32) -> String {
@@ -23,13 +23,13 @@ async fn worker_task(worker_id: u32) {
 
     // Use InspectExt trait to track inline futures
     let data = fetch_data(worker_id)
-        .inspect(&format!("fetch_data_{}", worker_id))
+        .inspect(format!("fetch_data_{}", worker_id))
         .await;
 
     println!("Worker {} fetched: {}", worker_id, data);
 
     let processed = process_data(data)
-        .inspect(&format!("process_data_{}", worker_id))
+        .inspect(format!("process_data_{}", worker_id))
         .await;
 
     println!("Worker {} completed: {}", worker_id, processed);
@@ -70,12 +70,16 @@ fn main() {
                 "Task: {} | ID: {} | Parent: {} | State: {:?}",
                 task.name,
                 task.id.as_u64(),
-                task.parent.map_or("None".to_string(), |p| p.as_u64().to_string()),
+                task.parent
+                    .map_or("None".to_string(), |p| p.as_u64().to_string()),
                 task.state
             );
         }
 
         println!("\n✅ Example completed successfully!");
-        println!("   {} tasks were tracked during execution", stats.total_tasks);
+        println!(
+            "   {} tasks were tracked during execution",
+            stats.total_tasks
+        );
     });
 }

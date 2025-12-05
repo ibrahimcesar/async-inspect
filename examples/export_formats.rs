@@ -61,8 +61,11 @@ async fn run_workflow() {
     let api_tasks: Vec<_> = (1..=3)
         .map(|i| {
             spawn_tracked(format!("api_call_{}", i), async move {
-                http_request(&format!("https://api.example.com/endpoint/{}", i), 100 + i * 20)
-                    .await
+                http_request(
+                    &format!("https://api.example.com/endpoint/{}", i),
+                    100 + i * 20,
+                )
+                .await
             })
         })
         .collect();
@@ -118,8 +121,14 @@ async fn main() {
     let inspector = Inspector::global();
     let stats = inspector.stats();
 
-    println!("📊 Captured {} tasks and {} events", stats.total_tasks, stats.total_events);
-    println!("⏱️  Timeline duration: {:.2}ms\n", stats.timeline_duration.as_secs_f64() * 1000.0);
+    println!(
+        "📊 Captured {} tasks and {} events",
+        stats.total_tasks, stats.total_events
+    );
+    println!(
+        "⏱️  Timeline duration: {:.2}ms\n",
+        stats.timeline_duration.as_secs_f64() * 1000.0
+    );
 
     // Create output directory
     let output_dir = "async_inspect_exports";
@@ -132,7 +141,7 @@ async fn main() {
     // 1. Export to JSON
     println!("1️⃣  JSON Export");
     let json_path = format!("{}/data.json", output_dir);
-    match JsonExporter::export_to_file(&inspector, &json_path) {
+    match JsonExporter::export_to_file(inspector, &json_path) {
         Ok(_) => println!("   ✅ Saved to: {}", json_path),
         Err(e) => println!("   ❌ Failed: {}", e),
     }
@@ -143,7 +152,7 @@ async fn main() {
     // 2. Export to CSV (Tasks)
     println!("2️⃣  CSV Export (Tasks)");
     let csv_tasks_path = format!("{}/tasks.csv", output_dir);
-    match CsvExporter::export_tasks_to_file(&inspector, &csv_tasks_path) {
+    match CsvExporter::export_tasks_to_file(inspector, &csv_tasks_path) {
         Ok(_) => println!("   ✅ Saved to: {}", csv_tasks_path),
         Err(e) => println!("   ❌ Failed: {}", e),
     }
@@ -154,7 +163,7 @@ async fn main() {
     // 3. Export to CSV (Events)
     println!("3️⃣  CSV Export (Events)");
     let csv_events_path = format!("{}/events.csv", output_dir);
-    match CsvExporter::export_events_to_file(&inspector, &csv_events_path) {
+    match CsvExporter::export_events_to_file(inspector, &csv_events_path) {
         Ok(_) => println!("   ✅ Saved to: {}", csv_events_path),
         Err(e) => println!("   ❌ Failed: {}", e),
     }
@@ -165,7 +174,7 @@ async fn main() {
     // 4. Export to Chrome Trace Event Format
     println!("4️⃣  Chrome Trace Event Format");
     let chrome_path = format!("{}/trace.json", output_dir);
-    match ChromeTraceExporter::export_to_file(&inspector, &chrome_path) {
+    match ChromeTraceExporter::export_to_file(inspector, &chrome_path) {
         Ok(_) => println!("   ✅ Saved to: {}", chrome_path),
         Err(e) => println!("   ❌ Failed: {}", e),
     }
@@ -177,7 +186,7 @@ async fn main() {
     // 5. Export to Flamegraph (basic)
     println!("5️⃣  Flamegraph Export (Basic)");
     let flamegraph_path = format!("{}/flamegraph.txt", output_dir);
-    match FlamegraphExporter::export_to_file(&inspector, &flamegraph_path) {
+    match FlamegraphExporter::export_to_file(inspector, &flamegraph_path) {
         Ok(_) => println!("   ✅ Saved to: {}", flamegraph_path),
         Err(e) => println!("   ❌ Failed: {}", e),
     }
@@ -191,8 +200,8 @@ async fn main() {
     let flamegraph_custom_path = format!("{}/flamegraph_filtered.txt", output_dir);
     let custom_result = FlamegraphBuilder::new()
         .include_polls(false) // Exclude poll events for cleaner view
-        .min_duration_ms(10)  // Only include operations >= 10ms
-        .export_to_file(&inspector, &flamegraph_custom_path);
+        .min_duration_ms(10) // Only include operations >= 10ms
+        .export_to_file(inspector, &flamegraph_custom_path);
 
     match custom_result {
         Ok(_) => println!("   ✅ Saved to: {}", flamegraph_custom_path),
@@ -207,7 +216,7 @@ async fn main() {
     {
         println!("7️⃣  Flamegraph SVG (Direct visualization)");
         let svg_path = format!("{}/flamegraph.svg", output_dir);
-        match FlamegraphExporter::generate_svg(&inspector, &svg_path) {
+        match FlamegraphExporter::generate_svg(inspector, &svg_path) {
             Ok(_) => {
                 println!("   ✅ Saved to: {}", svg_path);
                 println!("   📝 Contains: Self-contained SVG visualization");
@@ -254,7 +263,10 @@ async fn main() {
     println!();
     println!("  Or generate SVG locally:");
     println!("  cargo install inferno");
-    println!("  cat {} | inferno-flamegraph > flamegraph.svg", flamegraph_path);
+    println!(
+        "  cat {} | inferno-flamegraph > flamegraph.svg",
+        flamegraph_path
+    );
     println!();
 
     println!("For CSV Analysis:");
@@ -272,6 +284,9 @@ async fn main() {
     println!("  jq '.tasks[].name' {}", json_path);
     println!();
     println!("  # Find slowest task");
-    println!("  jq '.tasks | sort_by(.duration_ms) | reverse | .[0]' {}", json_path);
+    println!(
+        "  jq '.tasks | sort_by(.duration_ms) | reverse | .[0]' {}",
+        json_path
+    );
     println!();
 }

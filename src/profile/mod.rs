@@ -50,7 +50,7 @@ pub struct TaskMetrics {
 
 impl TaskMetrics {
     /// Create new task metrics
-    #[must_use] 
+    #[must_use]
     pub fn new(task_id: TaskId, name: String) -> Self {
         Self {
             task_id,
@@ -67,7 +67,7 @@ impl TaskMetrics {
     }
 
     /// Calculate efficiency (running time / total time)
-    #[must_use] 
+    #[must_use]
     pub fn efficiency(&self) -> f64 {
         if self.total_duration.is_zero() {
             return 0.0;
@@ -76,7 +76,7 @@ impl TaskMetrics {
     }
 
     /// Check if this task is a potential bottleneck
-    #[must_use] 
+    #[must_use]
     pub fn is_bottleneck(&self, threshold_ms: u64) -> bool {
         self.total_duration.as_millis() > u128::from(threshold_ms)
     }
@@ -112,7 +112,7 @@ pub struct DurationStats {
 
 impl DurationStats {
     /// Calculate statistics from a collection of durations
-    #[must_use] 
+    #[must_use]
     pub fn from_durations(mut durations: Vec<Duration>) -> Self {
         if durations.is_empty() {
             return Self {
@@ -277,7 +277,8 @@ impl LockContentionMetrics {
         }
 
         if self.successful_acquisitions > 0 {
-            self.contention_rate = self.contention_count as f64 / self.successful_acquisitions as f64;
+            self.contention_rate =
+                self.contention_count as f64 / self.successful_acquisitions as f64;
         }
     }
 
@@ -330,7 +331,13 @@ impl Profiler {
     }
 
     /// Record lock wait event
-    pub fn record_lock_wait(&mut self, resource_id: ResourceId, name: String, wait_time: Duration, task_id: TaskId) {
+    pub fn record_lock_wait(
+        &mut self,
+        resource_id: ResourceId,
+        name: String,
+        wait_time: Duration,
+        task_id: TaskId,
+    ) {
         let metrics = self
             .lock_contention
             .entry(resource_id)
@@ -375,7 +382,11 @@ impl Profiler {
     #[must_use]
     pub fn most_contended_locks(&self, count: usize) -> Vec<&LockContentionMetrics> {
         let mut metrics: Vec<_> = self.lock_contention.values().collect();
-        metrics.sort_by(|a, b| b.contention_rate.partial_cmp(&a.contention_rate).unwrap_or(std::cmp::Ordering::Equal));
+        metrics.sort_by(|a, b| {
+            b.contention_rate
+                .partial_cmp(&a.contention_rate)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
         metrics.into_iter().take(count).collect()
     }
 
@@ -410,19 +421,19 @@ impl Profiler {
     }
 
     /// Get metrics for a specific task
-    #[must_use] 
+    #[must_use]
     pub fn get_task_metrics(&self, task_id: &TaskId) -> Option<&TaskMetrics> {
         self.task_metrics.get(task_id)
     }
 
     /// Get all task metrics
-    #[must_use] 
+    #[must_use]
     pub fn all_metrics(&self) -> Vec<&TaskMetrics> {
         self.task_metrics.values().collect()
     }
 
     /// Identify bottleneck tasks
-    #[must_use] 
+    #[must_use]
     pub fn identify_bottlenecks(&self) -> Vec<&TaskMetrics> {
         self.task_metrics
             .values()
@@ -431,7 +442,7 @@ impl Profiler {
     }
 
     /// Get hot paths sorted by execution count
-    #[must_use] 
+    #[must_use]
     pub fn get_hot_paths(&self) -> Vec<&HotPath> {
         let mut paths: Vec<_> = self.hot_paths.values().collect();
         paths.sort_by(|a, b| b.execution_count.cmp(&a.execution_count));
@@ -439,7 +450,7 @@ impl Profiler {
     }
 
     /// Calculate overall statistics
-    #[must_use] 
+    #[must_use]
     pub fn calculate_stats(&self) -> DurationStats {
         let durations: Vec<Duration> = self
             .task_metrics
@@ -451,7 +462,7 @@ impl Profiler {
     }
 
     /// Calculate await point statistics
-    #[must_use] 
+    #[must_use]
     pub fn await_stats(&self) -> DurationStats {
         let mut all_await_durations = Vec::new();
 
@@ -463,7 +474,7 @@ impl Profiler {
     }
 
     /// Find slowest tasks
-    #[must_use] 
+    #[must_use]
     pub fn slowest_tasks(&self, count: usize) -> Vec<&TaskMetrics> {
         let mut metrics: Vec<_> = self.task_metrics.values().collect();
         metrics.sort_by(|a, b| b.total_duration.cmp(&a.total_duration));
@@ -471,7 +482,7 @@ impl Profiler {
     }
 
     /// Find tasks with most polls (busy tasks)
-    #[must_use] 
+    #[must_use]
     pub fn busiest_tasks(&self, count: usize) -> Vec<&TaskMetrics> {
         let mut metrics: Vec<_> = self.task_metrics.values().collect();
         metrics.sort_by(|a, b| b.poll_count.cmp(&a.poll_count));
@@ -498,11 +509,8 @@ impl Profiler {
         let lock_metrics = self.lock_contention.values().cloned().collect();
 
         let total_tasks = self.task_metrics.len();
-        let total_execution_time: Duration = self
-            .task_metrics
-            .values()
-            .map(|m| m.total_duration)
-            .sum();
+        let total_execution_time: Duration =
+            self.task_metrics.values().map(|m| m.total_duration).sum();
 
         let avg_task_duration = if total_tasks > 0 {
             total_execution_time / total_tasks as u32
@@ -564,8 +572,7 @@ mod tests {
         let efficiency = metrics.efficiency();
         assert!(
             (efficiency - 0.8).abs() < 0.01,
-            "Expected efficiency ~0.8, got {}",
-            efficiency
+            "Expected efficiency ~0.8, got {efficiency}"
         );
     }
 

@@ -6,21 +6,24 @@ use async_inspect::config::Config;
 use async_inspect::export::{CsvExporter, JsonExporter};
 use async_inspect::inspector::Inspector;
 use async_inspect::reporter::Reporter;
+use async_inspect::telemetry;
 use clap::{Parser, Subcommand};
+use colored::Colorize;
 use std::path::PathBuf;
+use std::time::Instant;
 
 #[cfg(feature = "cli")]
 use async_inspect::tui::run_tui;
 
-/// async-inspect - X-ray vision for async Rust 🔍
+/// async-inspect - X-ray vision for async Rust
 #[derive(Parser, Debug)]
 #[command(name = "async-inspect")]
 #[command(author, version)]
-#[command(about = "🔍 async-inspect - X-ray vision for async Rust")]
+#[command(about = "[async-inspect] X-ray vision for async Rust")]
 #[command(long_about = None)]
 #[command(arg_required_else_help = true)]
 #[command(
-    after_help = "📚 For detailed information, run: async-inspect info\n💡 Quick start guide, examples, and documentation available with 'info' command"
+    after_help = "[INFO] For detailed information, run: async-inspect info\n[TIP] Quick start guide, examples, and documentation available with 'info' command"
 )]
 struct Cli {
     #[command(subcommand)]
@@ -110,10 +113,17 @@ enum ConfigMode {
 }
 
 fn main() -> anyhow::Result<()> {
+    // Initialize telemetry early
+    telemetry::init();
+
+    let start_time = Instant::now();
     let cli = Cli::parse();
 
     if cli.verbose {
-        println!("🔍 async-inspect - Verbose mode enabled\n");
+        println!(
+            "{} - Verbose mode enabled\n",
+            "[async-inspect]".on_purple().white().bold()
+        );
     }
 
     let command = match cli.command {
@@ -125,13 +135,27 @@ fn main() -> anyhow::Result<()> {
         }
     };
 
-    match command {
+    // Get command name for telemetry
+    let command_name = match &command {
+        #[cfg(feature = "cli")]
+        Commands::Monitor { .. } => "monitor",
+        Commands::Export { .. } => "export",
+        Commands::Stats { .. } => "stats",
+        Commands::Config { .. } => "config",
+        Commands::Info => "info",
+        Commands::Version => "version",
+    };
+
+    let result = match command {
         #[cfg(feature = "cli")]
         Commands::Monitor { interval } => {
             println!("╔════════════════════════════════════════════════════════════╗");
-            println!("║  async-inspect - TUI Monitor                               ║");
+            println!(
+                "║  {} - TUI Monitor                               ║",
+                "[async-inspect]".on_purple().white().bold()
+            );
             println!("╚════════════════════════════════════════════════════════════╝\n");
-            println!("🎯 Launching TUI (update interval: {}ms)...\n", interval);
+            println!("[>] Launching TUI (update interval: {}ms)...\n", interval);
 
             let inspector = Inspector::global().clone();
 
@@ -141,7 +165,7 @@ fn main() -> anyhow::Result<()> {
 
             run_tui(inspector)?;
 
-            println!("\n✅ Monitor closed.");
+            println!("\n[OK] Monitor closed.");
             Ok(())
         }
 
@@ -154,23 +178,25 @@ fn main() -> anyhow::Result<()> {
             let stats = inspector.stats();
 
             if stats.total_tasks == 0 {
-                println!("⚠️  No tasks tracked yet. Use #[async_inspect::trace] in your code.");
+                println!("[WARN] No tasks tracked yet. Use #[async_inspect::trace] in your code.");
                 return Ok(());
             }
 
             println!(
-                "📤 Exporting {} tasks and {} events...",
-                stats.total_tasks, stats.total_events
+                "{} Exporting {} tasks and {} events...",
+                "[*]".on_yellow().white().bold(),
+                stats.total_tasks,
+                stats.total_events
             );
 
             match format {
                 ExportFormat::Json => {
                     JsonExporter::export_to_file(inspector, &output)?;
-                    println!("✅ Exported to JSON: {}", output.display());
+                    println!("[OK] Exported to JSON: {}", output.display());
                 }
                 ExportFormat::Csv => {
                     CsvExporter::export_tasks_to_file(inspector, &output)?;
-                    println!("✅ Exported tasks to CSV: {}", output.display());
+                    println!("[OK] Exported tasks to CSV: {}", output.display());
 
                     if with_events {
                         let mut events_path = output.clone();
@@ -179,7 +205,7 @@ fn main() -> anyhow::Result<()> {
                             output.file_stem().unwrap().to_string_lossy()
                         ));
                         CsvExporter::export_events_to_file(inspector, &events_path)?;
-                        println!("✅ Exported events to CSV: {}", events_path.display());
+                        println!("[OK] Exported events to CSV: {}", events_path.display());
                     }
                 }
             }
@@ -193,18 +219,21 @@ fn main() -> anyhow::Result<()> {
             let stats = inspector.stats();
 
             if stats.total_tasks == 0 {
-                println!("⚠️  No tasks tracked yet. Use #[async_inspect::trace] in your code.");
+                println!("[WARN] No tasks tracked yet. Use #[async_inspect::trace] in your code.");
                 return Ok(());
             }
 
             println!("╔════════════════════════════════════════════════════════════╗");
-            println!("║  async-inspect - Statistics                                ║");
+            println!(
+                "║  {} - Statistics                                ║",
+                "[async-inspect]".on_purple().white().bold()
+            );
             println!("╚════════════════════════════════════════════════════════════╝\n");
 
             reporter.print_summary();
 
             if detailed {
-                println!("\n📈 Performance Metrics\n");
+                println!("\n[STATS] Performance Metrics\n");
                 let profiler = inspector.build_profiler();
                 let perf_reporter = async_inspect::profile::PerformanceReporter::new(&profiler);
                 perf_reporter.print_report();
@@ -221,12 +250,16 @@ fn main() -> anyhow::Result<()> {
         } => {
             let config = Config::global();
 
-            println!("⚙️  Configuring async-inspect...\n");
+            println!(
+                "{} {}\n",
+                "[CONFIG]".on_cyan().white().bold(),
+                "Configuring [async-inspect]...".bright_white()
+            );
 
             match mode {
                 ConfigMode::Production => {
                     config.production_mode();
-                    println!("✅ Applied production mode:");
+                    println!("[OK] Applied production mode:");
                     println!("   • 1% sampling (1 in 100 tasks)");
                     println!("   • 1,000 event limit");
                     println!("   • 500 task limit");
@@ -235,7 +268,7 @@ fn main() -> anyhow::Result<()> {
                 }
                 ConfigMode::Development => {
                     config.development_mode();
-                    println!("✅ Applied development mode:");
+                    println!("[OK] Applied development mode:");
                     println!("   • Full sampling (all tasks)");
                     println!("   • 10,000 event limit");
                     println!("   • 1,000 task limit");
@@ -244,7 +277,7 @@ fn main() -> anyhow::Result<()> {
                 }
                 ConfigMode::Debug => {
                     config.debug_mode();
-                    println!("✅ Applied debug mode:");
+                    println!("[OK] Applied debug mode:");
                     println!("   • Full sampling (all tasks)");
                     println!("   • Unlimited events");
                     println!("   • Unlimited tasks");
@@ -254,21 +287,21 @@ fn main() -> anyhow::Result<()> {
                 ConfigMode::Custom => {
                     if let Some(rate) = sampling_rate {
                         config.set_sampling_rate(rate);
-                        println!("✅ Set sampling rate: 1 in {}", rate);
+                        println!("[OK] Set sampling rate: 1 in {}", rate);
                     }
                     if let Some(events) = max_events {
                         config.set_max_events(events);
-                        println!("✅ Set max events: {}", events);
+                        println!("[OK] Set max events: {}", events);
                     }
                     if let Some(tasks) = max_tasks {
                         config.set_max_tasks(tasks);
-                        println!("✅ Set max tasks: {}", tasks);
+                        println!("[OK] Set max tasks: {}", tasks);
                     }
-                    println!("\n✅ Applied custom configuration");
+                    println!("\n[OK] Applied custom configuration");
                 }
             }
 
-            println!("\n📋 Current Configuration:");
+            println!("\n[CONFIG] Current Configuration:");
             print_config(config);
 
             Ok(())
@@ -280,16 +313,27 @@ fn main() -> anyhow::Result<()> {
             let stats = inspector.stats();
 
             println!("╔════════════════════════════════════════════════════════════╗");
-            println!("║  async-inspect - Information                               ║");
+            println!(
+                "║  {} - Information                               ║",
+                "[async-inspect]".on_purple().white().bold()
+            );
             println!("╚════════════════════════════════════════════════════════════╝\n");
 
-            println!("📦 Version: {}", env!("CARGO_PKG_VERSION"));
-            println!("📝 Description: {}\n", env!("CARGO_PKG_DESCRIPTION"));
+            println!(
+                "{} Version: {}",
+                "[*]".on_yellow().white().bold(),
+                env!("CARGO_PKG_VERSION")
+            );
+            println!(
+                "{} Description: {}\n",
+                "[*]".on_yellow().white().bold(),
+                env!("CARGO_PKG_DESCRIPTION")
+            );
 
-            println!("⚙️  Configuration:");
+            println!("[CONFIG] Configuration:");
             print_config(config);
 
-            println!("\n📊 Current State:");
+            println!("\n[STATS] Current State:");
             println!("  Total tasks:     {}", stats.total_tasks);
             println!("  Running tasks:   {}", stats.running_tasks);
             println!("  Completed tasks: {}", stats.completed_tasks);
@@ -302,13 +346,13 @@ fn main() -> anyhow::Result<()> {
 
             let overhead = config.overhead_stats();
             if overhead.calls > 0 {
-                println!("\n🔧 Overhead Statistics:");
+                println!("\n[PERF] Overhead Statistics:");
                 println!("  Total overhead:        {:.2}ms", overhead.total_ms());
                 println!("  Instrumentation calls: {}", overhead.calls);
                 println!("  Average per call:      {:.2}µs", overhead.avg_us());
             }
 
-            println!("\n📚 Features:");
+            println!("\n[INFO] Features:");
             println!("  • Task tracking and inspection");
             println!("  • Automatic instrumentation (#[async_inspect::trace])");
             println!("  • Deadlock detection");
@@ -318,12 +362,24 @@ fn main() -> anyhow::Result<()> {
             println!("  • JSON/CSV export");
             println!("  • Production-ready configuration");
 
-            println!("\n🔗 Links:");
-            println!("  Homepage:      {}", env!("CARGO_PKG_HOMEPAGE"));
-            println!("  Repository:    {}", env!("CARGO_PKG_REPOSITORY"));
-            println!("  Documentation: https://docs.rs/async-inspect");
+            println!("\n{}", "[*] Links:".on_yellow().white().bold());
+            println!(
+                "  {} {}",
+                "Homepage:     ".bright_white(),
+                env!("CARGO_PKG_HOMEPAGE").bright_blue()
+            );
+            println!(
+                "  {} {}",
+                "Repository:   ".bright_white(),
+                env!("CARGO_PKG_REPOSITORY").bright_blue()
+            );
+            println!(
+                "  {} {}",
+                "Documentation:".bright_white(),
+                "https://docs.rs/async-inspect".bright_blue()
+            );
 
-            println!("\n💡 Quick Start:");
+            println!("\n{}", "[*] Quick Start:".on_yellow().white().bold());
             println!("  1. Add to your Cargo.toml:");
             println!("     async-inspect = \"{}\"", env!("CARGO_PKG_VERSION"));
             println!("\n  2. Annotate async functions:");
@@ -338,7 +394,11 @@ fn main() -> anyhow::Result<()> {
         }
 
         Commands::Version => {
-            println!("async-inspect {}", env!("CARGO_PKG_VERSION"));
+            println!(
+                "{} {}",
+                "[async-inspect]".on_purple().white().bold(),
+                env!("CARGO_PKG_VERSION")
+            );
             println!("X-ray vision for async Rust\n");
 
             println!("Features enabled:");
@@ -346,13 +406,22 @@ fn main() -> anyhow::Result<()> {
             println!("  • cli (TUI support)");
             #[cfg(feature = "tokio")]
             println!("  • tokio");
+            #[cfg(feature = "telemetry")]
+            println!("  • telemetry (usage analytics)");
 
             println!("\nAuthors: {}", env!("CARGO_PKG_AUTHORS"));
             println!("License: {}", env!("CARGO_PKG_LICENSE"));
 
             Ok(())
         }
-    }
+    };
+
+    // Track command execution
+    let duration_ms = start_time.elapsed().as_millis() as u64;
+    let success = result.is_ok();
+    telemetry::track_command_sync(command_name, success, Some(duration_ms));
+
+    result
 }
 
 fn print_config(config: &Config) {

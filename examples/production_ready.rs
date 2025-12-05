@@ -7,6 +7,7 @@ use async_inspect::config::Config;
 use async_inspect::export::{CsvExporter, JsonExporter};
 use async_inspect::prelude::*;
 use async_inspect::runtime::tokio::spawn_tracked;
+use colored::Colorize;
 use std::time::Duration;
 use tokio::time::sleep;
 
@@ -88,7 +89,10 @@ async fn production_workload() {
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
     println!("╔════════════════════════════════════════════════════════════╗");
-    println!("║  async-inspect - Production-Ready Example                 ║");
+    println!(
+        "║  {} - Production-Ready Example                 ║",
+        "[async-inspect]".on_purple().white().bold()
+    );
     println!("╚════════════════════════════════════════════════════════════╝");
     println!();
 
@@ -96,7 +100,10 @@ async fn main() -> std::io::Result<()> {
     let config = Config::global();
     config.production_mode();
 
-    println!("📊 Production Configuration:");
+    println!(
+        "{}",
+        "[STATS] Production Configuration:".on_blue().white().bold()
+    );
     println!("   Sampling rate:   1 in {}", config.sampling_rate());
     println!("   Max events:      {}", config.max_events());
     println!("   Max tasks:       {}", config.max_tasks());
@@ -137,20 +144,20 @@ async fn main() -> std::io::Result<()> {
     println!("└────────────────────────────────────────────────────────────┘");
 
     let json_path = "production_export.json";
-    match JsonExporter::export_to_file(&Inspector::global(), json_path) {
+    match JsonExporter::export_to_file(Inspector::global(), json_path) {
         Ok(_) => println!("  ✅ JSON exported to: {}", json_path),
         Err(e) => println!("  ❌ JSON export failed: {}", e),
     }
 
     // Export to CSV
     let csv_tasks_path = "production_tasks.csv";
-    match CsvExporter::export_tasks_to_file(&Inspector::global(), csv_tasks_path) {
+    match CsvExporter::export_tasks_to_file(Inspector::global(), csv_tasks_path) {
         Ok(_) => println!("  ✅ Tasks CSV exported to: {}", csv_tasks_path),
         Err(e) => println!("  ❌ Tasks CSV export failed: {}", e),
     }
 
     let csv_events_path = "production_events.csv";
-    match CsvExporter::export_events_to_file(&Inspector::global(), csv_events_path) {
+    match CsvExporter::export_events_to_file(Inspector::global(), csv_events_path) {
         Ok(_) => println!("  ✅ Events CSV exported to: {}", csv_events_path),
         Err(e) => println!("  ❌ Events CSV export failed: {}", e),
     }
