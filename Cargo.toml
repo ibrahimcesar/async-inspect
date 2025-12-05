@@ -32,6 +32,10 @@ exclude = [
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
+[lints.rust]
+# Allow unstable feature check for async-std runtime integration
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(feature, values(\"unstable\"))"] }
+
 [lib]
 name = "async_inspect"
 path = "src/lib.rs"
@@ -241,6 +245,16 @@ required-features = ["tokio"]
 name = "dashboard_demo"
 path = "examples/dashboard_demo.rs"
 required-features = ["dashboard"]
+
+[[example]]
+name = "auto_lock_tracking"
+path = "examples/auto_lock_tracking.rs"
+required-features = ["tokio"]
+
+[[example]]
+name = "channel_visualization"
+path = "examples/channel_visualization.rs"
+required-features = ["tokio"]
 
 [[bench]]
 name = "overhead"
