@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Warning triangle -->
+  <path d="M100 30 L180 160 L20 160 Z" stroke="#ef4444" stroke-width="4" fill="#fef2f2"/>
+  <!-- Exclamation mark -->
+  <rect x="92" y="70" width="16" height="50" rx="4" fill="#ef4444"/>
+  <circle cx="100" cy="140" r="10" fill="#ef4444"/>
+  <!-- Circular arrows indicating cycle -->
+  <path d="M50 100 A50 50 0 0 1 100 50" stroke="#f97316" stroke-width="3" fill="none" stroke-dasharray="8 4"/>
+  <path d="M100 50 A50 50 0 0 1 150 100" stroke="#f97316" stroke-width="3" fill="none" stroke-dasharray="8 4"/>
+  <path d="M150 100 A50 50 0 0 1 100 150" stroke="#f97316" stroke-width="3" fill="none" stroke-dasharray="8 4"/>
+  <polygon points="45,95 50,105 55,95" fill="#f97316"/>
+  <polygon points="155,95 150,105 145,95" fill="#f97316"/>
+</svg>

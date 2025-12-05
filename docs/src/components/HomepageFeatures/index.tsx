@@ -11,32 +11,68 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
+    title: 'State Machine Inspection',
+    Svg: require('@site/static/img/feature-inspect.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        See exactly what your futures are doing. Inspect current state,
+        captured variables, and await points in real-time. No more guessing
+        why your async code is stuck.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Deadlock Detection',
+    Svg: require('@site/static/img/feature-deadlock.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Automatically detect circular dependencies and potential deadlocks
+        before they crash production. Get actionable diagnostics with
+        task dependency graphs.
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'Performance Profiling',
+    Svg: require('@site/static/img/feature-performance.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Identify bottlenecks with detailed timing analysis. Compare
+        performance across versions, detect regressions, and export
+        to Chrome DevTools and flamegraphs.
+      </>
+    ),
+  },
+  {
+    title: 'Multi-Runtime Support',
+    Svg: require('@site/static/img/feature-runtime.svg').default,
+    description: (
+      <>
+        Works with Tokio, async-std, smol, and more. One API for all
+        async runtimes with runtime-agnostic instrumentation and
+        zero-cost abstractions.
+      </>
+    ),
+  },
+  {
+    title: 'Real-Time Dashboard',
+    Svg: require('@site/static/img/feature-dashboard.svg').default,
+    description: (
+      <>
+        Monitor your async application with a live web dashboard or
+        terminal UI. Track task states, resource usage, and events
+        as they happen.
+      </>
+    ),
+  },
+  {
+    title: 'Execution Timeline',
+    Svg: require('@site/static/img/feature-timeline.svg').default,
+    description: (
+      <>
+        Visualize task execution with interactive timelines. See when
+        tasks start, await, resume, and complete. Perfect for debugging
+        complex concurrent workflows.
       </>
     ),
   },

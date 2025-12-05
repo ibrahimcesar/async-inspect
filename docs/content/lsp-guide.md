@@ -50,13 +50,13 @@ The binary will be located at `target/release/async-inspect-lsp`.
 
 ### 3. Configure Your Editor
 
-See the [lsp-config](../lsp-config/) directory for editor-specific configurations:
+See the [lsp-config directory on GitHub](https://github.com/ibrahimcesar/async-inspect/tree/main/lsp-config) for editor-specific configurations:
 
-- [Neovim](../lsp-config/neovim.lua)
-- [Emacs](../lsp-config/emacs.el)
-- [Vim](../lsp-config/vim.vim)
-- [Helix](../lsp-config/helix.toml)
-- [Sublime Text](../lsp-config/sublime-lsp.json)
+- [Neovim](https://github.com/ibrahimcesar/async-inspect/blob/main/lsp-config/neovim.lua)
+- [Emacs](https://github.com/ibrahimcesar/async-inspect/blob/main/lsp-config/emacs.el)
+- [Vim](https://github.com/ibrahimcesar/async-inspect/blob/main/lsp-config/vim.vim)
+- [Helix](https://github.com/ibrahimcesar/async-inspect/blob/main/lsp-config/helix.toml)
+- [Sublime Text](https://github.com/ibrahimcesar/async-inspect/blob/main/lsp-config/sublime-lsp.json)
 
 ## Features
 
@@ -359,15 +359,15 @@ If you want to disable certain diagnostics, you can use your editor's LSP config
 
 Contributions to improve the LSP server are welcome:
 
-- **Report bugs**: https://github.com/async-inspect/async-inspect/issues
+- **Report bugs**: https://github.com/ibrahimcesar/async-inspect/issues
 - **Suggest features**: Open a discussion or issue
-- **Submit PRs**: See [CONTRIBUTING.md](../CONTRIBUTING.md)
+- **Submit PRs**: See [CONTRIBUTING.md](https://github.com/ibrahimcesar/async-inspect/blob/main/CONTRIBUTING.md)
 
 ## Resources
 
 - [LSP Specification](https://microsoft.github.io/language-server-protocol/)
-- [async-inspect Documentation](https://github.com/async-inspect/async-inspect)
-- [Editor Configurations](../lsp-config/)
+- [async-inspect Documentation](https://github.com/ibrahimcesar/async-inspect)
+- [Editor Configurations](https://github.com/ibrahimcesar/async-inspect/tree/main/lsp-config)
 
 ---
 

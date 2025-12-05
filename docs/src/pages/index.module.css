@@ -20,4 +20,85 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.codeExample {
+  padding: 4rem 0;
+  background: var(--ifm-background-surface-color);
+}
+
+.codeExampleTitle {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.codeExampleContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media screen and (max-width: 996px) {
+  .codeExampleContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+.codeBlock {
+  background: var(--ifm-code-background);
+  border-radius: 8px;
+  padding: 1.5rem;
+  overflow-x: auto;
+}
+
+.codeBlock pre {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.codeBlock code {
+  background: transparent;
+  padding: 0;
+}
+
+.codeBlockLabel {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--ifm-font-color-base);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.installSection {
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.installCommand {
+  display: inline-block;
+  background: var(--ifm-code-background);
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 1.1rem;
+  margin-top: 1rem;
+}
+
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  height: 20px;
 }
