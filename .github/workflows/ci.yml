@@ -234,9 +234,10 @@ jobs:
           key: ${{ runner.os }}-cargo-msrv-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Check with MSRV
-        # Exclude features requiring ICU crates (Rust 1.82+): telemetry, lsp, dashboard
-        # These features depend on url crate which pulls in icu_* dependencies
-        run: cargo check --no-default-features --features "cli,tokio,prometheus-export,flamegraph"
+        # Exclude features requiring Rust 1.82+: telemetry, lsp, dashboard, flamegraph
+        # - telemetry/lsp/dashboard: url crate pulls in ICU dependencies
+        # - flamegraph: inferno pulls in indexmap 2.12+
+        run: cargo check --no-default-features --features "cli,tokio,prometheus-export"
 
   # Dependency review (PRs only)
   dependency-review:
