@@ -102,12 +102,14 @@ pub mod integrations;
 ///
 /// Drop-in replacements for `tokio::sync::Mutex`, `RwLock`, and `Semaphore`
 /// with automatic contention tracking and deadlock detection integration.
+#[cfg(feature = "tokio")]
 pub mod sync;
 
 /// Tracked channel primitives
 ///
 /// Drop-in replacements for `tokio::sync::mpsc`, `oneshot`, and `broadcast`
 /// channels with automatic message flow tracking.
+#[cfg(feature = "tokio")]
 pub mod channel;
 
 /// Terminal User Interface
@@ -173,6 +175,7 @@ pub mod prelude {
     pub use crate::instrument::{InspectContext, TaskGuard};
     pub use crate::reporter::html::HtmlReporter;
     pub use crate::reporter::Reporter;
+    #[cfg(feature = "tokio")]
     pub use crate::sync::{LockMetrics, Mutex, MutexGuard, RwLock, Semaphore};
     pub use crate::task::{
         sort_tasks, SortDirection, TaskFilter, TaskId, TaskInfo, TaskSortBy, TaskState,
