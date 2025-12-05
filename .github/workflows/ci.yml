@@ -234,7 +234,8 @@ jobs:
           key: ${{ runner.os }}-cargo-msrv-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Check with MSRV
-        run: cargo check --all-features
+        # Exclude telemetry feature which requires newer ICU crates (Rust 1.82+)
+        run: cargo check --features "cli,tokio,prometheus-export,flamegraph,dashboard,lsp"
 
   # Dependency review (PRs only)
   dependency-review:
