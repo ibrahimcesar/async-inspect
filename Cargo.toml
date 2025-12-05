@@ -2,7 +2,7 @@
 name = "async-inspect"
 version = "0.1.0"
 edition = "2021"
-rust-version = "1.70"
+rust-version = "1.74"
 authors = ["Ibrahim Cesar <email@ibrahimcesar.com>"]
 license = "MIT"
 description = "X-ray vision for async Rust - inspect and debug async state machines"
@@ -59,8 +59,8 @@ clap = { version = "4.5", features = ["derive", "cargo"] }
 colored = "2.1"
 
 # TUI (optional)
-ratatui = { version = "0.25", optional = true }
-crossterm = { version = "0.27", optional = true }
+ratatui = { version = "0.29", optional = true }
+crossterm = { version = "0.28", optional = true }
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -88,7 +88,7 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", optional = true }
 
 # Ecosystem integrations (optional)
-prometheus = { version = "0.13", optional = true }
+prometheus = { version = "0.13", optional = true, default-features = false }
 opentelemetry = { version = "0.21", optional = true }
 opentelemetry_sdk = { version = "0.21", optional = true }
 

@@ -403,7 +403,7 @@ fn ui(f: &mut Frame, app: &mut TuiApp) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .constraints(constraints)
-        .split(f.size());
+        .split(f.area());
 
     let mut idx = 0;
     draw_header(f, chunks[idx], app);
@@ -584,7 +584,7 @@ fn draw_tasks(f: &mut Frame, area: Rect, app: &TuiApp) {
             .bottom_margin(1),
     )
     .block(Block::default().borders(Borders::ALL).title(title))
-    .highlight_style(Style::default().bg(Color::DarkGray));
+    .row_highlight_style(Style::default().bg(Color::DarkGray));
 
     f.render_widget(table, area);
 }
@@ -691,7 +691,7 @@ fn draw_dependency_graph(f: &mut Frame, area: Rect, app: &TuiApp) {
             .bottom_margin(1),
     )
     .block(Block::default().borders(Borders::ALL).title(title))
-    .highlight_style(Style::default().bg(Color::DarkGray));
+    .row_highlight_style(Style::default().bg(Color::DarkGray));
 
     f.render_widget(table, area);
 }
@@ -851,7 +851,7 @@ fn draw_help(f: &mut Frame) {
         .style(Style::default());
 
     // Center the help box
-    let area = centered_rect(60, 80, f.size());
+    let area = centered_rect(60, 80, f.area());
     f.render_widget(help, area);
 }
 
