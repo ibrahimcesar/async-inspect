@@ -130,7 +130,7 @@ async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     println!("└────────────────────────────────────────────────────────────┘\n");
 
     let json_path = "ecosystem_trace.json";
-    async_inspect::export::JsonExporter::export_to_file(&Inspector::global(), json_path)?;
+    async_inspect::export::JsonExporter::export_to_file(Inspector::global(), json_path)?;
     println!("✅ Exported trace to: {}", json_path);
 
     // Print integration recommendations

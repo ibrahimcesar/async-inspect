@@ -201,16 +201,13 @@ impl<T> Receiver<T> {
     pub async fn recv(&mut self) -> Option<T> {
         let timer = WaitTimer::start();
 
-        match self.inner.recv().await {
-            Some(value) => {
-                let wait_time = timer.elapsed_if_waited();
-                self.metrics.record_recv(wait_time);
-                Some(value)
-            }
-            None => {
-                self.metrics.mark_closed();
-                None
-            }
+        if let Some(value) = self.inner.recv().await {
+            let wait_time = timer.elapsed_if_waited();
+            self.metrics.record_recv(wait_time);
+            Some(value)
+        } else {
+            self.metrics.mark_closed();
+            None
         }
     }
 
@@ -345,16 +342,13 @@ impl<T> UnboundedReceiver<T> {
     pub async fn recv(&mut self) -> Option<T> {
         let timer = WaitTimer::start();
 
-        match self.inner.recv().await {
-            Some(value) => {
-                let wait_time = timer.elapsed_if_waited();
-                self.metrics.record_recv(wait_time);
-                Some(value)
-            }
-            None => {
-                self.metrics.mark_closed();
-                None
-            }
+        if let Some(value) = self.inner.recv().await {
+            let wait_time = timer.elapsed_if_waited();
+            self.metrics.record_recv(wait_time);
+            Some(value)
+        } else {
+            self.metrics.mark_closed();
+            None
         }
     }
 
@@ -418,7 +412,7 @@ impl<T> fmt::Display for SendError<T> {
 
 impl<T: fmt::Debug> std::error::Error for SendError<T> {}
 
-/// Error returned when try_send fails.
+/// Error returned when `try_send` fails.
 #[derive(Debug)]
 pub enum TrySendError<T> {
     /// Channel is full.
@@ -438,7 +432,7 @@ impl<T> fmt::Display for TrySendError<T> {
 
 impl<T: fmt::Debug> std::error::Error for TrySendError<T> {}
 
-/// Error returned when try_recv fails.
+/// Error returned when `try_recv` fails.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TryRecvError {
     /// Channel is empty.

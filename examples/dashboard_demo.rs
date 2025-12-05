@@ -35,17 +35,17 @@ async fn worker_task(worker_id: u32, num_requests: u32) {
 
         // Fetch data
         let data = fetch_api_data(global_id, (50 + (request_id % 3) * 50) as u64)
-            .inspect(&format!("fetch_api_{}", global_id))
+            .inspect(format!("fetch_api_{}", global_id))
             .await;
 
         // Process data
         let processed = process_data(data, (30 + (request_id % 2) * 30) as u64)
-            .inspect(&format!("process_{}", global_id))
+            .inspect(format!("process_{}", global_id))
             .await;
 
         // Write to database
         write_to_db(processed, (20 + (request_id % 4) * 20) as u64)
-            .inspect(&format!("write_db_{}", global_id))
+            .inspect(format!("write_db_{}", global_id))
             .await;
 
         println!(

@@ -343,7 +343,7 @@ impl PerformanceComparison {
                 findings.push(Finding {
                     severity: FindingSeverity::Info,
                     category: FindingCategory::Throughput,
-                    description: format!("Throughput changed by {:.1}%", throughput_change),
+                    description: format!("Throughput changed by {throughput_change:.1}%"),
                     impact_percent: throughput_change,
                 });
             }

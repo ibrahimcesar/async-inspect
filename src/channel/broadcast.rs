@@ -228,7 +228,7 @@ impl fmt::Display for RecvError {
 
 impl std::error::Error for RecvError {}
 
-/// Error returned when try_recv fails.
+/// Error returned when `try_recv` fails.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TryRecvError {
     /// The channel is empty.

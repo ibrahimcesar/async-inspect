@@ -146,7 +146,7 @@ impl FlamegraphExporter {
         let mut svg_output = File::create(path)?;
 
         flamegraph::from_reader(&mut options, folded_bytes, &mut svg_output)
-            .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+            .map_err(io::Error::other)?;
 
         Ok(())
     }

@@ -38,7 +38,16 @@ use serde::{Deserialize, Serialize};
 use tower_lsp::jsonrpc::Result;
 
 #[cfg(feature = "lsp")]
-use tower_lsp::lsp_types::*;
+use tower_lsp::lsp_types::{
+    ClientCapabilities, CodeAction, CodeActionKind, CodeActionOrCommand, CodeActionParams,
+    CodeActionProviderCapability, CodeActionResponse, CompletionItem, CompletionItemKind,
+    CompletionOptions, CompletionParams, CompletionResponse, Diagnostic, DiagnosticSeverity,
+    DidChangeTextDocumentParams, DidOpenTextDocumentParams, DidSaveTextDocumentParams,
+    Documentation, Hover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams,
+    InitializeResult, InitializedParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType,
+    NumberOrString, Position, Range, ServerCapabilities, ServerInfo, TextDocumentSyncCapability,
+    TextDocumentSyncKind, TextEdit, Url, WorkspaceEdit,
+};
 
 #[cfg(feature = "lsp")]
 use tower_lsp::{Client, LanguageServer};
@@ -74,6 +83,7 @@ struct ServerState {
 #[cfg(feature = "lsp")]
 impl AsyncInspectLanguageServer {
     /// Create a new language server instance
+    #[must_use]
     pub fn new(client: Client) -> Self {
         Self {
             client,

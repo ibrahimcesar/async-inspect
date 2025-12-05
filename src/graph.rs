@@ -521,7 +521,7 @@ impl TaskGraph {
         json.push_str("\n  ],\n");
 
         // Stats
-        json.push_str(&format!("  \"stats\": {{\n"));
+        json.push_str("  \"stats\": {\n");
         json.push_str(&format!("    \"total_tasks\": {},\n", self.tasks.len()));
         json.push_str(&format!(
             "    \"total_relationships\": {},\n",
@@ -579,7 +579,7 @@ impl TaskGraph {
             };
 
             let label = match (&rel.relationship_type, &rel.resource_name) {
-                (_, Some(resource)) => format!("|{}|", resource),
+                (_, Some(resource)) => format!("|{resource}|"),
                 (RelationshipType::Spawned, None) => "|spawned|".to_string(),
                 (RelationshipType::ChannelSend, None) => "|send|".to_string(),
                 (RelationshipType::ChannelReceive, None) => "|recv|".to_string(),
@@ -634,12 +634,12 @@ impl TaskGraph {
             match rel.relationship_type {
                 RelationshipType::Spawned => stats.spawn_relationships += 1,
                 RelationshipType::ChannelSend | RelationshipType::ChannelReceive => {
-                    stats.channel_relationships += 1
+                    stats.channel_relationships += 1;
                 }
                 RelationshipType::SharedResource => stats.resource_relationships += 1,
                 RelationshipType::DataFlow => stats.dataflow_relationships += 1,
                 RelationshipType::AwaitsOn | RelationshipType::Dependency => {
-                    stats.dependency_relationships += 1
+                    stats.dependency_relationships += 1;
                 }
             }
         }

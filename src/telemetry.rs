@@ -202,8 +202,7 @@ pub fn disable() {
 pub fn is_enabled() -> bool {
     #[cfg(feature = "telemetry")]
     {
-        !TELEMETRY_DISABLED.load(Ordering::Relaxed)
-            && get().map(|t| t.is_enabled()).unwrap_or(false)
+        !TELEMETRY_DISABLED.load(Ordering::Relaxed) && get().is_some_and(Telemetry::is_enabled)
     }
     #[cfg(not(feature = "telemetry"))]
     {

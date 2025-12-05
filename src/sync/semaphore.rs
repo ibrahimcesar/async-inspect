@@ -128,31 +128,28 @@ impl Semaphore {
         let timer = WaitTimer::start();
 
         // Actually acquire the permit
-        match self.inner.acquire().await {
-            Ok(permit) => {
-                // Record metrics
-                let wait_time = timer.elapsed_if_contended();
-                self.metrics.record_acquisition(wait_time);
+        if let Ok(permit) = self.inner.acquire().await {
+            // Record metrics
+            let wait_time = timer.elapsed_if_contended();
+            self.metrics.record_acquisition(wait_time);
 
-                // Record successful acquisition
-                if let Some(tid) = task_id {
-                    detector.acquire(tid, self.resource_id);
-                }
+            // Record successful acquisition
+            if let Some(tid) = task_id {
+                detector.acquire(tid, self.resource_id);
+            }
 
-                Ok(SemaphorePermit {
-                    permit,
-                    resource_id: self.resource_id,
-                    task_id,
-                    detector: detector.clone(),
-                })
+            Ok(SemaphorePermit {
+                permit,
+                resource_id: self.resource_id,
+                task_id,
+                detector: detector.clone(),
+            })
+        } else {
+            // Clear wait state on error
+            if let Some(tid) = task_id {
+                detector.release(tid, self.resource_id);
             }
-            Err(_) => {
-                // Clear wait state on error
-                if let Some(tid) = task_id {
-                    detector.release(tid, self.resource_id);
-                }
-                Err(AcquireError(()))
-            }
+            Err(AcquireError(()))
         }
     }
 
@@ -183,28 +180,25 @@ impl Semaphore {
 
         let timer = WaitTimer::start();
 
-        match self.inner.acquire_many(n).await {
-            Ok(permit) => {
-                let wait_time = timer.elapsed_if_contended();
-                self.metrics.record_acquisition(wait_time);
+        if let Ok(permit) = self.inner.acquire_many(n).await {
+            let wait_time = timer.elapsed_if_contended();
+            self.metrics.record_acquisition(wait_time);
 
-                if let Some(tid) = task_id {
-                    detector.acquire(tid, self.resource_id);
-                }
+            if let Some(tid) = task_id {
+                detector.acquire(tid, self.resource_id);
+            }
 
-                Ok(SemaphorePermit {
-                    permit,
-                    resource_id: self.resource_id,
-                    task_id,
-                    detector: detector.clone(),
-                })
+            Ok(SemaphorePermit {
+                permit,
+                resource_id: self.resource_id,
+                task_id,
+                detector: detector.clone(),
+            })
+        } else {
+            if let Some(tid) = task_id {
+                detector.release(tid, self.resource_id);
             }
-            Err(_) => {
-                if let Some(tid) = task_id {
-                    detector.release(tid, self.resource_id);
-                }
-                Err(AcquireError(()))
-            }
+            Err(AcquireError(()))
         }
     }
 
@@ -402,7 +396,7 @@ pub struct SemaphorePermit<'a> {
     detector: DeadlockDetector,
 }
 
-impl<'a> SemaphorePermit<'a> {
+impl SemaphorePermit<'_> {
     /// Forget this permit, preventing it from being released.
     ///
     /// This is useful for implementing manual permit management.
@@ -417,7 +411,7 @@ impl<'a> SemaphorePermit<'a> {
     }
 }
 
-impl<'a> Drop for SemaphorePermit<'a> {
+impl Drop for SemaphorePermit<'_> {
     fn drop(&mut self) {
         if let Some(tid) = self.task_id {
             self.detector.release(tid, self.resource_id);
@@ -425,7 +419,7 @@ impl<'a> Drop for SemaphorePermit<'a> {
     }
 }
 
-impl<'a> fmt::Debug for SemaphorePermit<'a> {
+impl fmt::Debug for SemaphorePermit<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("SemaphorePermit")
             .field("resource_id", &self.resource_id)

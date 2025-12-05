@@ -82,7 +82,9 @@ impl<T> Sender<T> {
     /// Check if the receiver has been dropped.
     #[must_use]
     pub fn is_closed(&self) -> bool {
-        self.inner.as_ref().map_or(true, |tx| tx.is_closed())
+        self.inner
+            .as_ref()
+            .map_or(true, tokio::sync::oneshot::Sender::is_closed)
     }
 
     /// Get the channel name.
@@ -208,7 +210,7 @@ impl fmt::Display for RecvError {
 
 impl std::error::Error for RecvError {}
 
-/// Error returned when try_recv fails.
+/// Error returned when `try_recv` fails.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TryRecvError {
     /// The channel is empty (sender hasn't sent yet).

@@ -161,9 +161,9 @@ async fn main() {
     match html_reporter.save_to_file(html_path) {
         Ok(_) => {
             println!(
-                "\n{} {}",
+                "\n{} HTML report saved to: {}",
                 "[OK]".on_green().white().bold(),
-                format!("HTML report saved to: {}", html_path)
+                html_path
             );
             println!(
                 "\n{} {}",
@@ -190,23 +190,22 @@ async fn main() {
                 "-".bright_cyan(),
                 "Expandable task details".bright_white()
             );
+            let url = format!(
+                "file://{}/{}",
+                std::env::current_dir().unwrap().display(),
+                html_path
+            );
             println!(
                 "\n   {} {}",
                 "Open:".bright_yellow().bold(),
-                format!(
-                    "file://{}/{}",
-                    std::env::current_dir().unwrap().display(),
-                    html_path
-                )
-                .bright_blue()
-                .underline()
+                url.bright_blue().underline()
             );
         }
         Err(e) => {
             println!(
-                "\n{} {}",
+                "\n{} Failed to save HTML report: {}",
                 "[FAIL]".on_red().white().bold(),
-                format!("Failed to save HTML report: {}", e)
+                e
             );
         }
     }
@@ -218,30 +217,25 @@ async fn main() {
 
     let stats = Inspector::global().stats();
     println!(
-        "{} {}",
+        "{} Analyzed {} tasks with {} events",
         "[STATS]".on_blue().white().bold(),
-        format!(
-            "Analyzed {} tasks with {} events",
-            stats.total_tasks, stats.total_events
-        )
+        stats.total_tasks,
+        stats.total_events
     );
     println!(
-        "{} {}",
+        "{} Total execution time: {:.2}s",
         "[TIME]".on_truecolor(204, 119, 34).white().bold(),
-        format!(
-            "Total execution time: {:.2}s",
-            stats.timeline_duration.as_secs_f64()
-        )
+        stats.timeline_duration.as_secs_f64()
     );
     println!(
-        "{} {}",
+        "{} Completed: {}",
         "[OK]".on_green().white().bold(),
-        format!("Completed: {}", stats.completed_tasks)
+        stats.completed_tasks
     );
     println!(
-        "{} {}",
+        "{} Failed: {}",
         "[FAIL]".on_red().white().bold(),
-        format!("Failed: {}", stats.failed_tasks)
+        stats.failed_tasks
     );
 
     println!("\n{}", "[>] Next steps:".bright_cyan().bold());

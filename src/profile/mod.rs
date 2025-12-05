@@ -572,8 +572,7 @@ mod tests {
         let efficiency = metrics.efficiency();
         assert!(
             (efficiency - 0.8).abs() < 0.01,
-            "Expected efficiency ~0.8, got {}",
-            efficiency
+            "Expected efficiency ~0.8, got {efficiency}"
         );
     }
 

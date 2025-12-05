@@ -263,7 +263,7 @@ pub struct MutexGuard<'a, T> {
     detector: DeadlockDetector,
 }
 
-impl<'a, T> Deref for MutexGuard<'a, T> {
+impl<T> Deref for MutexGuard<'_, T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -271,13 +271,13 @@ impl<'a, T> Deref for MutexGuard<'a, T> {
     }
 }
 
-impl<'a, T> DerefMut for MutexGuard<'a, T> {
+impl<T> DerefMut for MutexGuard<'_, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.guard
     }
 }
 
-impl<'a, T> Drop for MutexGuard<'a, T> {
+impl<T> Drop for MutexGuard<'_, T> {
     fn drop(&mut self) {
         // Notify deadlock detector that we're releasing the lock
         if let Some(tid) = self.task_id {
@@ -286,7 +286,7 @@ impl<'a, T> Drop for MutexGuard<'a, T> {
     }
 }
 
-impl<'a, T: fmt::Debug> fmt::Debug for MutexGuard<'a, T> {
+impl<T: fmt::Debug> fmt::Debug for MutexGuard<'_, T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("MutexGuard")
             .field("value", &*self.guard)

@@ -144,20 +144,20 @@ async fn main() -> std::io::Result<()> {
     println!("└────────────────────────────────────────────────────────────┘");
 
     let json_path = "production_export.json";
-    match JsonExporter::export_to_file(&Inspector::global(), json_path) {
+    match JsonExporter::export_to_file(Inspector::global(), json_path) {
         Ok(_) => println!("  ✅ JSON exported to: {}", json_path),
         Err(e) => println!("  ❌ JSON export failed: {}", e),
     }
 
     // Export to CSV
     let csv_tasks_path = "production_tasks.csv";
-    match CsvExporter::export_tasks_to_file(&Inspector::global(), csv_tasks_path) {
+    match CsvExporter::export_tasks_to_file(Inspector::global(), csv_tasks_path) {
         Ok(_) => println!("  ✅ Tasks CSV exported to: {}", csv_tasks_path),
         Err(e) => println!("  ❌ Tasks CSV export failed: {}", e),
     }
 
     let csv_events_path = "production_events.csv";
-    match CsvExporter::export_events_to_file(&Inspector::global(), csv_events_path) {
+    match CsvExporter::export_events_to_file(Inspector::global(), csv_events_path) {
         Ok(_) => println!("  ✅ Events CSV exported to: {}", csv_events_path),
         Err(e) => println!("  ❌ Events CSV export failed: {}", e),
     }

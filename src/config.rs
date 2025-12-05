@@ -300,7 +300,7 @@ mod tests {
             }
         }
         // Should sample approximately 10 times (1 in 10)
-        assert!(sampled >= 8 && sampled <= 12);
+        assert!((8..=12).contains(&sampled));
     }
 
     #[test]

@@ -1,4 +1,4 @@
-//! Tracked RwLock implementation
+//! Tracked `RwLock` implementation
 //!
 //! A drop-in replacement for `tokio::sync::RwLock` that automatically tracks
 //! contention and integrates with async-inspect's deadlock detection.
@@ -57,7 +57,7 @@ use tokio::sync::RwLock as TokioRwLock;
 /// }
 /// ```
 pub struct RwLock<T> {
-    /// The underlying Tokio RwLock
+    /// The underlying Tokio `RwLock`
     inner: TokioRwLock<T>,
     /// Name for debugging/display
     name: String,
@@ -70,7 +70,7 @@ pub struct RwLock<T> {
 }
 
 impl<T> RwLock<T> {
-    /// Create a new tracked RwLock with a name for identification.
+    /// Create a new tracked `RwLock` with a name for identification.
     ///
     /// # Arguments
     ///
@@ -249,9 +249,9 @@ impl<T> RwLock<T> {
         }
     }
 
-    /// Get the current contention metrics for this RwLock.
+    /// Get the current contention metrics for this `RwLock`.
     ///
-    /// Returns a tuple of (read_metrics, write_metrics).
+    /// Returns a tuple of (`read_metrics`, `write_metrics`).
     ///
     /// # Example
     ///
@@ -292,7 +292,7 @@ impl<T> RwLock<T> {
         self.write_metrics.reset();
     }
 
-    /// Get the name of this RwLock.
+    /// Get the name of this `RwLock`.
     #[must_use]
     pub fn name(&self) -> &str {
         &self.name
@@ -304,7 +304,7 @@ impl<T> RwLock<T> {
         self.resource_id
     }
 
-    /// Consume the RwLock and return the inner value.
+    /// Consume the `RwLock` and return the inner value.
     pub fn into_inner(self) -> T {
         self.inner.into_inner()
     }
@@ -329,7 +329,7 @@ impl<T: fmt::Debug> fmt::Debug for RwLock<T> {
     }
 }
 
-/// RAII guard for a tracked RwLock read lock.
+/// RAII guard for a tracked `RwLock` read lock.
 ///
 /// When this guard is dropped, the lock is released and the deadlock
 /// detector is notified.
@@ -340,7 +340,7 @@ pub struct RwLockReadGuard<'a, T> {
     detector: DeadlockDetector,
 }
 
-impl<'a, T> Deref for RwLockReadGuard<'a, T> {
+impl<T> Deref for RwLockReadGuard<'_, T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -348,7 +348,7 @@ impl<'a, T> Deref for RwLockReadGuard<'a, T> {
     }
 }
 
-impl<'a, T> Drop for RwLockReadGuard<'a, T> {
+impl<T> Drop for RwLockReadGuard<'_, T> {
     fn drop(&mut self) {
         if let Some(tid) = self.task_id {
             self.detector.release(tid, self.resource_id);
@@ -356,7 +356,7 @@ impl<'a, T> Drop for RwLockReadGuard<'a, T> {
     }
 }
 
-impl<'a, T: fmt::Debug> fmt::Debug for RwLockReadGuard<'a, T> {
+impl<T: fmt::Debug> fmt::Debug for RwLockReadGuard<'_, T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("RwLockReadGuard")
             .field("value", &*self.guard)
@@ -365,7 +365,7 @@ impl<'a, T: fmt::Debug> fmt::Debug for RwLockReadGuard<'a, T> {
     }
 }
 
-/// RAII guard for a tracked RwLock write lock.
+/// RAII guard for a tracked `RwLock` write lock.
 ///
 /// When this guard is dropped, the lock is released and the deadlock
 /// detector is notified.
@@ -376,7 +376,7 @@ pub struct RwLockWriteGuard<'a, T> {
     detector: DeadlockDetector,
 }
 
-impl<'a, T> Deref for RwLockWriteGuard<'a, T> {
+impl<T> Deref for RwLockWriteGuard<'_, T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
@@ -384,13 +384,13 @@ impl<'a, T> Deref for RwLockWriteGuard<'a, T> {
     }
 }
 
-impl<'a, T> DerefMut for RwLockWriteGuard<'a, T> {
+impl<T> DerefMut for RwLockWriteGuard<'_, T> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.guard
     }
 }
 
-impl<'a, T> Drop for RwLockWriteGuard<'a, T> {
+impl<T> Drop for RwLockWriteGuard<'_, T> {
     fn drop(&mut self) {
         if let Some(tid) = self.task_id {
             self.detector.release(tid, self.resource_id);
@@ -398,7 +398,7 @@ impl<'a, T> Drop for RwLockWriteGuard<'a, T> {
     }
 }
 
-impl<'a, T: fmt::Debug> fmt::Debug for RwLockWriteGuard<'a, T> {
+impl<T: fmt::Debug> fmt::Debug for RwLockWriteGuard<'_, T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("RwLockWriteGuard")
             .field("value", &*self.guard)

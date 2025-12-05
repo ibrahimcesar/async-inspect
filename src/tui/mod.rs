@@ -251,22 +251,22 @@ impl TuiApp {
         // Export to multiple formats
         JsonExporter::export_to_file(
             &self.inspector,
-            &format!("{}/export_{}.json", export_dir, timestamp),
+            format!("{export_dir}/export_{timestamp}.json"),
         )?;
 
         CsvExporter::export_tasks_to_file(
             &self.inspector,
-            &format!("{}/tasks_{}.csv", export_dir, timestamp),
+            format!("{export_dir}/tasks_{timestamp}.csv"),
         )?;
 
         CsvExporter::export_events_to_file(
             &self.inspector,
-            &format!("{}/events_{}.csv", export_dir, timestamp),
+            format!("{export_dir}/events_{timestamp}.csv"),
         )?;
 
         ChromeTraceExporter::export_to_file(
             &self.inspector,
-            &format!("{}/trace_{}.json", export_dir, timestamp),
+            format!("{export_dir}/trace_{timestamp}.json"),
         )?;
 
         Ok(())
@@ -336,7 +336,7 @@ fn run_app<B: ratatui::backend::Backend>(
                             KeyCode::Char('e') => {
                                 if let Err(e) = app.export_data() {
                                     // Store error for display (we'll add a status bar later)
-                                    eprintln!("Export failed: {}", e);
+                                    eprintln!("Export failed: {e}");
                                 }
                             }
                             KeyCode::Up => app.select_previous(),
@@ -708,7 +708,7 @@ fn build_tree_lines<'a>(
     // Find children
     let mut children: Vec<_> = all_tasks
         .iter()
-        .filter(|t| t.parent.map(|p| p == task.id).unwrap_or(false))
+        .filter(|t| t.parent.is_some_and(|p| p == task.id))
         .collect();
     children.sort_by_key(|t| t.id.as_u64());
 
@@ -728,7 +728,7 @@ fn draw_footer(f: &mut Frame, area: Rect, app: &TuiApp) {
         Span::styled("[q]", Style::default().fg(Color::Yellow)),
         Span::raw(" Quit  "),
         Span::styled("[v]", Style::default().fg(Color::Yellow)),
-        Span::raw(format!(" View:{}  ", view_mode_str)),
+        Span::raw(format!(" View:{view_mode_str}  ")),
         Span::styled("[/]", Style::default().fg(Color::Yellow)),
         Span::raw(" Search  "),
         Span::styled("[e]", Style::default().fg(Color::Yellow)),

@@ -27,7 +27,7 @@ async fn main() {
     let stdin = tokio::io::stdin();
     let stdout = tokio::io::stdout();
 
-    let (service, socket) = LspService::new(|client| AsyncInspectLanguageServer::new(client));
+    let (service, socket) = LspService::new(AsyncInspectLanguageServer::new);
 
     eprintln!("LSP server listening on stdin/stdout");
 

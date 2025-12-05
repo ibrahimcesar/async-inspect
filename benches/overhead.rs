@@ -33,8 +33,7 @@ fn benchmark_inspect_overhead(c: &mut Criterion) {
     // Baseline: raw await
     group.bench_function("raw_await", |b| {
         let rt = Runtime::new().unwrap();
-        b.to_async(&rt)
-            .iter(|| async { async { black_box(42) }.await });
+        b.to_async(&rt).iter(|| async { black_box(42) });
     });
 
     // With .inspect()

@@ -47,9 +47,7 @@ fn benchmark_await_point_throughput(c: &mut Criterion) {
         let rt = Runtime::new().unwrap();
         b.to_async(&rt).iter(|| async {
             for i in 0..1000 {
-                async { black_box(i) }
-                    .inspect(&format!("await_{}", i))
-                    .await;
+                async { black_box(i) }.inspect(format!("await_{}", i)).await;
             }
         });
     });
@@ -102,14 +100,15 @@ fn benchmark_background_workers(c: &mut Criterion) {
     group.bench_function("worker_pool_10", |b| {
         let rt = Runtime::new().unwrap();
         b.to_async(&rt).iter(|| async {
-            let (tx, mut rx) = tokio::sync::mpsc::channel(100);
+            // Use broadcast channel so multiple workers can receive
+            let (tx, _rx) = tokio::sync::broadcast::channel(1000);
 
             // Spawn 10 workers
             let workers: Vec<_> = (0..10)
                 .map(|worker_id| {
-                    let mut rx = rx.clone();
+                    let mut rx = tx.subscribe();
                     spawn_tracked(format!("worker_{}", worker_id), async move {
-                        while let Some(job) = rx.recv().await {
+                        while let Ok(job) = rx.recv().await {
                             tokio::time::sleep(Duration::from_micros(10))
                                 .inspect("process_job")
                                 .await;
@@ -119,13 +118,12 @@ fn benchmark_background_workers(c: &mut Criterion) {
                 })
                 .collect();
 
-            // Send 1000 jobs
-            for i in 0..1000 {
-                tx.send(i).await.unwrap();
+            // Send 100 jobs (each worker receives all of them)
+            for i in 0..100 {
+                let _ = tx.send(i);
             }
 
             drop(tx);
-            drop(rx);
 
             for worker in workers {
                 worker.await.unwrap();

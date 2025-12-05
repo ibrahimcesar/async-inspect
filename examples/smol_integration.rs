@@ -23,13 +23,13 @@ async fn worker_task(worker_id: u32) {
 
     // Use InspectExt trait to track inline futures
     let data = fetch_data(worker_id)
-        .inspect(&format!("fetch_data_{}", worker_id))
+        .inspect(format!("fetch_data_{}", worker_id))
         .await;
 
     println!("Worker {} fetched: {}", worker_id, data);
 
     let processed = process_data(data)
-        .inspect(&format!("process_data_{}", worker_id))
+        .inspect(format!("process_data_{}", worker_id))
         .await;
 
     println!("Worker {} completed: {}", worker_id, processed);
