@@ -18,7 +18,7 @@ ignore = [
 version = 2
 confidence-threshold = 0.8
 
-# Allow common permissive licenses
+# Allow common permissive and weak-copyleft licenses
 allow = [
     "MIT",
     "Apache-2.0",
@@ -31,6 +31,9 @@ allow = [
     "CC0-1.0",
     "MPL-2.0",
     "Unicode-3.0",
+    "CDDL-1.0",       # inferno flamegraph crate
+    "BSL-1.0",        # Boost Software License (some deps)
+    "OpenSSL",        # ring and crypto crates
 ]
 
 # Private crate exceptions
