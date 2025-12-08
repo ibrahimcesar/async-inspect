@@ -121,7 +121,7 @@ telemetry-kit = { version = "0.3", optional = true }
 [dev-dependencies]
 tokio = { version = "1.35", features = ["full"] }
 tokio-test = "0.4"
-criterion = { version = "0.5", features = ["async_tokio"] }
+criterion = { version = "0.8", features = ["async_tokio"] }
 colored = "2.1"
 
 [features]
