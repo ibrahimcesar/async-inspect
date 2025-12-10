@@ -142,7 +142,13 @@ pub mod lsp;
 /// Can be disabled via `ASYNC_INSPECT_NO_TELEMETRY=1` or `DO_NOT_TRACK=1`.
 pub mod telemetry;
 
-/// Error types
+/// Enhanced error types with actionable messages
+///
+/// Provides detailed error types with helpful suggestions for resolving
+/// common issues like misconfigurations, resource limits, and performance problems.
+pub mod errors;
+
+/// Error types (legacy, use `errors` module for enhanced errors)
 ///
 /// Error definitions
 pub mod error {
@@ -207,6 +213,9 @@ pub mod prelude {
     pub use crate::{
         inspect_point, inspect_task_complete, inspect_task_failed, inspect_task_start,
     };
+
+    // Enhanced errors with actionable messages
+    pub use crate::errors::{ConfigError, Diagnostics, TaskError};
 }
 
 // Re-exports
