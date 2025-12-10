@@ -16,7 +16,7 @@ This roadmap outlines planned features and improvements. We welcome community in
 
 ### Improvements
 
-- [ ] Reduce memory overhead per tracked task
+- [x] Reduce memory overhead per tracked task (string interning, compact storage)
 - [ ] Improve TUI responsiveness with 10,000+ tasks
 - [x] Add task filtering by duration, state, or name pattern
 
@@ -25,11 +25,11 @@ This roadmap outlines planned features and improvements. We welcome community in
 ## v0.3.0 - Production Observability
 
 **Focus**: Safe for production use with minimal overhead
-
+3
 ### Planned Features
 
-- [ ] **Adaptive Sampling** - Automatically adjust sampling rate based on load
-- [ ] **Ring Buffer Mode** - Fixed memory usage, keep only recent N events
+- [x] **Adaptive Sampling** - Automatically adjust sampling rate based on load
+- [x] **Ring Buffer Mode** - Fixed memory usage, keep only recent N events
 - [ ] **Remote Dashboard** - Connect dashboard to remote running processes
 - [ ] **Alerting** - Configurable alerts for deadlocks, slow tasks, or high contention
 

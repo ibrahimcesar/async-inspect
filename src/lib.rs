@@ -80,6 +80,12 @@ pub mod intern;
 /// Compact task storage for reduced memory overhead
 pub mod compact;
 
+/// Ring buffer for fixed-memory event storage
+///
+/// Provides bounded memory usage for production environments.
+/// Events are automatically evicted when the buffer is full.
+pub mod ringbuf;
+
 /// Deadlock detection
 pub mod deadlock;
 
@@ -193,6 +199,9 @@ pub mod prelude {
         CompactState, CompactTaskInfo, CompactTimestamp, MemoryStats, TaskPool,
     };
     pub use crate::intern::{intern, resolve, InternedString, StringInterner};
+
+    // Ring buffer for production (fixed memory)
+    pub use crate::ringbuf::{EventRingBuffer, RingBuffer, RingBufferStats};
 
     // Re-export macros
     pub use crate::{
