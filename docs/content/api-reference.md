@@ -1,4 +1,10 @@
-# async-inspect API Reference
+---
+sidebar_position: 10
+title: API Reference
+description: Complete API documentation with stability guarantees
+---
+
+# API Reference
 
 This document describes the stable public API for `async-inspect`. Types and functions listed here follow semantic versioning guarantees.
 

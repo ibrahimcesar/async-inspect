@@ -1,4 +1,10 @@
-# async-inspect Quickstart Guide
+---
+sidebar_position: 2
+title: Getting Started
+description: Get started debugging async Rust in under 5 minutes
+---
+
+# Getting Started
 
 Get started debugging async Rust in under 5 minutes.
 
