@@ -82,11 +82,14 @@ pub struct TuiApp {
     /// Whether to show help
     show_help: bool,
 
-    /// Search query
+    /// Search query (supports glob patterns like "fetch_*" and duration filters like ">100")
     search_query: String,
 
     /// Whether search is active
     search_active: bool,
+
+    /// Minimum duration filter in milliseconds (parsed from ">N" in search)
+    min_duration_ms: Option<u64>,
 
     /// Last update time
     last_update: Instant,
@@ -108,6 +111,7 @@ impl TuiApp {
             show_help: false,
             search_query: String::new(),
             search_active: false,
+            min_duration_ms: None,
             last_update: Instant::now(),
             update_interval: Duration::from_millis(100),
         }
@@ -122,13 +126,30 @@ impl TuiApp {
     fn get_tasks(&self) -> Vec<TaskInfo> {
         let mut tasks = self.inspector.get_all_tasks();
 
-        // Apply search filter
+        // Apply search filter with glob pattern support
         if !self.search_query.is_empty() {
             let query = self.search_query.to_lowercase();
+            // Check if it's a glob pattern (contains * or ?)
+            let is_glob = query.contains('*') || query.contains('?');
+
             tasks.retain(|task| {
-                task.name.to_lowercase().contains(&query)
-                    || format!("{}", task.id.as_u64()).contains(&query)
+                let name_lower = task.name.to_lowercase();
+                let id_str = format!("{}", task.id.as_u64());
+
+                if is_glob {
+                    // Simple glob matching: * matches any characters, ? matches single char
+                    glob_match(&query, &name_lower) || glob_match(&query, &id_str)
+                } else {
+                    // Substring match (original behavior)
+                    name_lower.contains(&query) || id_str.contains(&query)
+                }
             });
+        }
+
+        // Apply duration filter (from >N syntax in search)
+        if let Some(min_ms) = self.min_duration_ms {
+            let min_duration = Duration::from_millis(min_ms);
+            tasks.retain(|task| task.age() >= min_duration);
         }
 
         // Apply state filter
@@ -152,6 +173,20 @@ impl TuiApp {
         }
 
         tasks
+    }
+
+    /// Parse search query for special filters (e.g., ">100" for duration)
+    fn parse_search_query(&mut self) {
+        self.min_duration_ms = None;
+
+        // Check for duration filter: >N (milliseconds)
+        if self.search_query.starts_with('>') {
+            if let Ok(ms) = self.search_query[1..].trim().parse::<u64>() {
+                self.min_duration_ms = Some(ms);
+                // Clear the search query since it's a filter, not a name search
+                self.search_query.clear();
+            }
+        }
     }
 
     /// Move selection up
@@ -211,14 +246,16 @@ impl TuiApp {
         self.search_active = true;
     }
 
-    /// Deactivate search mode
+    /// Deactivate search mode and parse special filters
     fn deactivate_search(&mut self) {
         self.search_active = false;
+        self.parse_search_query();
     }
 
-    /// Clear search query
+    /// Clear search query and duration filter
     fn clear_search(&mut self) {
         self.search_query.clear();
+        self.min_duration_ms = None;
         self.selected = 0;
     }
 
@@ -324,6 +361,9 @@ fn run_app<B: ratatui::backend::Backend>(
                             KeyCode::Char(c) => app.add_to_search(c),
                             _ => {}
                         }
+                    } else if app.show_help {
+                        // Any key closes help (as promised in the help screen)
+                        app.show_help = false;
                     } else {
                         match key.code {
                             KeyCode::Char('q') => return Ok(()),
@@ -339,12 +379,40 @@ fn run_app<B: ratatui::backend::Backend>(
                                     eprintln!("Export failed: {e}");
                                 }
                             }
-                            KeyCode::Up => app.select_previous(),
-                            KeyCode::Down => {
+                            // Navigation: vim-style j/k
+                            KeyCode::Up | KeyCode::Char('k') => app.select_previous(),
+                            KeyCode::Down | KeyCode::Char('j') => {
                                 let tasks = app.get_tasks();
                                 app.select_next(tasks.len());
                             }
-                            KeyCode::Char('r') => app.selected = 0, // Reset selection
+                            // Go to top/bottom (g and r both go to top)
+                            KeyCode::Char('g' | 'r') => app.selected = 0,
+                            KeyCode::Char('G') => {
+                                let tasks = app.get_tasks();
+                                app.selected = tasks.len().saturating_sub(1);
+                            }
+                            // Quick filter keys (1-5)
+                            KeyCode::Char('1') => {
+                                app.filter_mode = FilterMode::All;
+                                app.selected = 0;
+                            }
+                            KeyCode::Char('2') => {
+                                app.filter_mode = FilterMode::Running;
+                                app.selected = 0;
+                            }
+                            KeyCode::Char('3') => {
+                                app.filter_mode = FilterMode::Completed;
+                                app.selected = 0;
+                            }
+                            KeyCode::Char('4') => {
+                                app.filter_mode = FilterMode::Failed;
+                                app.selected = 0;
+                            }
+                            KeyCode::Char('5') => {
+                                app.filter_mode = FilterMode::Blocked;
+                                app.selected = 0;
+                            }
+                            KeyCode::Esc => app.show_help = false,
                             _ => {}
                         }
                     }
@@ -392,8 +460,8 @@ fn ui(f: &mut Frame, app: &mut TuiApp) {
         Constraint::Length(7), // Stats
     ];
 
-    // Add search bar if active or has query
-    if app.search_active || !app.search_query.is_empty() {
+    // Add search bar if active, has query, or has duration filter
+    if app.search_active || !app.search_query.is_empty() || app.min_duration_ms.is_some() {
         constraints.push(Constraint::Length(3)); // Search bar
     }
 
@@ -412,7 +480,7 @@ fn ui(f: &mut Frame, app: &mut TuiApp) {
     draw_stats(f, chunks[idx], app);
     idx += 1;
 
-    if app.search_active || !app.search_query.is_empty() {
+    if app.search_active || !app.search_query.is_empty() || app.min_duration_ms.is_some() {
         draw_search_bar(f, chunks[idx], app);
         idx += 1;
     }
@@ -591,25 +659,49 @@ fn draw_tasks(f: &mut Frame, area: Rect, app: &TuiApp) {
 
 /// Draw search bar
 fn draw_search_bar(f: &mut Frame, area: Rect, app: &TuiApp) {
+    let mut filter_info = String::new();
+
+    // Show active duration filter
+    if let Some(min_ms) = app.min_duration_ms {
+        filter_info = format!(" [Duration > {min_ms}ms]");
+    }
+
     let search_text = if app.search_active {
-        format!("Search: {}█", app.search_query)
+        format!(
+            "Search: {}█ (glob: fetch_* | duration: >100)",
+            app.search_query
+        )
+    } else if !app.search_query.is_empty() || app.min_duration_ms.is_some() {
+        format!(
+            "Filter: {}{} (/ to edit, c to clear)",
+            if app.search_query.is_empty() {
+                String::new()
+            } else {
+                format!("\"{}\"", app.search_query)
+            },
+            filter_info
+        )
     } else {
-        format!("Search: {} (Press / to edit, c to clear)", app.search_query)
+        "Press / to search (supports glob: fetch_* and duration: >100)".to_string()
     };
 
     let search = Paragraph::new(search_text)
         .block(
             Block::default()
                 .borders(Borders::ALL)
-                .title("Search")
+                .title("Search & Filter")
                 .border_style(if app.search_active {
                     Style::default().fg(Color::Green)
+                } else if app.min_duration_ms.is_some() || !app.search_query.is_empty() {
+                    Style::default().fg(Color::Yellow)
                 } else {
                     Style::default()
                 }),
         )
         .style(Style::default().fg(if app.search_active {
             Color::Green
+        } else if app.min_duration_ms.is_some() {
+            Color::Yellow
         } else {
             Color::White
         }));
@@ -744,100 +836,130 @@ fn draw_footer(f: &mut Frame, area: Rect, app: &TuiApp) {
     f.render_widget(footer, area);
 }
 
-/// Draw help screen
+/// Draw help screen (keyboard shortcut reference card)
 fn draw_help(f: &mut Frame) {
     let help_text = vec![
         Line::from(""),
         Line::from(Span::styled(
-            "  Keyboard Shortcuts",
+            "  ⌨️  Keyboard Shortcuts Reference Card",
             Style::default()
                 .fg(Color::Cyan)
                 .add_modifier(Modifier::BOLD),
         )),
         Line::from(""),
         Line::from(Span::styled(
-            "  Navigation & Control:",
+            "  Navigation",
             Style::default()
                 .fg(Color::Green)
                 .add_modifier(Modifier::BOLD),
         )),
         Line::from(vec![
-            Span::styled("  q", Style::default().fg(Color::Yellow)),
-            Span::raw("           Quit the application"),
+            Span::styled("    ↑/k      ", Style::default().fg(Color::Yellow)),
+            Span::raw("Move selection up"),
         ]),
         Line::from(vec![
-            Span::styled("  h or ?", Style::default().fg(Color::Yellow)),
-            Span::raw("      Toggle this help screen"),
+            Span::styled("    ↓/j      ", Style::default().fg(Color::Yellow)),
+            Span::raw("Move selection down"),
         ]),
         Line::from(vec![
-            Span::styled("  ↑/↓", Style::default().fg(Color::Yellow)),
-            Span::raw("         Navigate task list (or use mouse scroll)"),
+            Span::styled("    g        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Go to top"),
         ]),
         Line::from(vec![
-            Span::styled("  r", Style::default().fg(Color::Yellow)),
-            Span::raw("           Reset selection to top"),
+            Span::styled("    G        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Go to bottom"),
         ]),
         Line::from(vec![
-            Span::styled("  Mouse", Style::default().fg(Color::Yellow)),
-            Span::raw("        Scroll wheel to navigate tasks"),
+            Span::styled("    r        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Reset selection to top"),
+        ]),
+        Line::from(vec![
+            Span::styled("    Mouse    ", Style::default().fg(Color::Yellow)),
+            Span::raw("Scroll wheel to navigate"),
         ]),
         Line::from(""),
         Line::from(Span::styled(
-            "  View & Display:",
+            "  Views & Sorting",
             Style::default()
                 .fg(Color::Green)
                 .add_modifier(Modifier::BOLD),
         )),
         Line::from(vec![
-            Span::styled("  v", Style::default().fg(Color::Yellow)),
-            Span::raw("           Toggle view mode (List ↔ Dependency Graph)"),
+            Span::styled("    v        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Toggle view (List ↔ Graph)"),
         ]),
         Line::from(vec![
-            Span::styled("  s", Style::default().fg(Color::Yellow)),
-            Span::raw("           Cycle sort mode (ID → Name → Duration → State → Polls)"),
+            Span::styled("    s        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Cycle sort: ID→Name→Duration→State→Polls"),
         ]),
         Line::from(vec![
-            Span::styled("  f", Style::default().fg(Color::Yellow)),
-            Span::raw(
-                "           Cycle filter mode (All → Running → Completed → Failed → Blocked)",
-            ),
+            Span::styled("    f        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Cycle filter: All→Running→Done→Failed→Blocked"),
+        ]),
+        Line::from(vec![
+            Span::styled("    1-5      ", Style::default().fg(Color::Yellow)),
+            Span::raw("Quick filter (1=All 2=Run 3=Done 4=Fail 5=Block)"),
         ]),
         Line::from(""),
         Line::from(Span::styled(
-            "  Search & Export:",
+            "  Search & Filter",
             Style::default()
                 .fg(Color::Green)
                 .add_modifier(Modifier::BOLD),
         )),
         Line::from(vec![
-            Span::styled("  /", Style::default().fg(Color::Yellow)),
-            Span::raw("           Activate search mode (type to filter tasks)"),
+            Span::styled("    /        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Start search (supports glob: fetch_*)"),
         ]),
         Line::from(vec![
-            Span::styled("  c", Style::default().fg(Color::Yellow)),
-            Span::raw("           Clear search query"),
+            Span::styled("    Enter    ", Style::default().fg(Color::Yellow)),
+            Span::raw("Confirm search"),
         ]),
         Line::from(vec![
-            Span::styled("  ESC", Style::default().fg(Color::Yellow)),
-            Span::raw("         Exit search mode (while searching)"),
+            Span::styled("    Esc      ", Style::default().fg(Color::Yellow)),
+            Span::raw("Cancel search / Close help"),
         ]),
         Line::from(vec![
-            Span::styled("  e", Style::default().fg(Color::Yellow)),
-            Span::raw("           Export data (JSON, CSV, Chrome Trace to tui_exports/)"),
+            Span::styled("    c        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Clear search query"),
+        ]),
+        Line::from(vec![
+            Span::styled("    >N       ", Style::default().fg(Color::Yellow)),
+            Span::raw("Filter duration > N ms (e.g., >100)"),
         ]),
         Line::from(""),
         Line::from(Span::styled(
-            "  View Modes:",
+            "  Actions",
             Style::default()
-                .fg(Color::Magenta)
+                .fg(Color::Green)
                 .add_modifier(Modifier::BOLD),
         )),
-        Line::from("    • Task List: Standard sortable task list"),
-        Line::from("    • Dependency Graph: Hierarchical tree showing parent-child relationships"),
+        Line::from(vec![
+            Span::styled("    e        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Export data to tui_exports/"),
+        ]),
+        Line::from(vec![
+            Span::styled("    d        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Show task details (when implemented)"),
+        ]),
+        Line::from(vec![
+            Span::styled("    h/?      ", Style::default().fg(Color::Yellow)),
+            Span::raw("Toggle this help"),
+        ]),
+        Line::from(vec![
+            Span::styled("    q        ", Style::default().fg(Color::Yellow)),
+            Span::raw("Quit"),
+        ]),
         Line::from(""),
         Line::from(Span::styled(
-            "  Press h or ? to return",
-            Style::default().fg(Color::Yellow),
+            "  ─────────────────────────────────────────────────",
+            Style::default().fg(Color::DarkGray),
+        )),
+        Line::from(Span::styled(
+            "  Press any key to close this help",
+            Style::default()
+                .fg(Color::Cyan)
+                .add_modifier(Modifier::ITALIC),
         )),
     ];
 
@@ -845,14 +967,71 @@ fn draw_help(f: &mut Frame) {
         .block(
             Block::default()
                 .borders(Borders::ALL)
-                .title("Help")
+                .title(" Help - Keyboard Shortcuts ")
+                .title_style(
+                    Style::default()
+                        .fg(Color::Cyan)
+                        .add_modifier(Modifier::BOLD),
+                )
                 .border_style(Style::default().fg(Color::Cyan)),
         )
         .style(Style::default());
 
     // Center the help box
-    let area = centered_rect(60, 80, f.area());
+    let area = centered_rect(65, 85, f.area());
     f.render_widget(help, area);
+}
+
+/// Simple glob pattern matching
+/// Supports * (matches any number of characters) and ? (matches single character)
+fn glob_match(pattern: &str, text: &str) -> bool {
+    let mut pattern_chars = pattern.chars().peekable();
+    let mut text_chars = text.chars().peekable();
+
+    while let Some(p) = pattern_chars.next() {
+        match p {
+            '*' => {
+                // Handle consecutive *s
+                while pattern_chars.peek() == Some(&'*') {
+                    pattern_chars.next();
+                }
+
+                // If * is at end, it matches everything
+                if pattern_chars.peek().is_none() {
+                    return true;
+                }
+
+                // Try matching rest of pattern at each position
+                let remaining_pattern: String = pattern_chars.collect();
+                while text_chars.peek().is_some() {
+                    let remaining_text: String = text_chars.clone().collect();
+                    if glob_match(&remaining_pattern, &remaining_text) {
+                        return true;
+                    }
+                    text_chars.next();
+                }
+                // Also try matching with empty string
+                let remaining_text: String = text_chars.collect();
+                return glob_match(&remaining_pattern, &remaining_text);
+            }
+            '?' => {
+                // ? matches exactly one character
+                if text_chars.next().is_none() {
+                    return false;
+                }
+            }
+            c => {
+                // Literal character must match
+                match text_chars.next() {
+                    Some(t) if t == c => {}
+                    _ => return false,
+                }
+            }
+        }
+    }
+
+    // Pattern exhausted, text should also be exhausted
+    text_chars.peek().is_none()
 }
 
 /// Helper to create a centered rectangle

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Central hub -->
+  <circle cx="100" cy="100" r="30" stroke="#10b981" stroke-width="3" fill="#ecfdf5"/>
+  <text x="100" cy="105" text-anchor="middle" fill="#10b981" font-size="14" font-weight="bold">async</text>
+  <!-- Runtime nodes -->
+  <circle cx="100" cy="35" r="20" stroke="#3b82f6" stroke-width="2" fill="#dbeafe"/>
+  <text x="100" y="40" text-anchor="middle" fill="#3b82f6" font-size="10" font-weight="bold">tokio</text>
+  <circle cx="165" cy="100" r="20" stroke="#8b5cf6" stroke-width="2" fill="#f5f3ff"/>
+  <text x="165" y="105" text-anchor="middle" fill="#8b5cf6" font-size="10" font-weight="bold">smol</text>
+  <circle cx="100" cy="165" r="20" stroke="#f97316" stroke-width="2" fill="#fff7ed"/>
+  <text x="100" y="170" text-anchor="middle" fill="#f97316" font-size="9" font-weight="bold">async-std</text>
+  <circle cx="35" cy="100" r="20" stroke="#06b6d4" stroke-width="2" fill="#ecfeff"/>
+  <text x="35" y="105" text-anchor="middle" fill="#06b6d4" font-size="10" font-weight="bold">glommio</text>
+  <!-- Connection lines -->
+  <line x1="100" y1="70" x2="100" y2="55" stroke="#10b981" stroke-width="2"/>
+  <line x1="130" y1="100" x2="145" y2="100" stroke="#10b981" stroke-width="2"/>
+  <line x1="100" y1="130" x2="100" y2="145" stroke="#10b981" stroke-width="2"/>
+  <line x1="70" y1="100" x2="55" y2="100" stroke="#10b981" stroke-width="2"/>
+</svg>

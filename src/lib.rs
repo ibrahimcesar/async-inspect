@@ -74,6 +74,12 @@ pub mod task;
 /// Timeline and execution history
 pub mod timeline;
 
+/// String interning for reduced memory usage
+pub mod intern;
+
+/// Compact task storage for reduced memory overhead
+pub mod compact;
+
 /// Deadlock detection
 pub mod deadlock;
 
@@ -181,6 +187,12 @@ pub mod prelude {
         sort_tasks, SortDirection, TaskFilter, TaskId, TaskInfo, TaskSortBy, TaskState,
     };
     pub use crate::timeline::{Event, EventKind};
+
+    // Compact storage for high-performance scenarios
+    pub use crate::compact::{
+        CompactState, CompactTaskInfo, CompactTimestamp, MemoryStats, TaskPool,
+    };
+    pub use crate::intern::{intern, resolve, InternedString, StringInterner};
 
     // Re-export macros
     pub use crate::{

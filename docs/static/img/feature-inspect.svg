@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <circle cx="100" cy="100" r="90" stroke="#3b82f6" stroke-width="4" fill="#eff6ff"/>
+  <circle cx="100" cy="100" r="60" stroke="#3b82f6" stroke-width="3" fill="#dbeafe"/>
+  <circle cx="100" cy="100" r="30" stroke="#3b82f6" stroke-width="2" fill="#93c5fd"/>
+  <circle cx="100" cy="100" r="10" fill="#3b82f6"/>
+  <line x1="145" y1="145" x2="180" y2="180" stroke="#3b82f6" stroke-width="6" stroke-linecap="round"/>
+  <!-- State indicators -->
+  <circle cx="60" cy="60" r="8" fill="#22c55e"/>
+  <circle cx="140" cy="60" r="8" fill="#eab308"/>
+  <circle cx="60" cy="140" r="8" fill="#ef4444"/>
+  <circle cx="140" cy="140" r="8" fill="#3b82f6"/>
+</svg>
