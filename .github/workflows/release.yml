@@ -214,11 +214,13 @@ jobs:
         run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Announce on Discord (if webhook configured)
-        if: secrets.DISCORD_WEBHOOK != ''
+        if: env.DISCORD_WEBHOOK != ''
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           curl -H "Content-Type: application/json" \
             -d "{\"content\": \"🎉 async-inspect ${{ steps.version.outputs.version }} has been released! Check it out at https://github.com/${{ github.repository }}/releases/tag/${GITHUB_REF#refs/tags/}\"}" \
-            ${{ secrets.DISCORD_WEBHOOK }}
+            "$DISCORD_WEBHOOK"
 
       - name: Success
         run: |
