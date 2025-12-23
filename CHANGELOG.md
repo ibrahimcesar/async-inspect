@@ -7,7 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2025-12-23
+
 ### Added
+- **Production Readiness Features**
+  - **Ring Buffer Mode**: Fixed-memory event storage for production environments
+    * `Timeline::with_ring_buffer(capacity)` for bounded memory usage
+    * Automatic eviction of oldest events when capacity is reached
+    * Statistics tracking (overwrites, utilization, churn rate)
+    * Lock-free reads using `parking_lot::RwLock`
+    * Module: `src/ringbuf.rs`
+  - **Adaptive Sampling**: Automatically adjusts sampling rate based on measured overhead
+    * `Config::global().enable_adaptive_sampling()` to enable
+    * Configurable min/max sampling rates and target overhead
+    * Self-tuning algorithm that responds to system load
+    * `adaptive_stats()` for monitoring sampling behavior
+  - **Memory Optimization**: Reduced memory overhead per tracked task
+    * String interning (`src/intern.rs`) for repeated task names
+    * Compact task storage (`src/compact.rs`) with pre-allocated pools
+    * `TaskPool` for high-performance scenarios
+  - **Enhanced Error Messages**: Actionable error types with suggestions
+    * `ConfigError` for misconfiguration issues with fix suggestions
+    * `TaskError` for task tracking problems
+    * `Diagnostics` helper for runtime warnings (high memory, deadlocks, slow tasks)
+    * Module: `src/errors.rs`
+  - **Task Filtering in TUI**: Filter tasks by state, name pattern, and duration
+    * Press `f` in TUI to access filtering
+    * Glob pattern support for task names
+    * Duration-based filtering for slow task detection
+
+### Documentation
+- **API Reference** (`docs/content/api-reference.md`): Comprehensive public API documentation with stability guarantees
+- **Getting Started Guide** (`docs/content/getting-started.md`): Quick start in under 5 minutes
+- **Security Policy** (`SECURITY.md`): Vulnerability reporting and security best practices
+- **QA Testing Guide** (`scripts/qa-testing.md`): Comprehensive manual testing checklist
+- **QA Smoke Test** (`scripts/qa-smoke-test.sh`): Automated smoke test script
+
+### Fixed
+- Dead code warning for `window_start_ms` field in config
+
+### Security
+- Updated npm dependencies to fix security vulnerabilities in documentation site
+- Added comprehensive security policy with response timelines
+
+---
+
 - **Language Server Protocol (LSP) Support (Phase 9 - Complete)**: Universal editor integration via LSP
   - **LSP server binary** (`async-inspect-lsp`) for any LSP-compatible editor
     * Standalone binary built with `--features lsp`
@@ -288,5 +332,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Issue and PR templates
 - Documentation deployment
 
-[Unreleased]: https://github.com/ibrahimcesar/async-inspect/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ibrahimcesar/async-inspect/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ibrahimcesar/async-inspect/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ibrahimcesar/async-inspect/releases/tag/v0.1.0
