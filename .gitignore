@@ -60,3 +60,30 @@ tui_exports/
 .claude/
 async-inspect-macros/target/
 testkit-async/
+
+# Node.js
+node_modules/
+**/node_modules/
+
+# VS Code Extension
+vscode-extension/*.vsix
+vscode-extension/out/
+
+# Docusaurus
+docs/.docusaurus/
+docs/build/
+
+# IntelliJ Plugin
+intellij-plugin/build/
+intellij-plugin/.gradle/
+intellij-plugin/.idea/
+*.iml
+
+# Package manager locks (keep only root Cargo.lock)
+# Note: package-lock.json files are tracked for reproducible builds
+
+# Temporary files
+*.tmp
+*.temp
+.env
+.env.local
