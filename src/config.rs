@@ -60,6 +60,8 @@ struct ConfigInner {
     tasks_per_window: AtomicU64,
 
     /// Window start time (epoch millis, approximated)
+    /// Reserved for future time-window based adaptive sampling
+    #[allow(dead_code)]
     window_start_ms: AtomicU64,
 }
 
