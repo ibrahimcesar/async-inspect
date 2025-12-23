@@ -128,7 +128,8 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 | Version | Status | Highlights |
 |---------|--------|------------|
 | v0.1.0 | Released | Core tracking, deadlock detection, TUI, dashboard, IDE plugins, LSP |
-| v0.2.0 | Current | Ring buffer, adaptive sampling, memory optimization, enhanced errors |
+| v0.2.0 | Released | Initial production features |
+| v0.2.1 | Current | Ring buffer, adaptive sampling, memory optimization, enhanced errors |
 | v0.3.0 | Planned | Production observability, cloud integrations |
 | v0.4.0 | Planned | Distributed tracing |
 | v1.0.0 | Planned | Stable API |

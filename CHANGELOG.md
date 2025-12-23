@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.2.0] - 2025-12-23
+## [0.2.1] - 2025-12-23
 
 ### Added
 - **Production Readiness Features**
@@ -332,6 +332,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Issue and PR templates
 - Documentation deployment
 
-[Unreleased]: https://github.com/ibrahimcesar/async-inspect/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/ibrahimcesar/async-inspect/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/ibrahimcesar/async-inspect/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/ibrahimcesar/async-inspect/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ibrahimcesar/async-inspect/releases/tag/v0.1.0
