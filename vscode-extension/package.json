@@ -3,7 +3,7 @@
   "displayName": "async-inspect",
   "description": "X-ray vision for async Rust - Debug async code with real-time task inspection",
   "version": "0.1.0",
-  "publisher": "async-inspect",
+  "publisher": "ibrahimcesar",
   "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.85.0"
