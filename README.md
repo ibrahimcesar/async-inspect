@@ -41,12 +41,14 @@ Thread blocked in:
 ```
 
 ❌ Useless! You can't tell:
+
 - Which `.await` is blocked
 - What the future is waiting for
 - How long it's been waiting
 - What state the async state machine is in
 
 **Common async debugging nightmares:**
+
 - 🐌 Tests hang forever (where?)
 - 🔄 Deadlocks with no stack trace
 - ⏰ Timeouts that shouldn't happen
@@ -54,6 +56,7 @@ Thread blocked in:
 - 📉 Performance issues (lock contention? slow I/O?)
 
 **Current "solutions":**
+
 ```rust
 // Solution 1: Add prints everywhere 😭
 async fn fetch_user(id: u64) -> User {
@@ -76,26 +79,26 @@ async fn fetch_user(id: u64) -> User {
 $ async-inspect run ./my-app
 
 ┌─────────────────────────────────────────────────────────────┐
-│ async-inspect - Task Inspector                             │
+│ async-inspect - Task Inspector                              │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│ Task #42: fetch_user_data(user_id=12345)                  │
-│ Status: BLOCKED (2.3s)                                     │
-│ State: WaitingForPosts                                     │
+│ Task #42: fetch_user_data(user_id=12345)                    │
+│ Status: BLOCKED (2.3s)                                      │
+│ State: WaitingForPosts                                      │
 │                                                             │
-│ Progress: ▓▓▓▓▓░░░ 2/4 steps                              │
+│ Progress: ▓▓▓▓▓░░░ 2/4 steps                                │
 │                                                             │
-│ ✅ fetch_user() - Completed (145ms)                       │
-│ ⏳ fetch_posts() - IN PROGRESS (2.3s) ◄─── STUCK HERE     │
-│    └─> http::get("api.example.com/posts/12345")          │
-│        └─> TCP: ESTABLISHED, waiting for response        │
-│        └─> Timeout in: 27.7s                              │
-│ ⏸️  fetch_friends() - Not started                         │
-│ ⏸️  build_response() - Not started                        │
+│ ✅ fetch_user() - Completed (145ms)                         │
+│ ⏳ fetch_posts() - IN PROGRESS (2.3s) ◄─── STUCK HERE       │
+│    └─> http::get("api.example.com/posts/12345")             │
+│        └─> TCP: ESTABLISHED, waiting for response           │
+│        └─> Timeout in: 27.7s                                │
+│ ⏸️  fetch_friends() - Not started                           │ 
+│ ⏸️  build_response() - Not started                          │
 │                                                             │
-│ State Machine Polls: 156 (avg: 14.7ms between polls)      │
+│ State Machine Polls: 156 (avg: 14.7ms between polls)        │
 │                                                             │
-│ Press 'd' for details | 't' for timeline | 'g' for graph  │
+│ Press 'd' for details | 't' for timeline | 'g' for graph    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -113,6 +116,7 @@ $ async-inspect run ./my-app
 ### Motivation
 
 Async Rust is powerful but opaque. When you write:
+
 ```rust
 async fn complex_operation() {
     let a = step_a().await;
@@ -122,6 +126,7 @@ async fn complex_operation() {
 ```
 
 The compiler transforms this into a **state machine**:
+
 ```rust
 // Simplified - the real thing is more complex
 enum ComplexOperationState {
