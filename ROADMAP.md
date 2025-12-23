@@ -127,14 +127,14 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 
 | Version | Status | Highlights |
 |---------|--------|------------|
-| v0.1.0 | Current | Core tracking, deadlock detection, TUI, dashboard, IDE plugins, LSP |
-| v0.2.0 | Planned | Auto lock tracking, channel viz, source maps |
+| v0.1.0 | Released | Core tracking, deadlock detection, TUI, dashboard, IDE plugins, LSP |
+| v0.2.0 | Current | Ring buffer, adaptive sampling, memory optimization, enhanced errors |
 | v0.3.0 | Planned | Production observability, cloud integrations |
 | v0.4.0 | Planned | Distributed tracing |
 | v1.0.0 | Planned | Stable API |
 
 ---
 
-*Last updated: 2025-12-09*
+*Last updated: 2025-12-23*
 
 *Have ideas? Open a [discussion](https://github.com/ibrahimcesar/async-inspect/discussions) or [issue](https://github.com/ibrahimcesar/async-inspect/issues)!*
