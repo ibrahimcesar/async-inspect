@@ -25,13 +25,19 @@ This roadmap outlines planned features and improvements. We welcome community in
 ## v0.3.0 - Production Observability
 
 **Focus**: Safe for production use with minimal overhead
-3
+
 ### Planned Features
 
 - [x] **Adaptive Sampling** - Automatically adjust sampling rate based on load
 - [x] **Ring Buffer Mode** - Fixed memory usage, keep only recent N events
 - [ ] **Remote Dashboard** - Connect dashboard to remote running processes
 - [ ] **Alerting** - Configurable alerts for deadlocks, slow tasks, or high contention
+
+### Documentation
+
+- [x] **API Reference** - Comprehensive public API documentation (API.md)
+- [x] **Quickstart Guide** - Get started in under 5 minutes (QUICKSTART.md)
+- [x] **Enhanced Error Messages** - Actionable error messages with suggestions
 
 ### Integrations
 
@@ -129,6 +135,6 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed release notes.
 
 ---
 
-*Last updated: 2025-01-23*
+*Last updated: 2025-12-09*
 
 *Have ideas? Open a [discussion](https://github.com/ibrahimcesar/async-inspect/discussions) or [issue](https://github.com/ibrahimcesar/async-inspect/issues)!*
