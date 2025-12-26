@@ -14,17 +14,8 @@ async-inspect is a **debugging and observability tool** designed for development
 
 - Handle authentication or authorization
 - Process untrusted user input directly
-- Make network requests (except optional telemetry, which can be disabled)
+- Make network requests
 - Execute arbitrary code
-
-### Telemetry
-
-Anonymous usage telemetry can be disabled via environment variables:
-```bash
-ASYNC_INSPECT_NO_TELEMETRY=1
-# or
-DO_NOT_TRACK=1
-```
 
 ### Production Considerations
 
@@ -144,7 +135,6 @@ Security-sensitive optional dependencies:
 
 | Feature | Dependencies | Notes |
 |---------|--------------|-------|
-| `telemetry` | `telemetry-kit`, `reqwest` | Makes HTTPS requests |
 | `dashboard` | `axum`, `tower-http` | HTTP server |
 | `lsp` | `tower-lsp` | IPC/TCP server |
 

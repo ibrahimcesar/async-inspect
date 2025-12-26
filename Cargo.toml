@@ -115,9 +115,6 @@ once_cell = "1.19"
 # Proc macros (internal)
 async-inspect-macros = { version = "0.1.0", path = "async-inspect-macros" }
 
-# Telemetry (usage analytics)
-telemetry-kit = { version = "0.3", optional = true }
-
 [dev-dependencies]
 tokio = { version = "1.35", features = ["full"] }
 tokio-test = "0.4"
@@ -125,13 +122,10 @@ criterion = { version = "0.5", features = ["async_tokio"] }
 colored = "2.1"
 
 [features]
-default = ["cli", "tokio", "telemetry"]
+default = ["cli", "tokio"]
 
 # CLI with TUI
 cli = ["ratatui", "crossterm"]
-
-# Usage telemetry (can be disabled)
-telemetry = ["telemetry-kit", "tokio"]
 
 # Runtime support
 tokio = ["dep:tokio"]
@@ -155,7 +149,7 @@ dashboard = ["axum", "tokio-tungstenite", "tower-http", "tokio"]
 lsp = ["tower-lsp", "tokio-util", "tokio"]
 
 # All features
-full = ["cli", "tokio", "tracing-sub", "prometheus-export", "opentelemetry-export", "flamegraph", "dashboard", "lsp", "telemetry"]
+full = ["cli", "tokio", "tracing-sub", "prometheus-export", "opentelemetry-export", "flamegraph", "dashboard", "lsp"]
 
 [profile.dev]
 opt-level = 0

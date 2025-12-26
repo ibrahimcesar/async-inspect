@@ -6,11 +6,9 @@ use async_inspect::config::Config;
 use async_inspect::export::{CsvExporter, JsonExporter};
 use async_inspect::inspector::Inspector;
 use async_inspect::reporter::Reporter;
-use async_inspect::telemetry;
 use clap::{Parser, Subcommand};
 use colored::Colorize;
 use std::path::PathBuf;
-use std::time::Instant;
 
 #[cfg(feature = "cli")]
 use async_inspect::tui::run_tui;
@@ -113,10 +111,6 @@ enum ConfigMode {
 }
 
 fn main() -> anyhow::Result<()> {
-    // Initialize telemetry early
-    telemetry::init();
-
-    let start_time = Instant::now();
     let cli = Cli::parse();
 
     if cli.verbose {
@@ -135,18 +129,7 @@ fn main() -> anyhow::Result<()> {
         }
     };
 
-    // Get command name for telemetry
-    let command_name = match &command {
-        #[cfg(feature = "cli")]
-        Commands::Monitor { .. } => "monitor",
-        Commands::Export { .. } => "export",
-        Commands::Stats { .. } => "stats",
-        Commands::Config { .. } => "config",
-        Commands::Info => "info",
-        Commands::Version => "version",
-    };
-
-    let result = match command {
+    match command {
         #[cfg(feature = "cli")]
         Commands::Monitor { interval } => {
             println!("╔════════════════════════════════════════════════════════════╗");
@@ -406,22 +389,13 @@ fn main() -> anyhow::Result<()> {
             println!("  • cli (TUI support)");
             #[cfg(feature = "tokio")]
             println!("  • tokio");
-            #[cfg(feature = "telemetry")]
-            println!("  • telemetry (usage analytics)");
 
             println!("\nAuthors: {}", env!("CARGO_PKG_AUTHORS"));
             println!("License: {}", env!("CARGO_PKG_LICENSE"));
 
             Ok(())
         }
-    };
-
-    // Track command execution
-    let duration_ms = start_time.elapsed().as_millis() as u64;
-    let success = result.is_ok();
-    telemetry::track_command_sync(command_name, success, Some(duration_ms));
-
-    result
+    }
 }
 
 fn print_config(config: &Config) {
