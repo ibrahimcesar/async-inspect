@@ -136,12 +136,6 @@ pub mod dashboard;
 #[cfg(feature = "lsp")]
 pub mod lsp;
 
-/// Usage telemetry
-///
-/// Anonymous usage analytics to help improve async-inspect.
-/// Can be disabled via `ASYNC_INSPECT_NO_TELEMETRY=1` or `DO_NOT_TRACK=1`.
-pub mod telemetry;
-
 /// Enhanced error types with actionable messages
 ///
 /// Provides detailed error types with helpful suggestions for resolving
