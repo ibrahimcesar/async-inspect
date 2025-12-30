@@ -63,7 +63,7 @@ clap = { version = "4.5", features = ["derive", "cargo"] }
 colored = "2.1"
 
 # TUI (optional)
-ratatui = { version = "0.29", optional = true }
+ratatui = { version = "0.30", optional = true }
 crossterm = { version = "0.28", optional = true }
 
 # Serialization
